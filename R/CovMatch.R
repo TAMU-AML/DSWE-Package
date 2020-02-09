@@ -41,13 +41,13 @@ CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
 
 
 
-  ## reference set as a baseline
+  ## data set 2 as a baseline
   # file names to be matched
   dname_1 = rep(list(c()),2)
   dname_1[[1]]= dname[[1]]
   dname_1[[2]]= dname[[2]]
 
-  ## test set as a baseline
+  ## data set 1 as a baseline
   # file names to be matched
 
   dname_2 = rep(list(c()),2)
@@ -56,9 +56,6 @@ CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
 
 
   file_list = list(dname_1,dname_2)
-
-  # Non circular covariates
-  cov = cov
 
   # circular covariates
   cov_circ = cov_circ
@@ -71,7 +68,7 @@ CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
   matched_data = rep(list(), 2)
   foreach::foreach(i = 1:2) %do% {
 
-  matched_data[[i]] = covmatch.mult(dname = file_list[[i]], cov = cov, weight = weight, cov_circ = cov_circ)
+  matched_data[[i]] = covmatch.mult(dname = file_list[[i]], weight = weight, cov_circ = cov_circ)
 
   }
 
