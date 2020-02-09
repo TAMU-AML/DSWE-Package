@@ -2,18 +2,17 @@
 #' @description The function aims to take list of two data sets and returns the after
 #' matched data sets using user specified covariates.
 #'
-#' @param dname This should always be a list, containing all the data sets to match.
-#' @param cov Vector of column numbers for the covariates to be used in matching.
+#' @param dname This should always be a list, containing data sets to match.
 #' @param weight Vector of threshold values, against which matching happens.
-#' It should be a vector such as c(0.2, 0.2, 0.3), if considering three covariates.
+#' It should be a single value (0.2) or a vector of values c(0.2, 0.3).
 #' @param cov_circ Vector stating the column position of circular variables such as wind direction,
 #'  nacelle position etc.
-#' @usage CovMatch(dname, cov, weight, cov_circ)
+#' @usage CovMatch(dname, weight, cov_circ)
 #' @return The function returns a list containing after matched data sets.
 #' @export
 #' @import foreach
 
-CovMatch = function(dname, cov = NULL, weight, cov_circ = NULL ){
+CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
 
   if(length(dname) != 2){
 
