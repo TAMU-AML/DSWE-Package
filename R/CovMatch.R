@@ -28,15 +28,6 @@ CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
 
   }
 
-  # Checks for non circular covariates
-  if(length(cov) > 0){
-
-    if(!is.vector(cov)){
-
-      stop('Non circular covariates column number should be provided as a vector')
-
-    }
-  }
 
   # Checks for circular covariates
   if(length(cov_circ) > 0){
@@ -48,19 +39,7 @@ CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
     }
   }
 
-  # Checks whether any covariate is provided by user or not
-  if(!(length(cov) > 0) && !(length(cov_circ) > 0)){
 
-    stop('Atleast a single covariate, either circular or non circular should be provided')
-
-  }
-
-  # Checks for dimension compatibility of weight supplied
-  if(!(length(weight) == length(c(cov, cov_circ)))){
-
-    stop('The weight provided should be a single value or vector with weight for each covariate')
-
-  }
 
   ## reference set as a baseline
   # file names to be matched
