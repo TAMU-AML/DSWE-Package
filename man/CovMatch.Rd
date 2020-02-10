@@ -9,10 +9,12 @@ CovMatch(dname, weight, cov_circ)
 \arguments{
 \item{dname}{This should always be a list, containing data sets to match.}
 
-\item{weight}{Vector of threshold values, against which matching happens.
+\item{cov}{Vector stating the column position of non circular variables such as wind speed}
+
+\item{wgt}{Vector of threshold values, against which matching happens.
 It should be a single value (0.2) or a vector of values c(0.2, 0.3).}
 
-\item{cov_circ}{Vector stating the column position of circular variables such as wind direction,
+\item{cov.circ}{Vector stating the column position of circular variables such as wind direction,
 nacelle position etc.}
 }
 \value{

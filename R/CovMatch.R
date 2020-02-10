@@ -8,7 +8,7 @@
 #' @param cov Vector stating the column position of non circular variables such as wind speed
 #' @param cov.circ Vector stating the column position of circular variables such as wind direction,
 #'  nacelle position etc.
-#' @usage CovMatch(dname, weight, cov_circ)
+#' @usage CovMatch(dname, cov, wgt, cov.circ)
 #' @return The function returns a list containing after matched data sets.
 #' @export
 #' @import foreach
