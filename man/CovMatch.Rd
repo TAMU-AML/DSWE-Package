@@ -4,7 +4,7 @@
 \alias{CovMatch}
 \title{Covariate Matching}
 \usage{
-CovMatch(dname, weight, cov_circ)
+CovMatch(dname, cov, wgt, cov.circ)
 }
 \arguments{
 \item{dname}{This should always be a list, containing data sets to match.}
