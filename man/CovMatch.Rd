@@ -4,15 +4,13 @@
 \alias{CovMatch}
 \title{Covariate Matching}
 \usage{
-CovMatch(dname, cov, weight, cov_circ)
+CovMatch(dname, weight, cov_circ)
 }
 \arguments{
-\item{dname}{This should always be a list, containing all the data sets to match.}
-
-\item{cov}{Vector of column numbers for the covariates to be used in matching.}
+\item{dname}{This should always be a list, containing data sets to match.}
 
 \item{weight}{Vector of threshold values, against which matching happens.
-It should be a vector such as c(0.2, 0.2, 0.3), if considering three covariates.}
+It should be a single value (0.2) or a vector of values c(0.2, 0.3).}
 
 \item{cov_circ}{Vector stating the column position of circular variables such as wind direction,
 nacelle position etc.}
@@ -21,6 +19,6 @@ nacelle position etc.}
 The function returns a list containing after matched data sets.
 }
 \description{
-The function aims to take exactly two data sets and returns the after
+The function aims to take list of two data sets and returns the after
 matched data sets using user specified covariates.
 }

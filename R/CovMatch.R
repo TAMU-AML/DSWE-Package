@@ -3,16 +3,17 @@
 #' matched data sets using user specified covariates.
 #'
 #' @param dname This should always be a list, containing data sets to match.
-#' @param weight Vector of threshold values, against which matching happens.
+#' @param wgt Vector of threshold values, against which matching happens.
 #' It should be a single value (0.2) or a vector of values c(0.2, 0.3).
-#' @param cov_circ Vector stating the column position of circular variables such as wind direction,
+#' @param cov Vector stating the column position of non circular variables such as wind speed
+#' @param cov.circ Vector stating the column position of circular variables such as wind direction,
 #'  nacelle position etc.
 #' @usage CovMatch(dname, weight, cov_circ)
 #' @return The function returns a list containing after matched data sets.
 #' @export
 #' @import foreach
 
-CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
+CovMatch = function(dname, cov = NULL, wgt = 0.2, cov.circ = NULL ){
 
   if(length(dname) != 2){
 
@@ -28,71 +29,75 @@ CovMatch = function(dname, weight = 0.2, cov_circ = NULL ){
 
   }
 
+  # Checks for non circular covariates
+  if(length(cov) > 0){
+
+    if(!is.vector(cov)){
+
+      stop('Non circular covariates column number should be provided as a vector')
+
+    }
+  }
 
   # Checks for circular covariates
-  if(length(cov_circ) > 0){
+  if(length(cov.circ) > 0){
 
-    if(!is.vector(cov_circ)){
+    if(!is.vector(cov.circ)){
 
       stop('Circular covariates column number should be provided as a vector')
 
     }
   }
 
+  # Checks whether any covariate is provided by user or not
+  if(!(length(cov) > 0) && !(length(cov.circ) > 0)){
 
+    stop('Atleast a single covariate, either circular or non circular should be provided')
+
+  }
+
+  # Checks for dimension compatibility of weight supplied
+  if(length(wgt) > 1){
+
+    if(!(length(wgt) == length(c(cov, cov.circ)))){
+
+      stop('The weight provided should be a single value or vector with weight for each covariate')
+
+    }
+  }
 
   ## data set 2 as a baseline
-  # file names to be matched
-  dname_1 = rep(list(c()),2)
-  dname_1[[1]]= dname[[1]]
-  dname_1[[2]]= dname[[2]]
+  dname1_ = list(dname[[1]], dname[[2]])
 
-  ## data set 1 as a baseline
-  # file names to be matched
-
-  dname_2 = rep(list(c()),2)
-  dname_2[[1]]= dname[[2]]
-  dname_2[[2]]= dname[[1]]
-
-
-  file_list = list(dname_1,dname_2)
-
-  # circular covariates
-  cov_circ = cov_circ
-
-  # weight for threshold calculation
-  weight = weight
+  ## test set as a baseline
+  dname2_ = list(dname[[2]], dname[[1]])
+  filelist_ = list(dname1_, dname2_)
 
   # sequential computation
   `%do%` = foreach::`%do%`
-  matched_data = rep(list(), 2)
+  matcheddata_ = rep(list(), 2)
   foreach::foreach(i = 1:2) %do% {
 
-  matched_data[[i]] = covmatch.mult(dname = file_list[[i]], weight = weight, cov_circ = cov_circ)
+    matcheddata_[[i]] = CovMatch.Mult(dname = file_list[[i]], cov = cov, wgt = wgt, cov.circ = cov.circ)
 
   }
 
   ############# Retrieving datasets from 1st matching #########################
   # creating list of matched data set from step 1
-  match1 = matched_data[[1]]
-  matched1 = rep(list(c()),2)
+  match1_ = matcheddata_[[1]]
+  matched1_ = list(match1_[[2]], match1_[[1]])
 
-  matched1[[2]]= match1[[2]]
-  matched1[[1]]= match1[[1]]
 
   ############# Retrieving datasets from 2nd matching #########################
   # creating list of matched data set from step 1
-  match2 = matched_data[[2]]
-  matched2 = rep(list(c()),2)
-
-  matched2[[2]]= match2[[1]]
-  matched2[[1]]= match2[[2]]
+  match2_ = matcheddata_[[2]]
+  matched2_ = list(match2_[[1]], match2_[[2]])
 
   ############ Combining results to generate final matched pairs ###################
-  matched = rep(list(c()), 2)
-  matched[[1]] = unique(rbind(matched1[[1]], matched2[[1]]))
-  matched[[2]] = unique(rbind(matched1[[2]], matched2[[2]]))
+  result_ = rep(list(c()), 2)
+  result_[[1]] = unique(rbind(matched1_[[1]], matched2_[[1]]))
+  result_[[2]] = unique(rbind(matched1_[[2]], matched2_[[2]]))
 
-  return(matched)
+  return(result_)
 
 }
