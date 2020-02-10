@@ -1,21 +1,25 @@
 #' @import matrixStats
 
 
-covmatch.mult = function(dname, weight, cov_circ = NULL ){
+CovMatch.Mult = function(dname, cov, wgt, cov.circ){
+
 
   # Store data sets to be compared
-  f_name = dname
+  fname_ = dname
 
   # Weight assigning
-  wgt = weight
+  wgt_ = wgt
+
+  # Covariates column number for matching
+  covcol_ = c(cov, cov.circ)
 
   # Circular variable presence indicator
   flag = 0
 
   # Ensuring circular variable to be between 0 to 360 degree
-  if(length(cov_circ) > 0) {
+  if(length(cov.circ) > 0) {
 
-    f_name = lapply(1:length(f_name), function(x) circ.positive(f_name[[x]], cov_circ))
+    fname_ = lapply(1:length(fname_), function(x) circ.positive(fname_[[x]], cov.circ))
 
     # Circular variable indicator
     flag = 1
@@ -23,49 +27,49 @@ covmatch.mult = function(dname, weight, cov_circ = NULL ){
   }
 
   # Setting up the reference data set and threshold
-  ref_id = length(f_name)
-  ref = as.matrix(f_name[[ref_id]])
+  refid_ = length(fname_)
+  ref_ = as.matrix(fname_[[refid_]][, covcol_, drop = F])
 
   # Test files
-  test_id = c(1:length(f_name))[-ref_id]
+  testid_ = c(1:length(fname_))[-refid_]
 
   # Setting up thresholds
-  ratio = matrixStats::colSds(as.matrix(ref)) / colMeans(ref)
-  thres = ratio * wgt
+  ratio_ = matrixStats::colSds(as.matrix(ref_)) / colMeans(ref_)
+  thres_ = ratio_ * wgt_
 
   # Matching data sets with ref as reference
-  matchID  = lapply(test_id, function(x) match.cov(ref, f_name[[x]], thres, circ_pos = cov_circ, flag = flag))
+  matchID_  = lapply(testid_, function(x) match.cov(ref_, fname_[[x]][, covcol_, drop = F], thres_, cov.circ, flag))
 
   # creating list of matched data set
-  matched = rep(list(c()), (length(f_name)))
+  matched_ = rep(list(c()), (length(fname_)))
 
   # selecting indices of matched data sets
   # matched reference set
-  refid = ((matchID[[1]]) > 0)
-  if(length(f_name) < 3){
+  refid_ = ((matchID_[[1]]) > 0)
+  if(length(fname_) < 3){
 
-    refid = refid
+    refid_ = refid_
 
   } else
   {
 
-    for(i in 2:(length(f_name)-1))
+    for(i in 2:(length(fname_)-1))
     {
-      refid = refid & ((matchID[[i]]) > 0)
+      refid_ = refid_ & ((matchID_[[i]]) > 0)
 
     }
 
   }
 
-  refID = which(refid)
-  matched[[ref_id]] = f_name[[ref_id]][refID, ]
+  refID_ = which(refid_)
+  matched_[[refid_]] = fname_[[refid_]][refID_, ]
 
   # matched test set
-  for(j in (1:(length(f_name)-1))){
+  for(j in (1:(length(fname_)-1))){
 
-    matched[[test_id[j]]] = f_name[[test_id[j]]][matchID[[j]][refID], ]
+    matched_[[testid_[j]]] = fname_[[testid_[j]]][matchID_[[j]][refID_], ]
 
   }
 
-  return(matched)
+  return(matched_)
 }
