@@ -4,7 +4,6 @@
 
 CovMatch.Mult = function(dname, cov, wgt, cov.circ){
 
-
   # Store data sets to be compared
   fname_ = dname
 
@@ -14,6 +13,9 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   # Covariates column number for matching
   covcol_ = c(cov, cov.circ)
 
+  # Circular variable position indicator
+  pos = 0
+
   # Circular variable presence indicator
   flag = 0
 
@@ -21,6 +23,9 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   if(length(cov.circ) > 0) {
 
     fname_ = lapply(1:length(fname_), function(x) Circ.Positive(fname_[[x]], cov.circ))
+
+    # Circular variable after data subsetting position
+    pos = (length(cov)+1):length(covcol_)
 
     # Circular variable indicator
     flag = 1
@@ -39,30 +44,29 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   thres_ = ratio_ * wgt_
 
   # Matching data sets with ref as reference
-  matchID_  = lapply(testid_, function(x) Match.Cov(ref_, fname_[[x]][, covcol_, drop = F], thres_, cov.circ, flag))
+  matchID_  = lapply(testid_, function(x) Match.Cov(ref_, fname_[[x]][, covcol_, drop = F], thres_, pos, flag))
 
   # creating list of matched data set
   matched_ = rep(list(c()), (length(fname_)))
 
   # selecting indices of matched data sets
   # matched reference set
-  refid_ = ((matchID_[[1]]) > 0)
+  ref.id_ = ((matchID_[[1]]) > 0)
   if(length(fname_) < 3){
 
-    refid_ = refid_
+    ref.id_ = ref.id_
 
-  } else
-  {
+  } else{
 
     for(i in 2:(length(fname_)-1))
     {
-      refid_ = refid_ & ((matchID_[[i]]) > 0)
+      ref.id_ = ref.id_ & ((matchID_[[i]]) > 0)
 
     }
 
   }
 
-  refID_ = which(refid_)
+  refID_ = which(ref.id_)
   matched_[[refid_]] = fname_[[refid_]][refID_, ]
 
   # matched test set
