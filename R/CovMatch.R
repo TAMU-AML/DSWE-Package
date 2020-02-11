@@ -74,10 +74,9 @@ CovMatch = function(dname, cov = NULL, wgt = 0.2, cov.circ = NULL ){
   filelist_ = list(dname1_, dname2_)
 
   # sequential computation
-  i = 1:2
   `%do%` = foreach::`%do%`
   matcheddata_ = rep(list(), 2)
-  foreach::foreach(i) %do% {
+  foreach::foreach(i = 1:2) %do% {
 
     matcheddata_[[i]] = CovMatch.Mult(filelist_[[i]], cov, wgt, cov.circ)
 
