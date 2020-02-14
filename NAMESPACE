@@ -2,6 +2,7 @@
 
 export(CovMatch)
 export(KnnPcurve)
+import(FNN)
 import(foreach)
 import(matrixStats)
 importFrom(Rcpp,sourceCpp)

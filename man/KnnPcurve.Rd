@@ -20,7 +20,7 @@ KnnPcurve(dname, xvar, xvar.circ = NULL, yvar, kfold, forward_stepwise = FALSE)
 \item{forward_stepwise}{variable selection technique, which gives the best result for 1 feature, 2 features etc}
 }
 \value{
-
+a dataframe consisting of best features and their rmse for forward stepwise, else a numeric value
 }
 \description{
 The function models the powercurve using KNN, against supplied arguments
