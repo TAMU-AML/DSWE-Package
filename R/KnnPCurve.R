@@ -7,9 +7,9 @@
 #' @param kfold split the data set should go through, such as kfold = 10
 #' @param forward_stepwise variable selection technique, which gives the best result for 1 feature, 2 features etc
 #'
-#' @return
+#' @return a dataframe consisting of best features and their rmse for forward stepwise, else a numeric value
 #' @export
-#'
+#' @import FNN
 #' @examples
 KnnPcurve = function(dname, xvar, xvar.circ = NULL,  yvar, kfold, forward_stepwise = FALSE){
 
