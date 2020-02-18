@@ -8,6 +8,7 @@
 #' @param fixedCov
 #' @param cirCov
 #'
+#' @import KernSmooth
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi', nMultiCov = 3, fixedCov = c(1,2), cirCov = 2 ){
   if (!is.matrix(trainX) && !is.data.frame(trainX)) {
