@@ -2,6 +2,7 @@
 
 export(CovMatch)
 export(KnnPcurve)
+export(funGP)
 import(FNN)
 import(foreach)
 import(matrixStats)
