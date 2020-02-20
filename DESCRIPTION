@@ -19,4 +19,6 @@ Imports:
     Rcpp,
     foreach,
     RcppArmadillo,
-    matrixStats
+    matrixStats,
+    FNN,
+    KernSmooth
