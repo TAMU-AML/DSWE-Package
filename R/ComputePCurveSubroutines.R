@@ -25,7 +25,7 @@ ComputeSMetric = function(mu1, mu2, band){
 }
 
 # Compute weighted metrics
-ComputeWMetric(dList1, dList2, mu1, mu2, testdata, var1, var2){
+ComputeWMetric = function(dList1, dList2, mu1, mu2, testdata, var1, var2){
 
   mixedData = rbind(dList1[[1]], dList[[2]])
 
