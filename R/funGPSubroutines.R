@@ -28,7 +28,7 @@ estimateParameters= function(datalist, covCols, yCol){
 }
 
 ###
-computeDIffCov = function(datalist, covCols, yCol, params, testset){
+computeDiffCov = function(datalist, covCols, yCol, params, testset){
   theta = params$theta
   sigma_f = params$sigma_f
   sigma_n = params$sigma_n
