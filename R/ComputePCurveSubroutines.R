@@ -7,7 +7,7 @@ GenerateTestset = function(data, var1, var2, gridSize){
 
   Var2Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var2], c(0.025,0.975))[1])))
   Var2Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var2], c(0.025,0.975))[2])))
-  Var2Range = seq(Var1Min, Var1Max, length.out = gridSize )
+  Var2Range = seq(Var2Min, Var2Max, length.out = gridSize )
 
   return(expand.grid(Var1Range, Var2Range))
 
