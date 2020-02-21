@@ -12,7 +12,7 @@
 #'
 #' @export
 
-ComputePCurve = function(data, xcol, xcol.circ, ycol, var1col, var2col, thrs = 0.2, conflevel = 0.95, gridSize = 50){
+ComputePCurve = function(data, xcol, xcol.circ = NULL, ycol, var1col, var2col, thrs = 0.2, conflevel = 0.95, gridSize = 50){
 
   ResultMatching = CovMatch(data, xcol, xcol.circ, thrs)
 
