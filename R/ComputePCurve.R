@@ -18,7 +18,7 @@ ComputePCurve = function(data, xcol, xcol.circ = NULL, ycol, var1col, var2col, t
 
   TestSet = GenerateTestset(ResultMatching, var1col, var2col, gridSize )
 
-  ResultGP = funGP(ResultMatching, xcol, ycol, conflevel, TestSet)
+  ResultGP = funGP(ResultMatching, c(var1col, var2col), ycol, conflevel, TestSet)
 
   ResultSMetric = ComputeSMetric(ResultGP$mu1, ResultGP$mu2, ResultGP$band)
 
