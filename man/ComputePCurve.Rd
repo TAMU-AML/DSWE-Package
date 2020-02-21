@@ -7,7 +7,7 @@
 ComputePCurve(
   data,
   xcol,
-  xcol.circ,
+  xcol.circ = NULL,
   ycol,
   var1col,
   var2col,

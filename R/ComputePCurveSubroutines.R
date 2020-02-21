@@ -1,5 +1,5 @@
 # Generates test set
-GeneraTestset = function(data, var1, var2, gridSize){
+GenerateTestset = function(data, var1, var2, gridSize){
 
   Var1Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var1], c(0.025,0.975))[1])))
   Var1Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var1], c(0.025,0.975))[2])))

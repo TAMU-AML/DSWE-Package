@@ -11,11 +11,11 @@ CovMatch(dname, cov, wgt, cov.circ)
 
 \item{cov}{Vector stating the column position of non circular variables such as wind speed}
 
-\item{wgt}{Vector of threshold values, against which matching happens.
-It should be a single value (0.2) or a vector of values c(0.2, 0.3).}
-
 \item{cov.circ}{Vector stating the column position of circular variables such as wind direction,
 nacelle position etc.}
+
+\item{wgt}{Vector of threshold values, against which matching happens.
+It should be a single value (0.2) or a vector of values c(0.2, 0.3).}
 }
 \value{
 The function returns a list containing after matched data sets.
