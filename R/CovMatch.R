@@ -13,7 +13,7 @@
 #' @export
 #' @import foreach
 
-CovMatch = function(dname, cov = NULL, wgt = 0.2, cov.circ = NULL ){
+CovMatch = function(dname, cov = NULL, cov.circ = NULL, wgt = 0.2){
 
   if(length(dname) != 2){
 
