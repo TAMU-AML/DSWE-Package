@@ -17,7 +17,7 @@ GenerateTestset = function(data, var1, var2, gridSize){
 ComputeSMetric = function(mu1, mu2, band){
 
   funcDiff = mu1 - mu2
-  funcDiff[funcDiff < band] = 0
+  funcDiff[abs(funcDiff) < band] = 0
   resultP = ((sum(funcDiff) / sum(mu2)) * (100))
   resultA = (sum(funcDiff)) / nrow(mu2)
 
@@ -25,14 +25,14 @@ ComputeSMetric = function(mu1, mu2, band){
 }
 
 # Compute weighted metrics
-ComputeWMetric = function(dList1, dList2, mu1, mu2, testdata, var1, var2){
+ComputeWMetric = function(dList, mu1, mu2, testdata, var1, var2){
 
-  mixedData = rbind(dList1[[1]], dList[[2]])
+  mixedData = rbind(dList[[1]], dList[[2]])
 
-  var1Density = density(mixed_data[, var1])
+  var1Density = density(mixedData[, var1])
   var1Test = approx(var1Density$x,var1Density$y, xout = testdata[, 1])
 
-  var2Density = density(mixed_data[, var2])
+  var2Density = density(mixedData[, var2])
   var2Test = approx(var2Density$x,var2Density$y, xout = testdata[, 2])
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
