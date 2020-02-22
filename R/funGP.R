@@ -15,7 +15,7 @@ funGP = function(datalist, covCols, yCol, confLevel, testset ){
 
   muDiff = diffCov$mu2 - diffCov$mu1
 
-  diffCovMat = diffCov$doffCovMat
+  diffCovMat = diffCov$diffCovMat
 
   band = computeConfBand(diffCovMat, confLevel)
 
