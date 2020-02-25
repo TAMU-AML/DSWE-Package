@@ -1,11 +1,11 @@
 #' @title Covariate Matching
 #' @description The function aims to take list of two data sets and returns the after
-#' matched data sets using user specified covariates.
+#' matched data sets using user specified covariates and threshold.
 #'
 #' @param dname This should always be a list, containing data sets to match.
-#' @param wgt Vector of threshold values, against which matching happens.
-#' It should be a single value (0.2) or a vector of values c(0.2, 0.3).
-#' @param cov Vector stating the column position of non circular variables such as wind speed
+#' @param wgt Vector of threshold values for each covariates, against which matching happens.
+#' It should be a single value (0.2) or a vector of values c(0.2, 0.3) representing threshold for each of the covariate.
+#' @param cov Vector stating the column position of non circular variables such as wind speed, ambient temperature etc.
 #' @param cov.circ Vector stating the column position of circular variables such as wind direction,
 #'  nacelle position etc.
 #' @usage CovMatch(dname, cov, wgt, cov.circ)
