@@ -98,6 +98,8 @@ CovMatch = function(dname, cov = NULL, cov.circ = NULL, wgt = 0.2){
   result_[[1]] = unique(rbind(matched1_[[1]], matched2_[[1]]))
   result_[[2]] = unique(rbind(matched1_[[2]], matched2_[[2]]))
 
-  return(result_)
+  MinMaxOriginal = MinMaxData(dname, cov)
+  MinMaxMatched = MinMaxData(result_, cov)
 
+  return(list(originalData = dname,  matchedData = result_, MinMaxOriginal = MinMaxOriginal, MinMaxMatched = MinMaxMatched))
 }
