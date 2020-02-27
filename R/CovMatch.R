@@ -13,7 +13,7 @@
 #' @export
 #' @import foreach
 
-CovMatch = function(dname, cov = NULL, cov.circ = NULL, wgt = 0.2){
+CovMatch = function(dname, cov = NULL, cov.circ = NULL, wgt = 0.2, priority = FALSE){
 
   if(length(dname) != 2){
 
@@ -64,6 +64,14 @@ CovMatch = function(dname, cov = NULL, cov.circ = NULL, wgt = 0.2){
       stop('The weight provided should be a single value or vector with weight for each covariate')
 
     }
+  }
+
+  if(priority == TRUE){
+
+    covDiff = as.numeric(abs(colMeans(data[[1]][, cov]) - colMeans(data[[2]][, cov])))
+
+    cov = cov[order(covDiff, decreasing = TRUE)]
+
   }
 
   ## data set 2 as a baseline
