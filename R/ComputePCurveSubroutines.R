@@ -43,3 +43,15 @@ ComputeWMetric = function(dList, mu1, mu2, testdata, var1, var2){
   return(resultP)
 
 }
+
+# Compute reduction ratio
+ComputeRatio = function(dataList1, dataList2, var1, var2){
+
+  combList1 = rbind(dataList1[[1]], dataList1[[2]])
+  combList2 = rbind(dataList2[[1]], dataList2[[2]])
+
+  ratioVar1 = max(combList2[, var1]) - min(combList2[, var1]) / (max(combList1[, var1]) - min(combList1[, var1]))
+  ratioVar2 = max(combList2[, var2]) - min(combList2[, var2]) / (max(combList1[, var2]) - min(combList1[, var2]))
+
+  return(list(ratioVar1 = ratioVar1, ratioVar2 = ratioVar2))
+}
