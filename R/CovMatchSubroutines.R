@@ -115,4 +115,19 @@ Circ.Positive = function(data, circ){
 }
 
 
+MinMaxData = function(data, xcol){
 
+  if(is.list(data)){
+
+    comData = rbind(data[[1]], data[[2]])
+  }
+  filteredData = matrix(nrow = 2, ncol = length(xcol))
+  colnames(filteredData) = as.character(xcol)
+  row.names(filteredData) = c('Min', 'Max')
+
+  filteredData[1 , ] = colMins(as.matrix(comData[, xcol]))
+  filteredData[2 , ] = colMaxs(as.matrix(comData[, xcol]))
+
+  return(filteredData)
+
+}
