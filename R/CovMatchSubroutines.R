@@ -11,7 +11,7 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   wgt_ = wgt
 
   # Covariates column number for matching
-  covcol_ = c(cov, cov.circ)
+  covcol_ = cov
 
   # Circular variable position indicator
   pos = 0
@@ -25,7 +25,7 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
     fname_ = lapply(1:length(fname_), function(x) Circ.Positive(fname_[[x]], cov.circ))
 
     # Circular variable after data subsetting position
-    pos = (length(cov)+1):length(covcol_)
+    pos = which(cov.circ == covcol_)
 
     # Circular variable indicator
     flag = 1
