@@ -60,8 +60,8 @@ ComputeRatio = function(dataList1, dataList2, var1, var2){
 ComputeExtrapolation = function(data, yCol, mu1, mu2){
 
   # creating bins for combined original data
-  combData = rbind(unlist(data))
-  combData$bin = cut(combined[, yCol], breaks = seq(0, max(combined[, yCol])+50, 50), labels = FALSE)
+  combData = do.call(rbind, data)
+  combData$bin = cut(combData[, yCol], breaks = seq(0, max(combData[, yCol])+50, 50), labels = FALSE)
   combData$bin = 50 * combData$bin
 
   # calculating probability in original data set

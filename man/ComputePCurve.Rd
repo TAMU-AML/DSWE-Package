@@ -45,8 +45,8 @@ a list containing :
   \item confLevel - The statistical boundation
   \item testset - The test prediction for first data set
   \item estimatedParams - The function parameter values
-  \item statisticalDiff - The % statistical difference between functions in comaprison
-  \item weightedDiff - The % wighted difference between functions in comparison
+  \item statisticalDiff - The \% statistical difference between functions in comaprison
+  \item weightedDiff - The \% wighted difference between functions in comparison
   \item ratioVarcol1 - The shrinkage ratio of varcol1
   \item ratioVarcol1 - The shrinkage ratio of varcol2
   \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate
