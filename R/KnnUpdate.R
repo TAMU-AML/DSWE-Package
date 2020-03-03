@@ -12,8 +12,10 @@
 #'         2) column number of features
 #'         3) column number of target
 #'         4) best K
+#'
 #' @export
-updateKNN = function(knnMdl, newData){
+#'
+KnnUpdate = function(knnMdl, newData){
   data = knnMdl$data
   bestK = knnMdl$bestK
   yCol = knnMdl$yCol
