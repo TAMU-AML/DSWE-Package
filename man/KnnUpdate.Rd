@@ -10,17 +10,21 @@ KnnUpdate(knnMdl, newData)
 \item{newData}{a dataframe or a matrix, to be used for updating the model}
 
 \item{KnnMdl}{a list containing:
-1) data
-2) column number of features
-3) column number of target
-4) bestK from trained model}
+ \itemize{
+  \item knnMdl$data - The data set provided by user
+  \item knnMdl$xCol - The column number of features provided by user or the best subset column number
+  \item knnMdl$yCol - The column number of target provided by user
+  \item knn$bestK - The best k nearest neighbor calculated using the function KnnFit
+}}
 }
 \value{
 a list containing :
-        1) data
-        2) column number of features
-        3) column number of target
-        4) best K
+ \itemize{
+  \item data - The updated data using old data set and new data
+  \item xCol - The column number of features provided by user or the best subset column number
+  \item yCol - The column number of target provided by user
+  \item bestK - The best k nearest neighbor calculated for the new data using user specified features and target
+}
 }
 \description{
 The function can be used to update KNN model when new data is provided

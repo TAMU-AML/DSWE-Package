@@ -55,3 +55,31 @@ ComputeRatio = function(dataList1, dataList2, var1, var2){
 
   return(list(ratioVar1 = ratioVar1, ratioVar2 = ratioVar2))
 }
+
+# Compute extrapolatiion
+ComputeExtrapolation = function(data, yCol, mu1, mu2){
+
+  # creating bins for combined original data
+  combData = rbind(unlist(data))
+  combData$bin = cut(combined[, yCol], breaks = seq(0, max(combined[, yCol])+50, 50), labels = FALSE)
+  combData$bin = 50 * combData$bin
+
+  # calculating probability in original data set
+  combDataBinned = combData[, c('bin'), drop = FALSE] %>%  group_by(bin) %>% summarise(count = length(bin))
+  combDataBinned$prob = (combDataBinned$count) / sum(combDataBinned$count)
+
+  # importing result and binning for each period
+  result = data.frame(cbind(mu1, mu2))
+  result$mu1[result$mu1 < 0] = 0.1
+  result$mu2[result$mu2 < 0] = 0.1
+  result$bin1 = cut(result$mu1, breaks = seq(0, max(result$mu1)+50, 50), labels = FALSE) * 50
+  result$bin2 = cut(result$mu2, breaks = seq(0, max(result$mu2)+50, 50), labels = FALSE) * 50
+
+  binnedPeriod1 = result[, c('bin1', 'mu1')] %>%  group_by(bin1) %>% summarise(avg = mean(mu1))
+  binnedPeriod2 = result[, c('bin2', 'mu2')] %>%  group_by(bin2) %>% summarise(avg = mean(mu2))
+
+  num = min(length(combDataBinned$bin),length(binnedPeriod1$bin1), length(binnedPeriod2$bin2))
+  extrapolatedPwr = sum((binnedPeriod1$avg[1:num] - binnedPeriod2$avg[1:num]) * combDataBinned$prob[1:num]) * num
+
+  return(extrapolatedPwr)
+}
