@@ -3,13 +3,16 @@
 #' @param data a dataframe or a matrix, to be used in modelling
 #' @param xCol a vector or numeric values stating the column number of features
 #' @param yCol a numerical or a vector value stating the column number of target
-#' @param subsetSelection a boolean, default value is FALSE, if TRUE returns the best beature combination
+#' @param subsetSelection a boolean, default value is FALSE, if TRUE returns the best feature column number as xCol
 #'
 #' @return a list containing :
-#'         1) data
-#'         2) column number of features
-#'         3) column number of target
-#'         4) best K
+#'  \itemize{
+#'   \item data - The data set provided by user
+#'   \item xCol - The column number of features provided by user or the best subset column number
+#'   \item yCol - The column number of target provided by user
+#'   \item bestK - The best k nearest neighbor calculated using the function
+#'   \item bestRMSE - The best RMSE calculated using the function for provided data using user defined features
+#'}
 #' @export
 #' @import FNN
 KnnFit = function(data, xCol, yCol, subsetSelection = FALSE){
