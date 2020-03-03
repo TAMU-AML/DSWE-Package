@@ -17,23 +17,40 @@ ComputePCurve(
 )
 }
 \arguments{
-\item{data}{List of data sets to be compared}
+\item{data}{a List of data sets to be compared}
 
-\item{xcol}{Vector of covariates column number}
+\item{xcol}{a numeric or vector stating column number of covariates}
 
-\item{xcol.circ}{vector of circular covariates column number}
+\item{xcol.circ}{a numeric or vector stating column number of circular covariates}
 
-\item{ycol}{A value representing column number of target}
+\item{ycol}{A numeric value stating the column number of target}
 
-\item{var1col}{Column number of first covariate to used in generating test set}
+\item{var1col}{a numeric value stating column number of first covariate to used in generating test set}
 
-\item{var2col}{Column number of second covariate to be used in generating test set}
+\item{var2col}{a numeric value stating column number of second covariate to be used in generating test set}
 
 \item{thrs}{A single value or vector represnting threshold for each covariates}
 
 \item{conflevel}{A single value as a Bound to be used in hypothesis testing while function comparison}
 
 \item{gridSize}{A single value to used in constructing test set size}
+}
+\value{
+a list containing :
+ \itemize{
+  \item muDiff - The testset prediction for each of the data set
+  \item mu1 - The test prediction for first data set
+  \item mu2 - The test prediction for second data set
+  \item band - The allowed statistical difference between functions
+  \item confLevel - The statistical boundation
+  \item testset - The test prediction for first data set
+  \item estimatedParams - The function parameter values
+  \item statisticalDiff - The % statistical difference between functions in comaprison
+  \item weightedDiff - The % wighted difference between functions in comparison
+  \item ratioVarcol1 - The shrinkage ratio of varcol1
+  \item ratioVarcol1 - The shrinkage ratio of varcol2
+  \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate
+}
 }
 \description{
 Power curve comparison
