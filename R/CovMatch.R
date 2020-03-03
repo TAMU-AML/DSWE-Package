@@ -8,8 +8,13 @@
 #' @param xCol a vector stating the column position of covariates used.
 #' @param xCol.circ a vector stating the column position of circular variables
 #' @usage covMatch(dname, xCol, xCol.circ, wgt, priority)
-#' @return a list containing : original data, matched data, MinMax values for covariates in original data and MinMax
-#' values for covariates in matched data
+#' @return a list containing :
+#'   \itemize{
+#'   \item originalData - The data sets provided for matching
+#'   \item matchedData - The data sets after matching
+#'   \item MinMaxOriginal - The minimum and maximum value in original data for each covariate used in matching
+#'   \item MinMaxMatched - The minimum and maximum value in matched data for each covariates used in matching
+#'}
 #' @export
 #' @import foreach
 
