@@ -7,15 +7,27 @@
 funGP(datalist, covCols, yCol, confLevel, testset)
 }
 \arguments{
-\item{datalist}{List of data sets}
+\item{datalist}{a list of data sets to compute a function for each of them}
 
-\item{covCols}{Vector of column number of covariates}
+\item{covCols}{a numeric or vector stating the column number of covariates}
 
-\item{yCol}{A numeric value for target}
+\item{yCol}{A numeric value stating the column number of target}
 
-\item{confLevel}{Statistical confidence value, such as 0.95}
+\item{confLevel}{a statistical value, such as 0.95, to be used for hypothesis testing by computing the band}
 
 \item{testset}{Test points at which the functions will be compared}
+}
+\value{
+a list containing :
+ \itemize{
+  \item muDiff - The testset prediction for each of the data set
+  \item mu1 - The test prediction for first data set
+  \item mu2 - The test prediction for second data set
+  \item band - The allowed statistical difference between functions
+  \item confLevel - The statistical boundation
+  \item testset - The test prediction for first data set
+  \item estimatedParams - The function parameter values
+}
 }
 \description{
 Function estimator using Gaussian Process

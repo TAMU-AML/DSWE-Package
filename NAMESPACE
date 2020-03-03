@@ -2,10 +2,10 @@
 
 export(AMK)
 export(ComputePCurve)
-export(CovMatch)
 export(KnnFit)
 export(KnnPredict)
 export(KnnUpdate)
+export(covMatch)
 export(funGP)
 import(FNN)
 import(KernSmooth)
