@@ -12,7 +12,7 @@
 #'         4) best K
 #' @export
 #' @import FNN
-KnnPcurve = function(data, xCol, yCol, subsetSelection = FALSE){
+KnnFit = function(data, xCol, yCol, subsetSelection = FALSE){
 
   if(!is.matrix(data) || !is.data.frame(data)){
 
