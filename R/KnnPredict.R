@@ -28,5 +28,5 @@ KnnPredict = function(knnMdl, testData){
 
   prediction = knn.reg(trainData[, xCol], testData[, xCol], trainData[, yCol], k = bestK )
 
-  return(list(data = data, xCol = result$bestSubset, yCol = yCol, prediction = prediction))
+  return(list(prediction = prediction))
 }
