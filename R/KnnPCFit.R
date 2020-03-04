@@ -15,7 +15,7 @@
 #'}
 #' @export
 #' @import FNN
-KnnFit = function(data, xCol, yCol, subsetSelection = FALSE){
+KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
 
   if(!is.matrix(data) || !is.data.frame(data)){
 
