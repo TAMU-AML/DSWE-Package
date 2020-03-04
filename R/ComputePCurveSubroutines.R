@@ -1,13 +1,13 @@
 # Generates test set
-GenerateTestset = function(data, var1, var2, gridSize){
+GenerateTestset = function(data, testCol, gridSize){
 
-  Var1Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var1], c(0.025,0.975))[1])))
-  Var1Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var1], c(0.025,0.975))[2])))
-  Var1Range = seq(Var1Min, Var1Max, length.out = gridSize )
+  Var1Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[1]], c(0.025,0.975))[1])))
+  Var1Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[1]], c(0.025,0.975))[2])))
+  Var1Range = seq(Var1Min, Var1Max, length.out = gridSize[1] )
 
-  Var2Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var2], c(0.025,0.975))[1])))
-  Var2Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, var2], c(0.025,0.975))[2])))
-  Var2Range = seq(Var2Min, Var2Max, length.out = gridSize )
+  Var2Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[2]], c(0.025,0.975))[1])))
+  Var2Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[2]], c(0.025,0.975))[2])))
+  Var2Range = seq(Var2Min, Var2Max, length.out = gridSize[2] )
 
   return(expand.grid(Var1Range, Var2Range))
 
@@ -25,15 +25,15 @@ ComputeSMetric = function(mu1, mu2, band){
 }
 
 # Compute weighted metrics
-ComputeWMetric = function(dList, mu1, mu2, testdata, var1, var2){
+ComputeWMetric = function(dList, mu1, mu2, testdata, testCol){
 
   mixedData = rbind(dList[[1]], dList[[2]])
 
-  var1Density = density(mixedData[, var1])
-  var1Test = approx(var1Density$x,var1Density$y, xout = testdata[, 1])
+  var1Density = density(mixedData[, testCol[1]])
+  var1Test = approx(var1Density$x, var1Density$y, xout = testdata[, 1])
 
-  var2Density = density(mixedData[, var2])
-  var2Test = approx(var2Density$x,var2Density$y, xout = testdata[, 2])
+  var2Density = density(mixedData[, testCol[2]])
+  var2Test = approx(var2Density$x, var2Density$y, xout = testdata[, 2])
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
@@ -45,13 +45,13 @@ ComputeWMetric = function(dList, mu1, mu2, testdata, var1, var2){
 }
 
 # Compute reduction ratio
-ComputeRatio = function(dataList1, dataList2, var1, var2){
+ComputeRatio = function(dataList1, dataList2, testCol){
 
   combList1 = rbind(dataList1[[1]], dataList1[[2]])
   combList2 = rbind(dataList2[[1]], dataList2[[2]])
 
-  ratioVar1 = max(combList2[, var1]) - min(combList2[, var1]) / (max(combList1[, var1]) - min(combList1[, var1]))
-  ratioVar2 = max(combList2[, var2]) - min(combList2[, var2]) / (max(combList1[, var2]) - min(combList1[, var2]))
+  ratioVar1 = max(combList2[, testCol[1]]) - min(combList2[, testCol[1]]) / (max(combList1[, testCol[1]]) - min(combList1[, testCol[1]]))
+  ratioVar2 = max(combList2[, testCol[2]]) - min(combList2[, testCol[2]]) / (max(combList1[, testCol[2]]) - min(combList1[, testCol[2]]))
 
   return(list(ratioVar1 = ratioVar1, ratioVar2 = ratioVar2))
 }
