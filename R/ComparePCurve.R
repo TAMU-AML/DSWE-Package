@@ -1,11 +1,11 @@
 #' @title Power curve comparison
 #'
 #' @param data a List of data sets to be compared
-#' @param xcol a numeric or vector stating column number of covariates
-#' @param xcol.circ a numeric or vector stating column number of circular covariates
-#' @param ycol A numeric value stating the column number of target
-#' @param var1col a numeric value stating column number of first covariate to used in generating test set
-#' @param var2col a numeric value stating column number of second covariate to be used in generating test set
+#' @param xCol a numeric or vector stating column number of covariates
+#' @param xCol.circ a numeric or vector stating column number of circular covariates
+#' @param yCol A numeric value stating the column number of target
+#' @param testCol a numeric/vector stating column number of covariates to used in generating test set
+#' @param testSet a matrix or dataframe consisting of test points
 #' @param thrs A single value or vector represnting threshold for each covariates
 #' @param conflevel A single value as a Bound to be used in hypothesis testing while function comparison
 #' @param gridSize A single value to used in constructing test set size
@@ -29,24 +29,24 @@
 #' @import dplyr
 #' @export
 
-ComparePCurve = function(data, xcol, xcol.circ = NULL, ycol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50)){
+ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50)){
 
   if(!is.list(data)){
 
-    stop('Data set provided should be a list containing data sets')
+    stop('The data must be provided as a list containing data sets')
 
   }
 
   if(length(data) != 2){
 
 
-    stop('The number of data sets to match should be equal to two')
+    stop('The data length should be equal to two')
 
   }
 
   if(!is.vector(xCol)){
 
-      stop('Non circular covariates column number should be provided as a vector')
+      stop('The xcol.circ must be provided as a numeric/vector')
 
     }
 
@@ -54,7 +54,7 @@ ComparePCurve = function(data, xcol, xcol.circ = NULL, ycol, testCol, testSet = 
 
     if(!is.vector(xCol.circ)){
 
-      stop('Circular covariates column number should be provided as a vector')
+      stop('The xCol must be provided as a numeric/vector')
 
     }
   }
@@ -63,14 +63,14 @@ ComparePCurve = function(data, xcol, xcol.circ = NULL, ycol, testCol, testSet = 
 
     if(!(length(thrs) == length(xCol))){
 
-      stop('The weight provided should be a single value or vector with weight for each covariate')
+      stop('The thrs must be provided as a single value or vector with weight for each covariate')
 
     }
   }
 
   if(!is.vector(testCol)){
 
-    stop('The testCol should be provided as a vector')
+    stop('The testCol must be provided as a numeric/vector')
 
   }else if(length(testCol) != 2){
 
@@ -79,7 +79,7 @@ ComparePCurve = function(data, xcol, xcol.circ = NULL, ycol, testCol, testSet = 
 
   if(!is.vector(gridSize)){
 
-    stop('The gridsize should be provided as a vector')
+    stop('The gridsize must be provided as a vector')
 
   }else if(length(gridSize) != 2){
 
@@ -90,7 +90,7 @@ ComparePCurve = function(data, xcol, xcol.circ = NULL, ycol, testCol, testSet = 
     stop('The product of gridSize should not be more than 2500')
   }
 
-  resultMatching = CovMatch(data, xcol, xcol.circ, thrs)
+  resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
 
   if(is.null(testSet)){
 
@@ -98,15 +98,15 @@ ComparePCurve = function(data, xcol, xcol.circ = NULL, ycol, testCol, testSet = 
 
   }
 
-  resultGP = funGP(resultMatching, testCol, ycol, conflevel, testSet)
+  resultGP = funGP(resultMatching, testCol, yCol, conflevel, testSet)
 
   resultSMetric = ComputeSMetric(resultGP$mu1, resultGP$mu2, resultGP$band)
 
-  resultWMetric = ComputeWMetric(data, resultGP$mu1, resultGP$mu2, testSet, var1col, var2col)
+  resultWMetric = ComputeWMetric(data, resultGP$mu1, resultGP$mu2, testSet, testCol)
 
-  reductionRatio = ComputeRatio(data, resultMatching$matchedData, var1col, var2col)
+  reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
 
-  extrapolatedPower = ComputeExtrapolation(data, ycol, resultGP$mu1, resultGP$mu2)
+  extrapolatedPower = ComputeExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2)
 
   returnList = list(weightedDiff = resultWMetric, statisticalDiff = resultSMetric, ratioVarcol1 = reductionRatio$ratioVar1, ratioVarcol2 = reductionRatio$ratioVar2, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = confLevel, testSet = testSet, estimatedParams = resultGP$params)
 
