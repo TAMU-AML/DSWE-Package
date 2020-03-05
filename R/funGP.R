@@ -17,7 +17,56 @@
 #'   \item estimatedParams - The function parameter values
 #' }
 #' @export
-funGP = function(datalist, covCols, yCol, confLevel, testset ){
+funGP = function(datalist, covCols, yCol, confLevel = 0.95, testset ){
+
+  if(!is.list(datalist)){
+
+    stop('datalist must be a list containing data sets')
+
+  }
+
+  if(length(datalist) != 2){
+
+
+    stop('The number of data sets to match should be equal to two')
+
+  }
+
+  if(!is.vector(covCols)){
+
+    stop('covCols must be provided as a numeric/vector')
+
+  }
+
+  if(!is.vector(yCol)){
+
+    stop('covCols must be provided as a numeric/vector')
+
+  }else{
+
+    if(length(yCol) != 1){
+
+      stop('yCol must be provided as a single numeric value')
+    }
+  }
+
+  if(!is.vector(confLevel)){
+
+    stop('confLevel must be provided as a numeric/vector')
+
+  }else{
+
+    if(length(confLevel) != 1){
+
+      stop('confLevel must be provided as a single numeric value')
+
+    }else if(!(confLevel > 0 & confLevel < 1)){
+
+        stop('confLevel must be between 0 to 1')
+      }
+    }
+
+
 
   params = estimateParameters(datalist, covCols, yCol)$estimatedParams
 
