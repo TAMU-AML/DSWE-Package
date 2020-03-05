@@ -3,11 +3,11 @@
 #' matched data sets using user specified covariates and threshold
 #'
 #' @param data a list, consisting of data sets to match, also each of the individual data set can be dataframe or a matrix
-#' @param wgt a numerical or a vector of threshold values for each covariates, against which matching happens
+#' @param thrs a numerical or a vector of threshold values for each covariates, against which matching happens
 #' It should be a single value or a vector of values representing threshold for each of the covariate
 #' @param xCol a vector stating the column position of covariates used.
 #' @param xCol.circ a vector stating the column position of circular variables
-#' @usage covMatch(dname, xCol, xCol.circ, wgt, priority)
+#' @usage covMatch(dname, xCol, xCol.circ, thrs, priority)
 #' @return a list containing :
 #'   \itemize{
 #'   \item originalData - The data sets provided for matching
@@ -18,12 +18,12 @@
 #' @export
 #' @import foreach
 
-covMatch = function(data, xCol = NULL, xCol.circ = NULL, wgt = 0.2, priority = FALSE){
+covMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
 
   # Checks whether the provided data set is a list or not
   if(!is.list(data)){
 
-    stop('Data set provided should be a list containing data sets')
+    stop('data must be a list containing data sets')
 
   }
 
@@ -35,12 +35,15 @@ covMatch = function(data, xCol = NULL, xCol.circ = NULL, wgt = 0.2, priority = F
   }
 
   # Checks for non circular covariates
-  if(length(xCol) > 0){
+  if(!is.vector(xCol)){
 
-    if(!is.vector(xCol)){
+    stop('xCol must be provided as numeric/vector')
 
-      stop('Non circular covariates column number should be provided as a vector')
+  }else{
 
+    if(!(all(xCol %in% 1:ncol(data[[1]])))){
+
+      stop('xCol value should not be more than the column in data')
     }
   }
 
@@ -49,24 +52,18 @@ covMatch = function(data, xCol = NULL, xCol.circ = NULL, wgt = 0.2, priority = F
 
     if(!is.vector(xCol.circ)){
 
-      stop('Circular covariates column number should be provided as a vector')
+      stop('xCol.circ must be provided as a numeric/vector')
 
     }
   }
 
-  # Checks whether any covariate is provided by user or not
-  if(!(length(xCol) > 0) && !(length(xCol.circ) > 0)){
-
-    stop('Atleast a single covariate, either circular or non circular should be provided')
-
-  }
 
   # Checks for dimension compatibility of weight supplied
-  if(length(wgt) > 1){
+  if(length(thrs) > 1){
 
-    if(!(length(wgt) == length(c(xCol, xCol.circ)))){
+    if(!(length(thrs) == length(xCol))){
 
-      stop('The weight provided should be a single value or vector with weight for each covariate')
+      stop('The thrs must be a single value or vector with weight for each covariate')
 
     }
   }
@@ -91,7 +88,7 @@ covMatch = function(data, xCol = NULL, xCol.circ = NULL, wgt = 0.2, priority = F
   matcheddata_ = rep(list(), 2)
   foreach::foreach(i = 1:2) %do% {
 
-    matcheddata_[[i]] = covMatch.Mult(filelist_[[i]], xCol, wgt, xCol.circ)
+    matcheddata_[[i]] = covMatch.Mult(filelist_[[i]], xCol, thrs, xCol.circ)
 
   }
 
