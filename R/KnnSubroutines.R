@@ -6,13 +6,16 @@ computeBestK = function(dataX, dataY, rangeK ){
   maxK = max(rangeK)
   nnIdx = knnx.index(dataX, query = dataX, k = maxK)
   gcv = rep(0,length(rangeK))
+  gcv_mae = rep(0, length(rangeK))
   for (i in 1:length(rangeK)){
     predY = rowMeans(matrix(dataY[nnIdx[, 1:rangeK[i]]], ncol = ncol(nnIdx[, 1:rangeK[i]])))
     gcv[i] = sqrt(mean(((dataY - predY) / (1 - (1 / rangeK[i])))^2))
+    gcv_mae[i] = mean(dataY - predY)
   }
   bestK = rangeK[which.min(gcv)]
   bestRMSE = min(gcv)
-  returnList = list(bestK = bestK, bestRMSE = bestRMSE)
+  bestMAE = min(gcv_mae)
+  returnList = list(bestK = bestK, bestRMSE = bestRMSE, bestMAE = bestMAE)
   if (bestK == maxK){
     rangeK = maxK + seq(5,50,5)
     returnList = computeBestK(dataX, dataY, rangeK)
