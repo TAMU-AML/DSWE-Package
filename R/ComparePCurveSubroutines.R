@@ -50,8 +50,8 @@ ComputeRatio = function(dataList1, dataList2, testCol){
   combList1 = rbind(dataList1[[1]], dataList1[[2]])
   combList2 = rbind(dataList2[[1]], dataList2[[2]])
 
-  ratioVar1 = max(combList2[, testCol[1]]) - min(combList2[, testCol[1]]) / (max(combList1[, testCol[1]]) - min(combList1[, testCol[1]]))
-  ratioVar2 = max(combList2[, testCol[2]]) - min(combList2[, testCol[2]]) / (max(combList1[, testCol[2]]) - min(combList1[, testCol[2]]))
+  ratioVar1 = (max(combList2[, testCol[1]]) - min(combList2[, testCol[1]])) / (max(combList1[, testCol[1]]) - min(combList1[, testCol[1]]))
+  ratioVar2 = (max(combList2[, testCol[2]]) - min(combList2[, testCol[2]])) / (max(combList1[, testCol[2]]) - min(combList1[, testCol[2]]))
 
   return(list(ratioVar1 = ratioVar1, ratioVar2 = ratioVar2))
 }
@@ -70,6 +70,7 @@ ComputeExtrapolation = function(data, yCol, mu1, mu2){
 
   # importing result and binning for each period
   result = data.frame(cbind(mu1, mu2))
+  colnames(result) = c('mu1', 'mu2')
   result$mu1[result$mu1 < 0] = 0.1
   result$mu2[result$mu2 < 0] = 0.1
   result$bin1 = cut(result$mu1, breaks = seq(0, max(result$mu1)+50, 50), labels = FALSE) * 50
