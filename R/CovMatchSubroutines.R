@@ -125,8 +125,8 @@ MinMaxData = function(data, xcol){
   colnames(filteredData) = as.character(xcol)
   row.names(filteredData) = c('Min', 'Max')
 
-  filteredData[1 , ] = colMins(as.matrix(comData[, xcol]))
-  filteredData[2 , ] = colMaxs(as.matrix(comData[, xcol]))
+  filteredData[1 , ] = matrixStats::colMins(as.matrix(comData[, xcol]))
+  filteredData[2 , ] = matrixStats::colMaxs(as.matrix(comData[, xcol]))
 
   return(filteredData)
 

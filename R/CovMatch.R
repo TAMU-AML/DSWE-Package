@@ -18,7 +18,7 @@
 #' @export
 #' @import foreach
 
-covMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
+CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
 
   # Checks whether the provided data set is a list or not
   if(!is.list(data)){
@@ -88,7 +88,7 @@ covMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
   matcheddata_ = rep(list(), 2)
   foreach::foreach(i = 1:2) %do% {
 
-    matcheddata_[[i]] = covMatch.Mult(filelist_[[i]], xCol, thrs, xCol.circ)
+    matcheddata_[[i]] = CovMatch.Mult(filelist_[[i]], xCol, thrs, xCol.circ)
 
   }
 
