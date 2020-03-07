@@ -15,6 +15,8 @@ covMatch(dname, xCol, xCol.circ, thrs, priority)
 
 \item{thrs}{a numerical or a vector of threshold values for each covariates, against which matching happens
 It should be a single value or a vector of values representing threshold for each of the covariate}
+
+\item{priority}{a boolean, default value False, otherwise computes the sequence of matching}
 }
 \value{
 a list containing :

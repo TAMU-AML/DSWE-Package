@@ -8,7 +8,7 @@
 #' @param xCol a vector stating the column position of covariates used.
 #' @param xCol.circ a vector stating the column position of circular variables
 #' @param priority a boolean, default value False, otherwise computes the sequence of matching
-#' @usage covMatch(dname, xCol, xCol.circ, thrs, priority)
+#' @usage CovMatch(data, xCol, xCol.circ, thrs, priority)
 #' @return a list containing :
 #'   \itemize{
 #'   \item originalData - The data sets provided for matching
