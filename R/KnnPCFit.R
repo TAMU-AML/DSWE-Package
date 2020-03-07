@@ -17,12 +17,12 @@
 #' @import FNN
 KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
 
-  if(!is.matrix(data) || !is.data.frame(data)){
+  if(!is.matrix(data) & !is.data.frame(data)){
 
     stop('data provided should either be a matrix or data frame')
   }
 
-  if(!is.numeric(xCol)  || !is.vector(xCol)){
+  if(!is.numeric(xCol)  & !is.vector(xCol)){
 
     stop('column number of features should be provided as a numeric or vector')
 
@@ -34,7 +34,7 @@ KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
     }
   }
 
-  if(!is.numeric(yCol)  || !is.vector(yCol)){
+  if(!is.numeric(yCol)  & !is.vector(yCol)){
 
     stop('column number of target should be provided as a numeric or vector')
 
