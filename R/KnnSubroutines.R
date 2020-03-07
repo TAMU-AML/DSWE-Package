@@ -1,6 +1,5 @@
 # Computes best k using generalized cross validation
 computeBestK = function(dataX, dataY, rangeK ){
-
   bestK = NULL
   dataX = as.matrix(dataX)
   maxK = max(rangeK)
@@ -10,7 +9,7 @@ computeBestK = function(dataX, dataY, rangeK ){
   for (i in 1:length(rangeK)){
     predY = rowMeans(matrix(dataY[nnIdx[, 1:rangeK[i]]], ncol = ncol(nnIdx[, 1:rangeK[i]])))
     gcv[i] = sqrt(mean(((dataY - predY) / (1 - (1 / rangeK[i])))^2))
-    gcv_mae[i] = mean(dataY - predY)
+    gcv_mae[i] = mean(abs(((dataY - predY) / (1 - (1 / rangeK[i])))))
   }
   bestK = rangeK[which.min(gcv)]
   bestRMSE = min(gcv)
@@ -41,11 +40,12 @@ computeBestSubset = function(data, xCol, yCol,rangeK){
       if (RMSE < bestRMSE){
         bestRMSE = RMSE
         bestK = result$bestK
+        bestMAE = result$bestMAE
         bestCol = xCol[i]
       }
     }
 
-    returnList = list(bestSubset = bestSubset, bestK = bestK, bestRMSE = bestRMSE )
+    returnList = list(bestSubset = bestSubset, bestK = bestK, bestRMSE = bestRMSE, bestMAE = bestMAE )
 
     if (length(bestCol)>0){
       bestSubset = c(bestSubset, bestCol)

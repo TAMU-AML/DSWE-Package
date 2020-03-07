@@ -59,7 +59,7 @@ KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
   if(subsetSelection == FALSE){
 
     result = computeBestK(normalizedData[, xCol], normalizedData[, yCol], rangeK)
-    returnList = list(bestK = result$bestK, bestRMSE = result$bestRMSE, data = data, xCol = xCol, yCol = yCol)
+    returnList = list(bestK = result$bestK, RMSE = result$bestRMSE, MAE = result$bestMAE, data = data, xCol = xCol, yCol = yCol)
 
   }else{
 
