@@ -4,7 +4,7 @@
 \alias{funGP}
 \title{Function estimator using Gaussian Process}
 \usage{
-funGP(datalist, covCols, yCol, confLevel, testset)
+funGP(datalist, covCols, yCol, confLevel = 0.95, testset)
 }
 \arguments{
 \item{datalist}{a list of data sets to compute a function for each of them}

@@ -21,4 +21,5 @@ Imports:
     RcppArmadillo,
     matrixStats,
     FNN,
-    KernSmooth
+    KernSmooth,
+    dplyr
