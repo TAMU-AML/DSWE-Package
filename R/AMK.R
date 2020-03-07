@@ -1,12 +1,12 @@
 #' @title Additive Multiplicative Kernel Regression
 #'
-#' @param trainX
-#' @param trainY
-#' @param testX
-#' @param bw
-#' @param nMultiCov
-#' @param fixedCov
-#' @param cirCov
+#' @param trainX a matrix or dataframe to be used in modelling
+#' @param trainY a numeric or vector as a target
+#' @param testX a matrix or dataframe, to be used in computing the predictions
+#' @param bw a vector of character input. If character, the input should be 'dpi' or 'dpi-gap'
+#' @param nMultiCov a numerical value specifying the number of covariates in multiplicative term
+#' @param fixedCov a vector or numeric specifying the fixed covariates column number
+#' @param cirCov a vector or numeric specifying the circular covariates column number
 #'
 #' @import KernSmooth
 #' @export
