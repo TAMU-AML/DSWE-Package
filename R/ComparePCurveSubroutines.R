@@ -24,6 +24,16 @@ ComputeSMetric = function(mu1, mu2, band){
   return(resultP)
 }
 
+# Compute unweighted metric
+ComputeUWMetric = function(mu1, mu2){
+
+  funcDiff = mu1 - mu2
+  resultP = ((sum(funcDiff) / sum(mu2)) * (100))
+  resultA = (sum(funcDiff)) / nrow(mu2)
+
+  return(resultP)
+}
+
 # Compute weighted metrics
 ComputeWMetric = function(dList, mu1, mu2, testdata, testCol){
 
@@ -80,7 +90,7 @@ ComputeExtrapolation = function(data, yCol, mu1, mu2){
   binnedPeriod2 = result[, c('bin2', 'mu2')] %>%  group_by(bin2) %>% summarise(avg = mean(mu2))
 
   num = min(length(combDataBinned$bin),length(binnedPeriod1$bin1), length(binnedPeriod2$bin2))
-  extrapolatedPwr = sum((binnedPeriod1$avg[1:num] - binnedPeriod2$avg[1:num]) * combDataBinned$prob[1:num]) * num
+  extrapolatedPwr = ((sum((binnedPeriod1$avg[1:num] - binnedPeriod2$avg[1:num]) * combDataBinned$prob[1:num]) * num) * 100) / 1500
 
   return(extrapolatedPwr)
 }

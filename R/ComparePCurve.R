@@ -94,13 +94,15 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   if(is.null(testSet)){
 
-  testSet = GeneratetestSet(resultMatching, testCol, gridSize )
+  testSet = GeneratetestSet(resultMatching$matchedData, testCol, gridSize )
 
   }
 
-  resultGP = funGP(resultMatching, testCol, yCol, conflevel, testSet)
+  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet)
 
   resultSMetric = ComputeSMetric(resultGP$mu1, resultGP$mu2, resultGP$band)
+
+  resultUWMetric = ComputeUWMetric(resultGP$mu1, resultGP$mu2)
 
   resultWMetric = ComputeWMetric(data, resultGP$mu1, resultGP$mu2, testSet, testCol)
 
@@ -108,7 +110,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   extrapolatedPower = ComputeExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2)
 
-  returnList = list(weightedDiff = resultWMetric, statisticalDiff = resultSMetric, ratioVarcol1 = reductionRatio$ratioVar1, ratioVarcol2 = reductionRatio$ratioVar2, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = confLevel, testSet = testSet, estimatedParams = resultGP$params)
+  returnList = list(unweightedDiff = resultUWMetric, weightedDiff = resultWMetric, statisticalDiff = resultSMetric, ratioVarcol1 = reductionRatio$ratioVar1, ratioVarcol2 = reductionRatio$ratioVar2, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = confLevel, testSet = testSet, estimatedParams = resultGP$params)
 
   return(returnList)
 }
