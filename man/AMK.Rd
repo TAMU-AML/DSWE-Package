@@ -15,7 +15,19 @@ AMK(
 )
 }
 \arguments{
-\item{cirCov}{}
+\item{trainX}{a matrix or dataframe to be used in modelling}
+
+\item{trainY}{a numeric or vector as a target}
+
+\item{testX}{a matrix or dataframe, to be used in computing the predictions}
+
+\item{bw}{a vector of character input. If character, the input should be 'dpi' or 'dpi-gap'}
+
+\item{nMultiCov}{a numerical value specifying the number of covariates in multiplicative term}
+
+\item{fixedCov}{a vector or numeric specifying the fixed covariates column number}
+
+\item{cirCov}{a vector or numeric specifying the circular covariates column number}
 }
 \description{
 Additive Multiplicative Kernel Regression

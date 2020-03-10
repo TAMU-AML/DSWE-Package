@@ -1,4 +1,4 @@
-#' @import matrixStats
+#' @importFrom matrixStats colMins, colMaxs, colSds
 #' @useDynLib DSWE
 #' @importFrom Rcpp sourceCpp
 
@@ -40,7 +40,7 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   testid_ = c(1:length(fname_))[-refid_]
 
   # Setting up thresholds
-  ratio_ = matrixStats::colSds(as.matrix(ref_)) / colMeans(ref_)
+  ratio_ = colSds(as.matrix(ref_)) / colMeans(ref_)
   thres_ = ratio_ * wgt_
 
   # Matching data sets with ref as reference
@@ -125,8 +125,8 @@ MinMaxData = function(data, xcol){
   colnames(filteredData) = as.character(xcol)
   row.names(filteredData) = c('Min', 'Max')
 
-  filteredData[1 , ] = matrixStats::colMins(as.matrix(comData[, xcol]))
-  filteredData[2 , ] = matrixStats::colMaxs(as.matrix(comData[, xcol]))
+  filteredData[1 , ] = colMins(as.matrix(comData[, xcol]))
+  filteredData[2 , ] = colMaxs(as.matrix(comData[, xcol]))
 
   return(filteredData)
 

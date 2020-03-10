@@ -4,7 +4,7 @@
 \alias{CovMatch}
 \title{Covariate Matching}
 \usage{
-covMatch(dname, xCol, xCol.circ, thrs, priority)
+CovMatch(data, xCol, xCol.circ, thrs, priority)
 }
 \arguments{
 \item{data}{a list, consisting of data sets to match, also each of the individual data set can be dataframe or a matrix}
