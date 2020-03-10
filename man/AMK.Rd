@@ -9,9 +9,9 @@ AMK(
   trainY,
   testX,
   bw = "dpi",
-  nMultiCov = 3,
-  fixedCov = c(1, 2),
-  cirCov = 2
+  nMultiCov = ncov(trainX),
+  fixedCov = NULL,
+  cirCov = NULL
 )
 }
 \arguments{
