@@ -131,4 +131,3 @@ MinMaxData = function(data, xcol){
   return(filteredData)
 
 }
-matri
