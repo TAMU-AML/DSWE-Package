@@ -1,4 +1,4 @@
-#' @importFrom matrixStats colMins, colMaxs, colSds
+#' @importFrom  matrixStats colMins colMaxs colSds
 #' @useDynLib DSWE
 #' @importFrom Rcpp sourceCpp
 
@@ -131,3 +131,4 @@ MinMaxData = function(data, xcol){
   return(filteredData)
 
 }
+matri
