@@ -9,7 +9,7 @@ AMK(
   trainY,
   testX,
   bw = "dpi",
-  nMultiCov = ncov(trainX),
+  nMultiCov = ncol(trainX),
   fixedCov = NULL,
   cirCov = NULL
 )

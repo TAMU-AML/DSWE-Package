@@ -49,16 +49,8 @@ AMK = function(trainX, trainY, testX, bw = 'dpi', nMultiCov = ncol(trainX), fixe
     if (!is.numeric(fixedCov) || any(fixedCov%%1 != 0)){
       stop("fixedCov must be an integer or a vector of integers.")
     }
-    if (length(fixedCov) >= nMultiCov){
+    if (length(fixedCov) > nMultiCov){
       stop("length of fixedCov must be less than nMultiCov.")
-    }
-  }
-  if (!is.na(cirCov) || !is.null(cirCov) ){
-    if (!is.numeric(cirCov) || cirCov%%1 != 0){
-      stop("cirCov must either be null or NA or an integer vector.")
-    }
-    if (length(cirCov)> nCov){
-      stop("Number of circular covariates must be less than or equal to the total number of covariates.")
     }
   }
 
