@@ -1,4 +1,4 @@
-#' @title Function estimator using Gaussian Process
+#' @title Function comparison using Gaussian Process and Hypothesis testing
 #'
 #' @param datalist a list of data sets to compute a function for each of them
 #' @param covCols a numeric or vector stating the column number of covariates

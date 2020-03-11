@@ -7,15 +7,15 @@
 KnnPredict(knnMdl, testData)
 }
 \arguments{
-\item{testData}{a data frame or matrix, to compute the predictions}
-
-\item{KnnMdl}{a list containing:
+\item{knnMdl}{a list containing:
  \itemize{
   \item knnMdl$data - The data set provided by user
   \item knnMdl$xCol - The column number of features provided by user or the best subset column number
   \item knnMdl$yCol - The column number of target provided by user
   \item knn$bestK - The best k nearest neighbor calculated using the function KnnFit
 }}
+
+\item{testData}{a data frame or matrix, to compute the predictions}
 }
 \value{
 a list containing :
