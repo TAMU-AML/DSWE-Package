@@ -1,6 +1,6 @@
 #' @title KNN : Update
 #' @description The function can be used to update KNN model when new data is provided
-#' @param KnnMdl a list containing:
+#' @param knnMdl a list containing:
 #'  \itemize{
 #'   \item knnMdl$data - The data set provided by user
 #'   \item knnMdl$xCol - The column number of features provided by user or the best subset column number
