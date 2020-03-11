@@ -27,6 +27,7 @@
 #' }
 #'
 #' @import dplyr
+#' @importFrom magrittr %>%
 #' @export
 
 ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50)){

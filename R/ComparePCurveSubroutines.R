@@ -75,7 +75,7 @@ ComputeExtrapolation = function(data, yCol, mu1, mu2){
   combData$bin = 50 * combData$bin
 
   # calculating probability in original data set
-  combDataBinned = combData[, c('bin'), drop = FALSE] %>%  group_by(bin) %>% summarise(count = length(bin))
+  combDataBinned = combData[, c('bin'), drop = FALSE] %>%  dplyr::group_by(bin) %>% dplyr::summarise(count = length(bin))
   combDataBinned$prob = (combDataBinned$count) / sum(combDataBinned$count)
 
   # importing result and binning for each period
@@ -86,8 +86,8 @@ ComputeExtrapolation = function(data, yCol, mu1, mu2){
   result$bin1 = cut(result$mu1, breaks = seq(0, max(result$mu1)+50, 50), labels = FALSE) * 50
   result$bin2 = cut(result$mu2, breaks = seq(0, max(result$mu2)+50, 50), labels = FALSE) * 50
 
-  binnedPeriod1 = result[, c('bin1', 'mu1')] %>%  group_by(bin1) %>% summarise(avg = mean(mu1))
-  binnedPeriod2 = result[, c('bin2', 'mu2')] %>%  group_by(bin2) %>% summarise(avg = mean(mu2))
+  binnedPeriod1 = result[, c('bin1', 'mu1')] %>%  dplyr::group_by(bin1) %>% dplyr::summarise(avg = mean(mu1))
+  binnedPeriod2 = result[, c('bin2', 'mu2')] %>%  dplyr::group_by(bin2) %>% dplyr::summarise(avg = mean(mu2))
 
   num = min(length(combDataBinned$bin),length(binnedPeriod1$bin1), length(binnedPeriod2$bin2))
   extrapolatedPwr = ((sum((binnedPeriod1$avg[1:num] - binnedPeriod2$avg[1:num]) * combDataBinned$prob[1:num]) * num) * 100) / 1500
