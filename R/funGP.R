@@ -1,9 +1,9 @@
 #' @title Function comparison using Gaussian Process and Hypothesis testing
 #'
 #' @param datalist a list of data sets to compute a function for each of them
-#' @param covCols a numeric or vector stating the column number of covariates
+#' @param xCol a numeric or vector stating the column number of covariates
 #' @param yCol A numeric value stating the column number of target
-#' @param confLevel a statistical value, such as 0.95, to be used for hypothesis testing by computing the band
+#' @param confLevel statistical significance level for constructing the band
 #' @param testset Test points at which the functions will be compared
 #'
 #' @return a list containing :
@@ -12,12 +12,12 @@
 #'   \item mu1 - The test prediction for first data set
 #'   \item mu2 - The test prediction for second data set
 #'   \item band - The allowed statistical difference between functions
-#'   \item confLevel - The statistical boundation
+#'   \item confLevel - The statistical significance level for constructing the band
 #'   \item testset - The test prediction for first data set
 #'   \item estimatedParams - The function parameter values
 #' }
 #' @export
-funGP = function(datalist, covCols, yCol, confLevel = 0.95, testset ){
+funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset ){
 
   if(!is.list(datalist)){
 
@@ -32,15 +32,15 @@ funGP = function(datalist, covCols, yCol, confLevel = 0.95, testset ){
 
   }
 
-  if(!is.vector(covCols)){
+  if(!is.vector(xCol)){
 
-    stop('covCols must be provided as a numeric/vector')
+    stop('xCol must be provided as a numeric/vector')
 
   }
 
   if(!is.vector(yCol)){
 
-    stop('covCols must be provided as a numeric/vector')
+    stop('xCol must be provided as a numeric/vector')
 
   }else{
 
@@ -68,9 +68,9 @@ funGP = function(datalist, covCols, yCol, confLevel = 0.95, testset ){
 
 
 
-  params = estimateParameters(datalist, covCols, yCol)$estimatedParams
+  params = estimateParameters(datalist, xCol, yCol)$estimatedParams
 
-  diffCov = computeDiffCov(datalist, covCols, yCol, params, testset)
+  diffCov = computeDiffCov(datalist, xCol, yCol, params, testset)
 
   muDiff = diffCov$mu2 - diffCov$mu1
 

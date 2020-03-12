@@ -11,7 +11,8 @@
 #'   \item xCol - The column number of features provided by user or the best subset column number
 #'   \item yCol - The column number of target provided by user
 #'   \item bestK - The best k nearest neighbor calculated using the function
-#'   \item bestRMSE - The best RMSE calculated using the function for provided data using user defined features
+#'   \item RMSE - The RMSE calculated using the function for provided data using user defined features and best obtained K
+#'   \item MAE - The MAE calculated using the function for provided data using user defined features and best obtained K
 #'}
 #' @export
 #' @import FNN

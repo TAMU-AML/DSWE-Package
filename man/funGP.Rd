@@ -2,7 +2,7 @@
 % Please edit documentation in R/funGP.R
 \name{funGP}
 \alias{funGP}
-\title{Function estimator using Gaussian Process}
+\title{Function comparison using Gaussian Process and Hypothesis testing}
 \usage{
 funGP(datalist, covCols, yCol, confLevel = 0.95, testset)
 }
@@ -30,5 +30,5 @@ a list containing :
 }
 }
 \description{
-Function estimator using Gaussian Process
+Function comparison using Gaussian Process and Hypothesis testing
 }
