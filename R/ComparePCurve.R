@@ -5,10 +5,10 @@
 #' @param xCol.circ a numeric or vector stating column number of circular covariates
 #' @param yCol A numeric value stating the column number of target
 #' @param testCol a numeric/vector stating column number of covariates to used in generating test set
-#' @param testSet a matrix or dataframe consisting of test points
+#' @param testSet a matrix or dataframe consisting of test points, default value Null, if Null computes test points internally using testCol variables
 #' @param thrs A single value or vector represnting threshold for each covariates
-#' @param conflevel A single value as a Bound to be used in hypothesis testing while function comparison
-#' @param gridSize A single value to used in constructing test set size
+#' @param conflevel a single value representing the statistical significance level for constructing the band
+#' @param gridSize A numeric / vector to be used in constructing test set
 #'
 #' @return a list containing :
 #'  \itemize{
@@ -16,8 +16,8 @@
 #'   \item mu1 - The test prediction for first data set
 #'   \item mu2 - The test prediction for second data set
 #'   \item band - The allowed statistical difference between functions
-#'   \item confLevel - The statistical boundation
-#'   \item testSet - The test prediction for first data set
+#'   \item confLevel - a single value representing the statistical significance level for constructing the band
+#'   \item testSet - The test set provided by user, or generated internally
 #'   \item estimatedParams - The function parameter values
 #'   \item statisticalDiff - The \% statistical difference between functions in comaprison
 #'   \item weightedDiff - The \% wighted difference between functions in comparison
