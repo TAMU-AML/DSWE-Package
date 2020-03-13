@@ -3,11 +3,16 @@
 #' @param trainX a matrix or dataframe to be used in modelling
 #' @param trainY a numeric or vector as a target
 #' @param testX a matrix or dataframe, to be used in computing the predictions
-#' @param bw a vector of character input. If character, the input should be 'dpi' or 'dpi-gap'
+#' @param bw a vector or character input. If character, the input should be 'dpi' or 'dpi-gap'
 #' @param nMultiCov a numerical value specifying the number of covariates in multiplicative term
-#' @param fixedCov a vector or numeric specifying the fixed covariates column number
-#' @param cirCov a vector or numeric specifying the circular covariates column number
+#' @param fixedCov a vector or numeric specifying the fixed covariates column number, default value is NA
+#' @param cirCov a vector or numeric specifying the circular covariates column number, default value is NA
 #'
+#'' @return a list containing :
+#'   \itemize{
+#'   \item bandwidth - a smoothing parameter for each of the features used in modelling
+#'   \item pred - The predictions on user provided test data
+#'}
 #' @import KernSmooth
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi', nMultiCov = ncol(trainX), fixedCov = NA, cirCov = NA ){

@@ -83,6 +83,7 @@ computeBandwidth = function(trainY,trainX,cirCov){
 
 ### Function to get mean estimate
 kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
+
   trainX = as.matrix(trainX)
   trainY = as.numeric(trainY)
   testX = as.matrix(testX)
@@ -98,14 +99,24 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
       }
       pred = computePred(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, cirCov )
     }else if (bw == "dpi_gap"){
-      bandwidth = computeBandwidth(trainY,trainX,cirCov)
-      if (any(!is.finite(bandwidth))){
+      band = bw.gap(trainY, trainX, id.dir = cirCov)
+      if(is.na(band$bw.adp)){
 
-        ##Use Hoon's code here
-
+        pred = computePred(trainX, trainY, testX, band$bw.fix, nMultiCov, fixedCov, cirCov )
 
       }else{
-        pred = computePred(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, cirCov )
+
+        prediction = rep(NA, nrow(testX))
+        for(i in 1:nrow(testX)){
+          bandwidth = find.bw(trainY, trainX, testX[i, , drop = F], band)
+          prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = F], bandwidth, nMultiCov, fixedCov, cirCov)
+        }
+        if (any(!is.finite(prediction))){
+          warning("some of the testpoints resulted in non-finite predictions.")
+        }
+
+        pred = list(pred = prediction)
+
       }
     }
   }else {
@@ -116,9 +127,11 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
 }
 
 computePred = function(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, cirCov ){
-  for (i in cirCov) {
-    trainX[,i] = trainX[,i]*pi/180
-    testX[,i] = testX[,i]*pi/180
+  if(!is.na(cirCov)){
+    for (i in cirCov) {
+      trainX[,i] = trainX[,i]*pi/180
+      testX[,i] = testX[,i]*pi/180
+    }
   }
   pred = rep(NA, nrow(testX))
   for (i in 1:length(pred)){
@@ -130,3 +143,4 @@ computePred = function(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, ci
   }
   return(list(bandwidth = bandwidth, pred = pred))
 }
+
