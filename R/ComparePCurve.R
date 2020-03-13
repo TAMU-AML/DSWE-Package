@@ -8,7 +8,7 @@
 #' @param testSet a matrix or dataframe consisting of test points, default value Null, if Null computes test points internally using testCol variables
 #' @param thrs A single value or vector represnting threshold for each covariates
 #' @param conflevel a single value representing the statistical significance level for constructing the band
-#' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is Null
+#' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is Null, else it is ignored
 #'
 #' @return a list containing :
 #'  \itemize{
