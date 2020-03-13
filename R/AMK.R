@@ -10,7 +10,7 @@
 #'
 #' @import KernSmooth
 #' @export
-AMK = function(trainX, trainY, testX, bw = 'dpi', nMultiCov = ncol(trainX), fixedCov = NULL, cirCov = NULL ){
+AMK = function(trainX, trainY, testX, bw = 'dpi', nMultiCov = ncol(trainX), fixedCov = NA, cirCov = NA ){
   if (!is.matrix(trainX) && !is.data.frame(trainX)) {
     stop("trainX must be a matrix or a dataframe.")
   }
