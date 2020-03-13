@@ -60,10 +60,10 @@ ComputeRatio = function(dataList1, dataList2, testCol){
   combList1 = rbind(dataList1[[1]], dataList1[[2]])
   combList2 = rbind(dataList2[[1]], dataList2[[2]])
 
-  ratioVar1 = (max(combList2[, testCol[1]]) - min(combList2[, testCol[1]])) / (max(combList1[, testCol[1]]) - min(combList1[, testCol[1]]))
-  ratioVar2 = (max(combList2[, testCol[2]]) - min(combList2[, testCol[2]])) / (max(combList1[, testCol[2]]) - min(combList1[, testCol[2]]))
+  ratioCol1 = (max(combList2[, testCol[1]]) - min(combList2[, testCol[1]])) / (max(combList1[, testCol[1]]) - min(combList1[, testCol[1]]))
+  ratioCol2 = (max(combList2[, testCol[2]]) - min(combList2[, testCol[2]])) / (max(combList1[, testCol[2]]) - min(combList1[, testCol[2]]))
 
-  return(list(ratioVar1 = ratioVar1, ratioVar2 = ratioVar2))
+  return(list(ratioCol1 = ratioCol1, ratioCol2 = ratioCol2))
 }
 
 # Compute extrapolatiion

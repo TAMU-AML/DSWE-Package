@@ -1,6 +1,6 @@
 #' @title Power curve comparison
 #'
-#' @param data a List of data sets to be compared
+#' @param data a list of data sets to be compared
 #' @param xCol a numeric or vector stating column number of covariates
 #' @param xCol.circ a numeric or vector stating column number of circular covariates
 #' @param yCol A numeric value stating the column number of target
@@ -8,7 +8,7 @@
 #' @param testSet a matrix or dataframe consisting of test points, default value Null, if Null computes test points internally using testCol variables
 #' @param thrs A single value or vector represnting threshold for each covariates
 #' @param conflevel a single value representing the statistical significance level for constructing the band
-#' @param gridSize A numeric / vector to be used in constructing test set
+#' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is Null
 #'
 #' @return a list containing :
 #'  \itemize{
@@ -21,8 +21,7 @@
 #'   \item estimatedParams - The function parameter values
 #'   \item statisticalDiff - The \% statistical difference between functions in comaprison
 #'   \item weightedDiff - The \% wighted difference between functions in comparison
-#'   \item ratioVarcol1 - The shrinkage ratio of varcol1
-#'   \item ratioVarcol1 - The shrinkage ratio of varcol2
+#'   \item reductionRatio - a list consisting of shrinkage ratio of features used in testSet
 #'   \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate
 #' }
 #'
@@ -30,7 +29,7 @@
 #' @importFrom magrittr %>%
 #' @export
 
-ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50)){
+ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50) ){
 
   if(!is.list(data)){
 
@@ -78,25 +77,32 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     stop('The length of testcol vector should be of size two')
   }
 
-  if(!is.vector(gridSize)){
-
-    stop('The gridsize must be provided as a vector')
-
-  }else if(length(gridSize) != 2){
-
-    stop('The length of gridSize vector should be of size two')
-
-  }else if((gridSize[1] * gridSize[2] > 2500)){
-
-    stop('The product of gridSize should not be more than 2500')
-  }
-
   resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
 
   if(is.null(testSet)){
 
   testSet = GeneratetestSet(resultMatching$matchedData, testCol, gridSize )
 
+        if(!is.vector(gridSize)){
+
+         stop('The gridsize must be provided as a vector')
+
+        }else if(length(gridSize) != 2){
+
+         stop('The length of gridSize vector should be of size two')
+
+        }else if((gridSize[1] * gridSize[2] > 2500)){
+
+         stop('The product of gridSize should not be more than 2500')
+    }
+
+  }else if(!is.matrix(testSet) & !is.data.frame(testSet)){
+
+    stop('The test set provided should be a matrix or a dataframe')
+
+  }else if (ncol(testCol) != ncol(testSet)){
+
+    stop('The length of testCol should be equal to the number of columns in testSet')
   }
 
   resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet)
@@ -111,7 +117,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   extrapolatedPower = ComputeExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2)
 
-  returnList = list(unweightedDiff = resultUWMetric, weightedDiff = resultWMetric, statisticalDiff = resultSMetric, ratioVarcol1 = reductionRatio$ratioVar1, ratioVarcol2 = reductionRatio$ratioVar2, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = confLevel, testSet = testSet, estimatedParams = resultGP$params)
+  returnList = list(unweightedDiff = resultUWMetric, weightedDiff = resultWMetric, statisticalDiff = resultSMetric, reductionRatio = reductionRatio, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = confLevel, testSet = testSet, estimatedParams = resultGP$params)
 
   return(returnList)
 }
