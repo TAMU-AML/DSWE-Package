@@ -1,6 +1,6 @@
 Package: DSWE
 Title: Data Science for wind energy
-Version: 1.0
+Version: 3.0
 Authors@R: 
     person(given = "Nitesh",
            family = "Kumar",
@@ -10,7 +10,7 @@ Authors@R:
 Description: The package houses functions, which can be used for predictive modelling
            and function comparison
 Depends:
-    R (>= 2.15)
+      R (>= 2.15) 
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
