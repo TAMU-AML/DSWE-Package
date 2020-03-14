@@ -17,7 +17,7 @@ ComparePCurve(
 )
 }
 \arguments{
-\item{data}{a List of data sets to be compared}
+\item{data}{a list of data sets to be compared}
 
 \item{xCol}{a numeric or vector stating column number of covariates}
 
@@ -27,13 +27,13 @@ ComparePCurve(
 
 \item{testCol}{a numeric/vector stating column number of covariates to used in generating test set}
 
-\item{testSet}{a matrix or dataframe consisting of test points}
+\item{testSet}{a matrix or dataframe consisting of test points, default value Null, if Null computes test points internally using testCol variables}
 
 \item{thrs}{A single value or vector represnting threshold for each covariates}
 
-\item{conflevel}{A single value as a Bound to be used in hypothesis testing while function comparison}
+\item{conflevel}{a single value representing the statistical significance level for constructing the band}
 
-\item{gridSize}{A single value to used in constructing test set size}
+\item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is Null, else it is ignored}
 }
 \value{
 a list containing :
@@ -42,13 +42,12 @@ a list containing :
   \item mu1 - The test prediction for first data set
   \item mu2 - The test prediction for second data set
   \item band - The allowed statistical difference between functions
-  \item confLevel - The statistical boundation
-  \item testSet - The test prediction for first data set
+  \item confLevel - a single value representing the statistical significance level for constructing the band
+  \item testSet - The test set provided by user, or generated internally
   \item estimatedParams - The function parameter values
   \item statisticalDiff - The \% statistical difference between functions in comaprison
   \item weightedDiff - The \% wighted difference between functions in comparison
-  \item ratioVarcol1 - The shrinkage ratio of varcol1
-  \item ratioVarcol1 - The shrinkage ratio of varcol2
+  \item reductionRatio - a list consisting of shrinkage ratio of features used in testSet
   \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate
 }
 }
