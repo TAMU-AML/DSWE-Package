@@ -117,7 +117,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   extrapolatedPower = ComputeExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2)
 
-  returnList = list(unweightedDiff = resultUWMetric, weightedDiff = resultWMetric, statisticalDiff = resultSMetric, reductionRatio = reductionRatio, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = confLevel, testSet = testSet, estimatedParams = resultGP$params)
+  returnList = list(unweightedDiff = resultUWMetric, weightedDiff = resultWMetric, statisticalDiff = resultSMetric, reductionRatio = reductionRatio, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$params)
 
   return(returnList)
 }
