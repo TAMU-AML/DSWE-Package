@@ -22,8 +22,6 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   # Ensuring circular variable to be between 0 to 360 degree
   if(length(cov.circ) > 0) {
 
-    fname_ = lapply(1:length(fname_), function(x) Circ.Positive(fname_[[x]], cov.circ))
-
     # Circular variable after data subsetting position
     pos = which(cov.circ == covcol_)
 
