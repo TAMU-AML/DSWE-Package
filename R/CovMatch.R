@@ -84,7 +84,7 @@ CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
       stop('xCol.circ should be present in xCol')
     }else{
 
-      data = lapply(1:length(data), function(x) Circ.Positive(data[[x]], cov.circ))
+      data = lapply(1:length(data), function(x) Circ.Positive(data[[x]], xCol.circ))
     }
   }
 
