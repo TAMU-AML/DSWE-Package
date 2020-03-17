@@ -77,6 +77,17 @@ CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
 
   }
 
+  if(!is.null(xCol.circ)) {
+
+    if(!xCol.circ %in% xCol){
+
+      stop('xCol.circ should be present in xCol')
+    }else{
+
+      data = lapply(1:length(data), function(x) Circ.Positive(data[[x]], cov.circ))
+    }
+  }
+
   ## data set 2 as a baseline
   dname1_ = list(data[[1]], data[[2]])
 
