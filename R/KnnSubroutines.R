@@ -29,6 +29,7 @@ computeBestSubset = function(data, xCol, yCol,rangeK){
 
   bestSubset = NULL
   bestRMSE = Inf
+  bestMAE = Inf
   bestK = NULL
 
   .computeBestSubset = function(data, xCol, yCol, rangeK, bestSubset, bestRMSE, bestK){
@@ -37,10 +38,11 @@ computeBestSubset = function(data, xCol, yCol,rangeK){
     for (i in 1:nCov){
       result = computeBestK(data[, c(bestSubset, xCol[i])], data[, yCol], rangeK)
       RMSE = result$bestRMSE
+      MAE = result$bestMAE
       if (RMSE < bestRMSE){
         bestRMSE = RMSE
         bestK = result$bestK
-        bestMAE = result$bestMAE
+        bestMAE = MAE
         bestCol = xCol[i]
       }
     }
