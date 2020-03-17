@@ -81,7 +81,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   if(is.null(testSet)){
 
-  testSet = GenerateTestSet(resultMatching$matchedData, testCol, gridSize )
+  testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
 
         if(!is.vector(gridSize)){
 
