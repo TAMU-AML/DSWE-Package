@@ -40,6 +40,6 @@ KnnUpdate = function(knnMdl, newData){
   dataX = normalizedData[,xCol]
   dataY = normalizedData[,yCol]
   bestK = computeBestK(dataX, dataY, rangeK)
-  knnMdl = list(data = data, bestK = bestK, xCol = xCol, yCol = yCol)
+  knnMdl = list(data = data, bestK = bestK$bestK, xCol = xCol, yCol = yCol)
   return(knnMdl)
 }

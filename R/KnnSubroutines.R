@@ -41,7 +41,7 @@ computeBestSubset = function(data, xCol, yCol,rangeK){
       }
     }
 
-    returnList = list(bestSubset = bestSubset, bestK = bestK, bestRMSE = bestRMSE, bestMAE = bestMAE )
+    returnList = list(bestSubset = bestSubset, bestK = bestK, bestRMSE = bestRMSE)
 
     if (length(bestCol)>0){
       bestSubset = c(bestSubset, bestCol)
