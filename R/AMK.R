@@ -3,19 +3,16 @@
 #' @param trainX a matrix or dataframe to be used in modelling
 #' @param trainY a numeric or vector as a target
 #' @param testX a matrix or dataframe, to be used in computing the predictions
-#' @param bw a vector or character input. If character, the input should be 'dpi' or 'dpi-gap'
+#' @param bw a vector or character input. If character, the input should be 'dpi' or 'dpi_gap'
 #' @param nMultiCov a numerical value specifying the number of covariates in multiplicative term
 #' @param fixedCov a vector or numeric specifying the fixed covariates column number, default value is NA
 #' @param cirCov a vector or numeric specifying the circular covariates column number, default value is NA
 #'
-#'' @return a list containing :
-#'   \itemize{
-#'   \item bandwidth - a smoothing parameter for each of the features used in modelling
-#'   \item pred - The predictions on user provided test data
+#'' @return a vector or numeric predictions on user provided test data
 #'}
 #' @import KernSmooth
 #' @export
-AMK = function(trainX, trainY, testX, bw = 'dpi', nMultiCov = ncol(trainX), fixedCov = NA, cirCov = NA ){
+AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
   if (!is.matrix(trainX) && !is.data.frame(trainX)) {
     stop("trainX must be a matrix or a dataframe.")
   }
@@ -35,28 +32,43 @@ AMK = function(trainX, trainY, testX, bw = 'dpi', nMultiCov = ncol(trainX), fixe
   }else if (length(bw)!= nCov){
     stop("length of bw must be same as the number of covariates.")
   }
-  if (nCov == 2) {
-    if (nMultiCov != "none"){
-      nMultiCov = "all"
-      message("Setting nMultiCov to 'all', since there are only 2 covariates. It can be set to 'none' for additive kernels.")
-    }
-  }
-  if (nCov == 1) {
-    nMultiCov = "all"
-  }
+
   if (nMultiCov != "all" && nMultiCov != "none"){
+
     if (!is.numeric(nMultiCov) || nMultiCov%%1 != 0){
-      stop("if nMultiCov is not set to 'all' or 'none', then it must be set to an integer greater than 1, and less than the number of covariates.")
+
+      stop("if nMultiCov is not set to 'all' or 'none', then it must be set to an integer greater than 1, and less than or equal to the number of covariates.")
+
+    }else if(nMultiCov > nCov){
+
+      stop('The value of nMultiCov cannot be greater than number of columns in trainX')
+
+    }else if(nMultiCov == nCov){
+
+      nMultiCov = 'all'
     }
-    if (nMultiCov >= ncol(trainX) || nMultiCov < 2) {
-      stop("if nMultiCov is not set to 'all' or 'none', then it must be set to an integer greater than 1, and less than the number of covariates.")
+  }
+
+  if(!is.null(fixedCov) && !is.na(fixedCov)){
+
+    if(!is.numeric(fixedCov) && !is.vector(fixedCov)){
+
+      stop('fixedCov should be provided as Null, NA or numeric/vector')
+    }else if (sum(fixedCov %in% 1:nCov) != length(fixedCov)){
+
+      stop('Any or all the values in fixedCov exceeds the numbr of columns in trainX')
+
+    }else if(length(fixedCov) > nMultiCov){
+
+      stop('fixedCov should be less than or equal to nMulticov')
+
+    }else if(length(fixedCov) == nMultiCov){
+
+      nMultiCov = 'all'
     }
-    if (!is.numeric(fixedCov) || any(fixedCov%%1 != 0)){
-      stop("fixedCov must be an integer or a vector of integers.")
-    }
-    if (length(fixedCov) > nMultiCov){
-      stop("length of fixedCov must be less than nMultiCov.")
-    }
+  }else{
+
+    nMultiCov = 'all'
   }
 
   returnObj = kernpred(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)

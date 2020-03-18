@@ -8,9 +8,9 @@ AMK(
   trainX,
   trainY,
   testX,
-  bw = "dpi",
-  nMultiCov = ncol(trainX),
-  fixedCov = NA,
+  bw = "dpi_gap",
+  nMultiCov = 3,
+  fixedCov = c(1, 2),
   cirCov = NA
 )
 }
@@ -21,19 +21,11 @@ AMK(
 
 \item{testX}{a matrix or dataframe, to be used in computing the predictions}
 
-\item{bw}{a vector or character input. If character, the input should be 'dpi' or 'dpi-gap'}
+\item{bw}{a vector or character input. If character, the input should be 'dpi' or 'dpi_gap'}
 
 \item{nMultiCov}{a numerical value specifying the number of covariates in multiplicative term}
 
 \item{fixedCov}{a vector or numeric specifying the fixed covariates column number, default value is NA}
-
-\item{cirCov}{a vector or numeric specifying the circular covariates column number, default value is NA
-
-' @return a list containing :
-  \itemize{
-  \item bandwidth - a smoothing parameter for each of the features used in modelling
-  \item pred - The predictions on user provided test data
-}}
 }
 \description{
 Additive Multiplicative Kernel Regression

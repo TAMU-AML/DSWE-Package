@@ -141,6 +141,6 @@ computePred = function(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, ci
   if (any(!is.finite(pred))){
     warning("some of the testpoints resulted in non-finite predictions.")
   }
-  return(list(bandwidth = bandwidth, pred = pred))
+  return(pred)
 }
 
