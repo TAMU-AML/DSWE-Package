@@ -22,7 +22,7 @@
 #'   \item statisticalDiff - The \% statistical difference between functions in comaprison
 #'   \item weightedDiff - The \% wighted difference between functions in comparison
 #'   \item reductionRatio - a list consisting of shrinkage ratio of features used in testSet
-#'   \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate
+#'   \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate in kW
 #' }
 #'
 #' @import dplyr

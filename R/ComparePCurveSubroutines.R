@@ -90,7 +90,7 @@ ComputeExtrapolation = function(data, yCol, mu1, mu2){
   binnedPeriod2 = result[, c('bin2', 'mu2')] %>%  dplyr::group_by(bin2) %>% dplyr::summarise(avg = mean(mu2))
 
   num = min(length(combDataBinned$bin),length(binnedPeriod1$bin1), length(binnedPeriod2$bin2))
-  extrapolatedPwr = ((sum((binnedPeriod1$avg[1:num] - binnedPeriod2$avg[1:num]) * combDataBinned$prob[1:num]) * num) * 100) / 1500
+  extrapolatedPwr = (sum((binnedPeriod1$avg[1:num] - binnedPeriod2$avg[1:num]) * combDataBinned$prob[1:num]) * num)
 
   return(extrapolatedPwr)
 }
