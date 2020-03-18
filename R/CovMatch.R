@@ -5,7 +5,7 @@
 #' @param data a list, consisting of data sets to match, also each of the individual data set can be dataframe or a matrix
 #' @param thrs a numerical or a vector of threshold values for each covariates, against which matching happens
 #' It should be a single value or a vector of values representing threshold for each of the covariate
-#' @param xCol a vector stating the column position of covariates used.
+#' @param xCol a vector stating the column position of covariates used
 #' @param xCol.circ a vector stating the column position of circular variables
 #' @param priority a boolean, default value False, otherwise computes the sequence of matching
 #' @usage CovMatch(data, xCol, xCol.circ, thrs, priority)

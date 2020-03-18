@@ -5,10 +5,10 @@
 #' @param xCol.circ a numeric or vector stating column number of circular covariates
 #' @param yCol A numeric value stating the column number of target
 #' @param testCol a numeric/vector stating column number of covariates to used in generating test set
-#' @param testSet a matrix or dataframe consisting of test points, default value Null, if Null computes test points internally using testCol variables
+#' @param testSet a matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables
 #' @param thrs A single value or vector represnting threshold for each covariates
 #' @param conflevel a single value representing the statistical significance level for constructing the band
-#' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is Null, else it is ignored
+#' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored
 #'
 #' @return a list containing :
 #'  \itemize{
