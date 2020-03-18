@@ -48,14 +48,21 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
       stop('The xcol.circ must be provided as a numeric/vector')
 
-    }
+  }else if(!all(xCol %in% 1:ncol(data[[1]]))){
 
-  if(length(xCol.circ) > 0){
+    stop('The xCol values should be the column number of data set')
+  }
+
+
+  if(!is.null(xCol.circ)){
 
     if(!is.vector(xCol.circ)){
 
       stop('The xCol must be provided as a numeric/vector')
 
+    }else if(!all(xCol.circ %in% xCol)){
+
+      stop('xCol.circ should be present in xCol')
     }
   }
 
@@ -81,8 +88,6 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   if(is.null(testSet)){
 
-  testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
-
         if(!is.vector(gridSize)){
 
          stop('The gridsize must be provided as a vector')
@@ -94,6 +99,8 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
         }else if((gridSize[1] * gridSize[2] > 2500)){
 
          stop('The product of gridSize should not be more than 2500')
+
+        testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
     }
 
   }else if(!is.matrix(testSet) & !is.data.frame(testSet)){
