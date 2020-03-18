@@ -117,8 +117,8 @@ CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
 
   ############ Combining results to generate final matched pairs ###################
   result_ = rep(list(c()), 2)
-  result_[[1]] = unique(rbind(matched1_[[1]], matched2_[[1]]))
-  result_[[2]] = unique(rbind(matched1_[[2]], matched2_[[2]]))
+  result_[[1]] = unique(rbind(matched1_[[2]], matched2_[[2]]))
+  result_[[2]] = unique(rbind(matched1_[[1]], matched2_[[1]]))
 
   MinMaxOriginal = MinMaxData(data, xCol)
   MinMaxMatched = MinMaxData(result_, xCol)
