@@ -84,6 +84,22 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     stop('The length of testcol vector should be of size two')
   }
 
+  if(!is.vector(conflevel)){
+
+    stop('conflevel must be provided as a numeric/vector')
+
+  }else{
+
+    if(length(conflevel) != 1){
+
+      stop('conflevel must be provided as a single numeric value')
+
+    }else if(!(conflevel > 0 & conflevel < 1)){
+
+      stop('conflevel must be between 0 to 1')
+    }
+  }
+
   resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
 
   if(is.null(testSet)){
