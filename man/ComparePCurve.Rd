@@ -27,13 +27,13 @@ ComparePCurve(
 
 \item{testCol}{a numeric/vector stating column number of covariates to used in generating test set}
 
-\item{testSet}{a matrix or dataframe consisting of test points, default value Null, if Null computes test points internally using testCol variables}
+\item{testSet}{a matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables}
 
 \item{thrs}{A single value or vector represnting threshold for each covariates}
 
 \item{conflevel}{a single value representing the statistical significance level for constructing the band}
 
-\item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is Null, else it is ignored}
+\item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored}
 }
 \value{
 a list containing :
@@ -48,7 +48,7 @@ a list containing :
   \item statisticalDiff - The \% statistical difference between functions in comaprison
   \item weightedDiff - The \% wighted difference between functions in comparison
   \item reductionRatio - a list consisting of shrinkage ratio of features used in testSet
-  \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate
+  \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate in kW
 }
 }
 \description{

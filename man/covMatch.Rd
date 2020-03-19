@@ -9,7 +9,7 @@ CovMatch(data, xCol, xCol.circ, thrs, priority)
 \arguments{
 \item{data}{a list, consisting of data sets to match, also each of the individual data set can be dataframe or a matrix}
 
-\item{xCol}{a vector stating the column position of covariates used.}
+\item{xCol}{a vector stating the column position of covariates used}
 
 \item{xCol.circ}{a vector stating the column position of circular variables}
 
