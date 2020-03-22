@@ -38,7 +38,7 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   testid_ = c(1:length(fname_))[-refid_]
 
   # Setting up thresholds
-  ratio_ = colSds(as.matrix(ref_)) / colMeans(ref_)
+  ratio_ = colSds(as.matrix(ref_))
   thres_ = ratio_ * wgt_
 
   # Matching data sets with ref as reference
