@@ -43,7 +43,10 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset){
   gc()
   KXTX1 = (sigma_f^2)*computeCorrelMat(testset,X1,theta)
   mu1 = beta + (KXTX1%*%backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),y1-beta)))
-
+  ls24 = backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),t(KXTX1)))
+  K1 =KXTX1%*%ls24
+  rm(KXTX1,upperCholKX1X1)
+  gc()
 
   X2 = as.matrix(datalist[[2]][,covCols])
   y2 = as.numeric(datalist[[2]][,yCol])
@@ -57,18 +60,22 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset){
   mu2 = beta + (KXTX2%*%backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),y2-beta)))
 
 
-  KX2X1 = (sigma_f^2)*computeCorrelMat(X2,X1,theta)
-
-
   ls1 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),t(KXTX2)))
-  ls24 = backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),t(KXTX1)))
-  ls3 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),KX2X1))
-
   K2 = KXTX2%*%ls1
-  K1 =KXTX1%*%ls24
-  K21 =KXTX2%*%ls3%*%ls24
+  rm(ls1)
+  gc()
 
+  KX2X1 = (sigma_f^2)*computeCorrelMat(X2,X1,theta)
+  ls3 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),KX2X1))
+  rm(upperCholKX2X2,KX2X1)
+  gc()
+
+  K21 =KXTX2%*%ls3%*%ls24
+  rm(KXTX2,ls3,ls24)
+  gc()
   diffCovMat =  K2 + K1 - (2*K21)
+  rm(K1,K2,K21)
+  gc()
   diffCovMat = (diffCovMat + t(diffCovMat))/2
 
   returnList = list(diffCovMat = diffCovMat, mu2 = mu2, mu1 = mu1)
