@@ -28,7 +28,7 @@ ComputeSMetric = function(mu1, mu2, band){
 ComputeUWMetric = function(mu1, mu2){
 
   funcDiff = mu1 - mu2
-  resultP = ((sum(funcDiff) / sum(mu2)) * (100))
+  resultP = ((sum(funcDiff) / (sum(mu1 + mu2) / 2)) * (100))
   resultA = (sum(funcDiff)) / nrow(mu2)
 
   return(resultP)
@@ -47,7 +47,7 @@ ComputeWMetric = function(dList, mu1, mu2, testdata, testCol){
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
-  resultP = (sum((mu1 - mu2) * (probTest)) / sum((mu2)* (probTest))) * 100
+  resultP = (sum((mu1 - mu2) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100
   resultA = sum(((mu1 - mu2)) * (probTest))
 
   return(resultP)
