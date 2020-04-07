@@ -11,18 +11,18 @@ estimateParameters= function(datalist, covCols, yCol){
   nCov = length(covCols)
   theta = rep(0,nCov)
   for (i in 1:length(theta)){
-    theta[i] = mean(unlist(lapply(datalist, function(x) sd(x[,i]))))
+    theta[i] = mean(unlist(lapply(datalist, function(x) sd(x[,covCols[i]]))))
   }
   beta = mean(unlist(lapply(datalist, function(x) mean(x[,yCol]))))
   sigma_f = mean(unlist(lapply(datalist, function(x) sd(x[,yCol])/sqrt(2))))
-  sigma_n = 0.1*mean(unlist(lapply(datalist, function(x) sd(x[,yCol])/sqrt(2))))
+  sigma_n = mean(unlist(lapply(datalist, function(x) sd(x[,yCol])/sqrt(2))))
   parInit = c(theta,sigma_f,sigma_n,beta)
   objFun = function(par){computeloglikSum(datalist,covCols,yCol,
                                           params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
   objGrad = function(par){computeloglikGradSum(datalist,covCols,yCol,
                                                params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
   optimResult = optim(par = parInit, fn = objFun, gr = objGrad, method = 'BFGS', control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
-  estimatedParams = list(theta = optimResult$par[1:nCov], sigma_f = optimResult$par[nCov+1], sigma_n = optimResult$par[nCov+2], beta = optimResult$par[nCov+3])
+  estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
   objVal = optimResult$value
   return(list(estimatedParams = estimatedParams,objVal = objVal))
 }
@@ -43,7 +43,10 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset){
   gc()
   KXTX1 = (sigma_f^2)*computeCorrelMat(testset,X1,theta)
   mu1 = beta + (KXTX1%*%backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),y1-beta)))
-
+  ls24 = backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),t(KXTX1)))
+  K1 =KXTX1%*%ls24
+  rm(KXTX1,upperCholKX1X1)
+  gc()
 
   X2 = as.matrix(datalist[[2]][,covCols])
   y2 = as.numeric(datalist[[2]][,yCol])
@@ -57,18 +60,22 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset){
   mu2 = beta + (KXTX2%*%backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),y2-beta)))
 
 
-  KX2X1 = (sigma_f^2)*computeCorrelMat(X2,X1,theta)
-
-
   ls1 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),t(KXTX2)))
-  ls24 = backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),t(KXTX1)))
-  ls3 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),KX2X1))
-
   K2 = KXTX2%*%ls1
-  K1 =KXTX1%*%ls24
-  K21 =KXTX2%*%ls3%*%ls24
+  rm(ls1)
+  gc()
 
+  KX2X1 = (sigma_f^2)*computeCorrelMat(X2,X1,theta)
+  ls3 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),KX2X1))
+  rm(upperCholKX2X2,KX2X1)
+  gc()
+
+  K21 =KXTX2%*%ls3%*%ls24
+  rm(KXTX2,ls3,ls24)
+  gc()
   diffCovMat =  K2 + K1 - (2*K21)
+  rm(K1,K2,K21)
+  gc()
   diffCovMat = (diffCovMat + t(diffCovMat))/2
 
   returnList = list(diffCovMat = diffCovMat, mu2 = mu2, mu1 = mu1)
@@ -171,15 +178,12 @@ computeloglikGradient = function(x,y,params){
 
 ###
 computeCorrelMat = function(x1,x2,theta){
-  if (length(theta) == 1){
-    correlMat = exp(-0.5*((outer(x1,x2,"-")/theta)^2))
-  }else {
+
     correlMat = matrix(0,nrow = nrow(x1),ncol = nrow(x2))
     for (i in 1:length(theta)){
       correlMat = correlMat + ((outer(x1[,i],x2[,i],"-")/theta[i])^2)
     }
     correlMat = exp(-0.5*correlMat)
-  }
 
   return(correlMat)
 }
