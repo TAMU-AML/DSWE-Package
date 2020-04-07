@@ -18,7 +18,7 @@ ComputeSMetric = function(mu1, mu2, band){
 
   funcDiff = mu1 - mu2
   funcDiff[abs(funcDiff) < band] = 0
-  resultP = ((sum(funcDiff) / sum(mu2)) * (100))
+  resultP = ((sum(funcDiff) / (sum(mu1 + mu2) / 2)) * (100))
   resultA = (sum(funcDiff)) / nrow(mu2)
 
   return(resultP)
