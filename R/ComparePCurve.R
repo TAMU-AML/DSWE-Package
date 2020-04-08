@@ -20,9 +20,12 @@
 #'   \item testSet - The test set provided by user, or generated internally
 #'   \item estimatedParams - The function parameter values
 #'   \item statisticalDiff - The \% statistical difference between functions in comaprison
+#'   \item weightedstatDiff - The \% weighted statistical difference between functions in comparison
+#'   \item weightedstatExtrapolation - The \% weighted statistical difference scaled on entire domain of the covariates
+#'   \item unweightedDiff - The \% unweighted difference between functions in comparison
 #'   \item weightedDiff - The \% wighted difference between functions in comparison
+#'   \item weightedExtrapolation - The \% weighted difference scaled on entire domain of the covariates
 #'   \item reductionRatio - a list consisting of shrinkage ratio of features used in testSet
-#'   \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate in kW
 #' }
 #'
 #' @import dplyr
@@ -132,15 +135,19 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   resultSMetric = ComputeSMetric(resultGP$mu1, resultGP$mu2, resultGP$band)
 
+  resultWSMetric = ComputeWSMetric(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
+
+  resultWSExtrapolation = ComputeWSExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band)
+
   resultUWMetric = ComputeUWMetric(resultGP$mu1, resultGP$mu2)
 
   resultWMetric = ComputeWMetric(data, resultGP$mu1, resultGP$mu2, testSet, testCol)
 
+  resultWExtrapolation = ComputeWExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2)
+
   reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
 
-  extrapolatedPower = ComputeExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2)
-
-  returnList = list(unweightedDiff = resultUWMetric, weightedDiff = resultWMetric, statisticalDiff = resultSMetric, reductionRatio = reductionRatio, extrapolatedPower = extrapolatedPower, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$params)
+  returnList = list(unweightedDiff = resultUWMetric, weightedDiff = resultWMetric, weightedExtrapolation = resultWExtrapolation, statisticalDiff = resultSMetric, weightedstatDiff = resultWSMetric, weightedstatExtrapolation = resultWSExtrapolation, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$params)
 
   return(returnList)
 }
