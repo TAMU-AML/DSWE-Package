@@ -13,16 +13,6 @@ GenerateTestset = function(data, testCol, gridSize){
 
 }
 
-# Compute statistical metric
-ComputeSMetric = function(mu1, mu2, band){
-
-  funcDiff = mu1 - mu2
-  funcDiff[abs(funcDiff) < band] = 0
-  resultP = ((sum(funcDiff) / (sum(mu1 + mu2) / 2)) * (100))
-  resultA = (sum(funcDiff)) / nrow(mu2)
-
-  return(resultP)
-}
 
 # Compute statistical weighted metrics
 ComputeWSMetric = function(dList, mu1, mu2, band, testdata, testCol){
@@ -38,8 +28,8 @@ ComputeWSMetric = function(dList, mu1, mu2, band, testdata, testCol){
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
   funcDiff = mu1 - mu2
-  funcDiff[abs(funcDiff) < band] = 0
-  resultP = (sum((funcDiff) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100
+  funcDiff[abs(funcDiff) <= band] = 0
+  resultP = round((sum((funcDiff) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100, 2)
   resultA = sum(((funcDiff)) * (probTest))
 
   return(resultP)
@@ -58,38 +48,50 @@ ComputeWSExtrapolation = function(data, yCol, mu1, mu2, band){
   combDataBinned = combData[, c('bin'), drop = FALSE] %>%  dplyr::group_by(bin) %>% dplyr::summarise(count = length(bin))
   combDataBinned$prob = (combDataBinned$count) / sum(combDataBinned$count)
 
-  # importing result and binning for each period
+  # importing result and checking bins for each period
   result = data.frame(cbind(mu1, mu2))
   colnames(result) = c('mu1', 'mu2')
   result$mu1[result$mu1 < 0] = 0.1
   result$mu2[result$mu2 < 0] = 0.1
   result$agg = (result$mu1 + result$mu2) / 2
   result$delta = result$mu1 - result$mu2
-  result$delta[abs(result$delta) < band] = 0
-  result$bin1 = cut(result$mu1, breaks = seq(0, max(result$mu1)+100, 100), labels = FALSE) * 100
-  result$bin2 = cut(result$mu2, breaks = seq(0, max(result$mu2)+100, 100), labels = FALSE) * 100
+  result$delta[abs(result$delta) <= band] = 0
+  combDataBinned[, c('avg1', 'delta1', 'avg2', 'delta2')] = NA
 
-  binnedPeriod1 = result[, c('bin1', 'agg', 'delta')] %>%  dplyr::group_by(bin1) %>% dplyr::summarise(avg_agg = mean(agg), avg_delta = mean(delta))
-  binnedPeriod2 = result[, c('bin2', 'agg', 'delta')] %>%  dplyr::group_by(bin2) %>% dplyr::summarise(avg_agg = mean(agg), avg_delta = mean(delta))
-  common_bin = intersect(binnedPeriod1$bin1, binnedPeriod2$bin2)
-  binnedData = (binnedPeriod1[binnedPeriod1$bin1 %in% common_bin,] + binnedPeriod2[binnedPeriod2$bin2 %in% common_bin,]) / 2
+  for (i in 1:nrow(combDataBinned)){
 
-  common_bin2 = intersect(binnedData$bin1, combDataBinned$bin)
+    if( i == 1){
+      combDataBinned$avg1[i] = mean(result$agg[result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$delta1[i] = mean(result$delta[result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$avg2[i] = mean(result$agg[result$mu2 <= combDataBinned$bin[i]])
+      combDataBinned$delta2[i] = mean(result$delta[result$mu2 <= combDataBinned$bin[i]])
+    }else{
 
-  extrapolatedDelta = sum(binnedData$avg_delta[binnedData$bin1 %in% common_bin2] * combDataBinned$prob[combDataBinned$bin %in% common_bin2])
-  extrapolatedDeltaP = round((extrapolatedDelta / sum(binnedData$avg_agg[binnedData$bin1 %in% common_bin2] * combDataBinned$prob[combDataBinned$bin %in% common_bin2])) * 100, 2)
+      combDataBinned$avg1[i] = mean(result$agg[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$delta1[i] = mean(result$delta[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$avg2[i] = mean(result$agg[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
+      combDataBinned$delta2[i] = mean(result$delta[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
+    }
+  }
+
+  while(sum(is.na(combDataBinned)) != 0){
+
+    id = max(unique(which(is.na(combDataBinned), arr.ind=TRUE)[, 1]))
+    combDataBinned[is.na(combDataBinned)] = 0
+    combDataBinned[min(id)-1, 'prob'] = sum(combDataBinned[c(min(id-1), id), 'prob'])
+    combDataBinned[min(id)-1, c('avg1', 'delta1', 'avg2', 'delta2')] = apply(combDataBinned[c(min(id-1), id), c('avg1', 'delta1', 'avg2', 'delta2')], 2, mean)
+
+  }
+
+  combDataBinned = combDataBinned[-id, ]
+  combDataBinned$avg = (combDataBinned$avg1 + combDataBinned$avg2) / 2
+  combDataBinned$delta = (combDataBinned$delta1 + combDataBinned$delta2) / 2
+
+  extrapolatedDelta = sum(combDataBinned$delta * combDataBinned$prob)
+  extrapolatedDeltaP = round((extrapolatedDelta / sum(combDataBinned$avg * combDataBinned$prob)) * 100, 2)
   return(extrapolatedDeltaP)
 }
 
-# Compute unweighted metric
-ComputeUWMetric = function(mu1, mu2){
-
-  funcDiff = mu1 - mu2
-  resultP = ((sum(funcDiff) / (sum(mu1 + mu2) / 2)) * (100))
-  resultA = (sum(funcDiff)) / nrow(mu2)
-
-  return(resultP)
-}
 
 # Compute weighted metrics
 ComputeWMetric = function(dList, mu1, mu2, testdata, testCol){
@@ -104,7 +106,7 @@ ComputeWMetric = function(dList, mu1, mu2, testdata, testCol){
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
-  resultP = (sum((mu1 - mu2) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100
+  resultP = round((sum((mu1 - mu2) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100, 2)
   resultA = sum(((mu1 - mu2)) * (probTest))
 
   return(resultP)
@@ -123,25 +125,47 @@ ComputeWExtrapolation = function(data, yCol, mu1, mu2){
   combDataBinned = combData[, c('bin'), drop = FALSE] %>%  dplyr::group_by(bin) %>% dplyr::summarise(count = length(bin))
   combDataBinned$prob = (combDataBinned$count) / sum(combDataBinned$count)
 
-  # importing result and binning for each period
+  # importing result and checking bins for each period
   result = data.frame(cbind(mu1, mu2))
   colnames(result) = c('mu1', 'mu2')
   result$mu1[result$mu1 < 0] = 0.1
   result$mu2[result$mu2 < 0] = 0.1
   result$agg = (result$mu1 + result$mu2) / 2
   result$delta = result$mu1 - result$mu2
-  result$bin1 = cut(result$mu1, breaks = seq(0, max(result$mu1)+100, 100), labels = FALSE) * 100
-  result$bin2 = cut(result$mu2, breaks = seq(0, max(result$mu2)+100, 100), labels = FALSE) * 100
+  combDataBinned[, c('avg1', 'delta1', 'avg2', 'delta2')] = NA
 
-  binnedPeriod1 = result[, c('bin1', 'agg', 'delta')] %>%  dplyr::group_by(bin1) %>% dplyr::summarise(avg_agg = mean(agg), avg_delta = mean(delta))
-  binnedPeriod2 = result[, c('bin2', 'agg', 'delta')] %>%  dplyr::group_by(bin2) %>% dplyr::summarise(avg_agg = mean(agg), avg_delta = mean(delta))
-  common_bin = intersect(binnedPeriod1$bin1, binnedPeriod2$bin2)
-  binnedData = (binnedPeriod1[binnedPeriod1$bin1 %in% common_bin,] + binnedPeriod2[binnedPeriod2$bin2 %in% common_bin,]) / 2
+  for (i in 1:nrow(combDataBinned)){
 
-  common_bin2 = intersect(binnedData$bin1, combDataBinned$bin)
+    if( i == 1){
+      combDataBinned$avg1[i] = mean(result$agg[result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$delta1[i] = mean(result$delta[result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$avg2[i] = mean(result$agg[result$mu2 <= combDataBinned$bin[i]])
+      combDataBinned$delta2[i] = mean(result$delta[result$mu2 <= combDataBinned$bin[i]])
+    }else{
 
-  extrapolatedDelta = sum(binnedData$avg_delta[binnedData$bin1 %in% common_bin2] * combDataBinned$prob[combDataBinned$bin %in% common_bin2])
-  extrapolatedDeltaP = round((extrapolatedDelta / sum(binnedData$avg_agg[binnedData$bin1 %in% common_bin2] * combDataBinned$prob[combDataBinned$bin %in% common_bin2])) * 100, 2)
+      combDataBinned$avg1[i] = mean(result$agg[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$delta1[i] = mean(result$delta[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
+      combDataBinned$avg2[i] = mean(result$agg[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
+      combDataBinned$delta2[i] = mean(result$delta[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
+    }
+  }
+
+  while(sum(is.na(combDataBinned)) != 0){
+
+
+    id = max(unique(which(is.na(combDataBinned), arr.ind=TRUE)[, 1]))
+    combDataBinned[is.na(combDataBinned)] = 0
+    combDataBinned[min(id)-1, 'prob'] = sum(combDataBinned[c(min(id-1), id), 'prob'])
+    combDataBinned[min(id)-1, c('avg1', 'delta1', 'avg2', 'delta2')] = apply(combDataBinned[c(min(id-1), id), c('avg1', 'delta1', 'avg2', 'delta2')], 2, mean)
+
+  }
+
+  combDataBinned = combDataBinned[-id, ]
+  combDataBinned$avg = (combDataBinned$avg1 + combDataBinned$avg2) / 2
+  combDataBinned$delta = (combDataBinned$delta1 + combDataBinned$delta2) / 2
+
+  extrapolatedDelta = sum(combDataBinned$delta * combDataBinned$prob)
+  extrapolatedDeltaP = round((extrapolatedDelta / sum(combDataBinned$avg * combDataBinned$prob)) * 100, 2)
   return(extrapolatedDeltaP)
 }
 
