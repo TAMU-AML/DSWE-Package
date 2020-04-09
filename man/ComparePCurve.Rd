@@ -45,10 +45,11 @@ a list containing :
   \item confLevel - a single value representing the statistical significance level for constructing the band
   \item testSet - The test set provided by user, or generated internally
   \item estimatedParams - The function parameter values
-  \item statisticalDiff - The \% statistical difference between functions in comaprison
-  \item weightedDiff - The \% wighted difference between functions in comparison
+  \item statDiff - The \% statistical difference between functions in comparison
+  \item scaledStatDiff - The \% statistical difference scaled on entire domain of the covariates
+  \item Diff - The \% difference between functions in comparison
+  \item scaledDiff - The \% difference scaled on entire domain of the covariates
   \item reductionRatio - a list consisting of shrinkage ratio of features used in testSet
-  \item extrapolatedPower - The matched power difference scaled on entire domain of a covariate in kW
 }
 }
 \description{
