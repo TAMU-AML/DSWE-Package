@@ -4,7 +4,7 @@
 \alias{funGP}
 \title{Function comparison using Gaussian Process and Hypothesis testing}
 \usage{
-funGP(datalist, xCol, yCol, confLevel = 0.95, testset)
+funGP(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T)
 }
 \arguments{
 \item{datalist}{a list of data sets to compute a function for each of them}
@@ -16,6 +16,8 @@ funGP(datalist, xCol, yCol, confLevel = 0.95, testset)
 \item{confLevel}{a single value representing the statistical significance level for constructing the band}
 
 \item{testset}{Test points at which the functions will be compared}
+
+\item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.}
 }
 \value{
 a list containing :

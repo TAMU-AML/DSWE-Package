@@ -5,6 +5,7 @@
 #' @param yCol A numeric value stating the column number of target
 #' @param confLevel a single value representing the statistical significance level for constructing the band
 #' @param testset Test points at which the functions will be compared
+#' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.
 #'
 #' @return a list containing :
 #'  \itemize{
@@ -17,7 +18,11 @@
 #'   \item estimatedParams - The function parameter values
 #' }
 #' @export
-funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset ){
+funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T){
+
+  if (class(limitMemory)!="logical"){
+    stop('limitMemory should either be TRUE or FALSE')
+  }
 
   if(!is.list(datalist)){
 
@@ -70,7 +75,7 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset ){
 
   params = estimateParameters(datalist, xCol, yCol)$estimatedParams
 
-  diffCov = computeDiffCov(datalist, xCol, yCol, params, testset)
+  diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory)
 
   muDiff = diffCov$mu2 - diffCov$mu1
 

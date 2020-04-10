@@ -28,15 +28,24 @@ estimateParameters= function(datalist, covCols, yCol){
 }
 
 ###
-computeDiffCov = function(datalist, covCols, yCol, params, testset){
+computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory){
   theta = params$theta
   sigma_f = params$sigma_f
   sigma_n = params$sigma_n
   beta = params$beta
+  if (limitMemory == T){
+    maxDataSample = 5000
+    for (i in 1:length(datalist)){
+      if (nrow(datalist[[i]]) > maxDataSample){
+        set.seed(1)
+        datalist[[i]] = datalist[[i]][sample(nrow(datalist[[i]]), maxDataSample),]
+      }
+    }
+  }
+
   X1 = as.matrix(datalist[[1]][,covCols])
   y1 = as.numeric(datalist[[1]][,yCol])
-  correlMat1 = computeCorrelMat(X1,X1,theta)
-  KX1X1 = (sigma_f^2)*correlMat1
+  KX1X1 = (sigma_f^2)*computeCorrelMat(X1,X1,theta)
   diag(KX1X1) = diag(KX1X1) + (sigma_n^2)
   upperCholKX1X1 = chol(KX1X1)
   rm(KX1X1)
@@ -50,8 +59,7 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset){
 
   X2 = as.matrix(datalist[[2]][,covCols])
   y2 = as.numeric(datalist[[2]][,yCol])
-  correlMat2 = computeCorrelMat(X2,X2,theta)
-  KX2X2 = (sigma_f^2)*correlMat2
+  KX2X2 = (sigma_f^2)*computeCorrelMat(X2,X2,theta)
   diag(KX2X2) = diag(KX2X2) + (sigma_n^2)
   upperCholKX2X2 = chol(KX2X2)
   rm(KX2X2)

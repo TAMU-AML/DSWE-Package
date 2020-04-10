@@ -9,6 +9,7 @@
 #' @param thrs A single value or vector represnting threshold for each covariates
 #' @param conflevel a single value representing the statistical significance level for constructing the band
 #' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored
+#' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.
 #'
 #' @return a list containing :
 #'  \itemize{
@@ -30,7 +31,11 @@
 #' @importFrom magrittr %>%
 #' @export
 
-ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50) ){
+ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), limitMemory = T ){
+
+  if (class(limitMemory)!="logical"){
+    stop('limitMemory should either be TRUE or FALSE')
+  }
 
   if(!is.list(data)){
 
@@ -129,7 +134,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     stop('The length of testCol should be equal to the number of columns in testSet')
   }
 
-  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet)
+  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory)
 
   resultWSMetric = ComputeWSMetric(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
 

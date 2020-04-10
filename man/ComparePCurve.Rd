@@ -13,7 +13,8 @@ ComparePCurve(
   testSet = NULL,
   thrs = 0.2,
   conflevel = 0.95,
-  gridSize = c(50, 50)
+  gridSize = c(50, 50),
+  limitMemory = T
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ ComparePCurve(
 \item{conflevel}{a single value representing the statistical significance level for constructing the band}
 
 \item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored}
+
+\item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.}
 }
 \value{
 a list containing :
