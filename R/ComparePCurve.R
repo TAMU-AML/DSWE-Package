@@ -31,7 +31,7 @@
 #' @importFrom magrittr %>%
 #' @export
 
-ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50) ){
+ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), limitMemory = T ){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
@@ -135,7 +135,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     stop('The length of testCol should be equal to the number of columns in testSet')
   }
 
-  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet)
+  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory)
 
   resultWSMetric = ComputeWSMetric(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
 
