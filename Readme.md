@@ -50,10 +50,10 @@ install.packages("devtools")
 **Step 3 (Build package using devtools):**
 
 ```R
-devtools::install_github("nitesh-1507/DSWE")
+devtools::install_github("TAMU-AML/DSWE-Package")
 ```
 
-# Usage 
+# Usage
 The package can be used to perform various tasks. The functions and their usage are mentioned below.
 
 The functions can be accessed either by attaching the package or using the package name.
@@ -111,7 +111,7 @@ The function can be used to perform function comparison using Gaussian process a
 
 *Function :*
 
-*funGP (datalist, xCol, yCol, confLevel = 0.95, testset)*
+*funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE)*
 
 ```R
 # Preparing the arguments
@@ -120,9 +120,10 @@ xCol = c(1, 3)
 yCol = 4
 confLevel = 0.95
 testset = read.csv('testset.csv')
+limitMemory = TRUE
 
 # Executing the function
-function_diff = funGP(datalist, xCol, yCol, confLevel, testset)
+function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory)
 ```
 
 ### 3. ComparePCurve
@@ -130,7 +131,7 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 *Function :*
 
-*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50))*
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), limitMemory = TRUE)*
 
 ```R
 # Preparing the arguments
@@ -145,9 +146,10 @@ testSet = NULL
 thrs = 0.2
 confLevel = 0.95
 gridSize = c(50, 50)
+limitMemory = TRUE
 
 # Executing the function
-function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize)
+function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, limitMemory)
 ```
 
 ### 4. KnnPCFit
@@ -232,4 +234,3 @@ For more information on DSWE Package, please access the package documentations. 
 * Name : Abhinav Prakash, Nitesh Kumar
 
 * Email : abhinavp@tamu.edu, nitesh.kumar@tamu.edu
-
