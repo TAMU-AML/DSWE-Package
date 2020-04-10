@@ -13,16 +13,21 @@
 #' @import KernSmooth
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
+
   if (!is.matrix(trainX) && !is.data.frame(trainX)) {
     stop("trainX must be a matrix or a dataframe.")
   }
+
   nCov = ncol(trainX)
+
   if (!is.numeric(trainY)){
     stop("trainY must be numeric/vector.")
   }
+
   if (length(trainY) != nrow(trainX)){
     stop("number of datapoints in trainX and trainY must be the same.")
   }
+
   if (!is.numeric(bw)) {
     if (bw != "dpi" && bw != "dpi_gap"){
       {
