@@ -31,7 +31,7 @@
 #' @importFrom magrittr %>%
 #' @export
 
-ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), limitMemory = T ){
+ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50) ){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
@@ -52,7 +52,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   if(!is.vector(xCol)){
 
-      stop('The xcol.circ must be provided as a numeric/vector')
+    stop('The xcol.circ must be provided as a numeric/vector')
 
   }else if(!all(xCol %in% 1:ncol(data[[1]]))){
 
@@ -110,20 +110,21 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   if(is.null(testSet)){
 
-        if(!is.vector(gridSize)){
+    if(!is.vector(gridSize)){
 
-         stop('The gridsize must be provided as a vector')
+      stop('The gridsize must be provided as a vector')
 
-        }else if(length(gridSize) != 2){
+    }else if(length(gridSize) != 2){
 
-         stop('The length of gridSize vector should be of size two')
+      stop('The length of gridSize vector should be of size two')
 
-        }else if((gridSize[1] * gridSize[2] > 2500)){
+    }else if((gridSize[1] * gridSize[2] > 2500)){
 
-         stop('The product of gridSize should not be more than 2500')
+      stop('The product of gridSize should not be more than 2500')
 
-        testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
     }
+
+    testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
 
   }else if(!is.matrix(testSet) & !is.data.frame(testSet)){
 
@@ -134,7 +135,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     stop('The length of testCol should be equal to the number of columns in testSet')
   }
 
-  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory)
+  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet)
 
   resultWSMetric = ComputeWSMetric(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
 
@@ -146,7 +147,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
 
-  returnList = list(Diff = resultWMetric, scaledDiff = resultWExtrapolation, statDiff = resultWSMetric, scaledStatDiff = resultWSExtrapolation, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$diffCov$mu2, mu1 = resultGP$diffCov$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$params)
+  returnList = list(Diff = resultWMetric, scaledDiff = resultWExtrapolation, statDiff = resultWSMetric, scaledStatDiff = resultWSExtrapolation, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$mu2, mu1 = resultGP$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$estimatedParams)
 
   return(returnList)
 }
