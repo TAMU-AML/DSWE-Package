@@ -147,9 +147,9 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band)
 
-  unweightedDiff = ComputeDiff(mu1, mu2)
+  unweightedDiff = ComputeDiff(resultGP$mu1, resultGP$mu2)
 
-  unweightedStatDiff = ComputeStatDiff(mu1, mu2, band)
+  unweightedStatDiff = ComputeStatDiff(resultGP$mu1, resultGP$mu2, resultGP$band)
 
   reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
 
