@@ -17,7 +17,7 @@
 #'   \item testset - The test prediction for first data set
 #'   \item estimatedParams - The function parameter values
 #' }
-#' @export
+#'
 funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T){
 
   if (class(limitMemory)!="logical"){

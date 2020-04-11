@@ -9,22 +9,24 @@
 #' @param thrs A single value or vector represnting threshold for each covariates
 #' @param conflevel a single value representing the statistical significance level for constructing the band
 #' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored
-#' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.
+#' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference
 #'
 #' @return a list containing :
 #'  \itemize{
-#'   \item muDiff - The testSet prediction for each of the data set
-#'   \item mu1 - The test prediction for first data set
-#'   \item mu2 - The test prediction for second data set
-#'   \item band - The allowed statistical difference between functions
-#'   \item confLevel - a single value representing the statistical significance level for constructing the band
-#'   \item testSet - The test set provided by user, or generated internally
-#'   \item estimatedParams - The function parameter values
-#'   \item statDiff - The \% statistical difference between functions in comparison
-#'   \item scaledStatDiff - The \% statistical difference scaled on entire domain of the covariates
-#'   \item Diff - The \% difference between functions in comparison
-#'   \item scaledDiff - The \% difference scaled on entire domain of the covariates
-#'   \item reductionRatio - a list consisting of shrinkage ratio of features used in testSet
+#'   \item weightedDiff - a numeric,  \% difference between the functions weighted using the density of the covariates
+#'   \item weightedStatDiff - a numeric, \% statistically significant difference between the functions weighted using the density of the covariates
+#'   \item scaledDiff -  a numeric, \% difference between the functions scaled to the orginal data
+#'   \item scaledStatDiff - a numeric, \% statistically significant difference between the functions scaled to the orginal data
+#'   \item unweightedDiff - a numeric,  \% difference between the functions unweighted
+#'   \item unweightedStatDiff - a numeric,  \% statistically significant difference between the functions unweighted
+#'   \item reductionRatio -  a list consisting of shrinkage ratio of features used in testSet
+#'   \item muDiff - a vector of the difference in prediction for each test point
+#'   \item mu1 - a vector of prediction on testset using the first data set
+#'   \item mu2 - a vector of prediction on testset using the second data set
+#'   \item band - a vector for the confidence band at all the testpoints for the two functions to be the same at a given cofidence level.
+#'   \item confLevel - a numeric representing the statistical significance level for constructing the band
+#'   \item testSet - a vector/matrix of the test points either provided by user, or generated internally
+#'   \item estimatedParams - a list of estimated hyperaparameters for the Gaussian process model
 #' }
 #'
 #' @import dplyr
@@ -137,17 +139,21 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory)
 
-  weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
-
-  scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band)
-
   weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol)
+
+  weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
 
   scaledDiff = ComputeScaledDiff(data, yCol, resultGP$mu1, resultGP$mu2)
 
+  scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band)
+
+  unweightedDiff = ComputeDiff(resultGP$mu1, resultGP$mu2)
+
+  unweightedStatDiff = ComputeStatDiff(resultGP$mu1, resultGP$mu2, resultGP$band)
+
   reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
 
-  returnList = list(weightedDiff = weightedDiff, scaledDiff = scaledDiff, weightedStatDiff = weightedStatDiff, scaledStatDiff = scaledStatDiff, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$mu2, mu1 = resultGP$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$estimatedParams)
+  returnList = list(weightedDiff = weightedDiff, , weightedStatDiff = weightedStatDiff, scaledDiff = scaledDiff, scaledStatDiff = scaledStatDiff, unweightedDiff = unweightedDiff, unweightedStatDiff = unweightedStatDiff, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$mu2, mu1 = resultGP$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$estimatedParams)
 
   return(returnList)
 }
