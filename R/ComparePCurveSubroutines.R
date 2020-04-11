@@ -15,7 +15,7 @@ GenerateTestset = function(data, testCol, gridSize){
 
 
 # Compute statistical weighted metrics
-ComputeWSMetric = function(dList, mu1, mu2, band, testdata, testCol){
+ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol){
 
   mixedData = rbind(dList[[1]], dList[[2]])
 
@@ -37,64 +37,62 @@ ComputeWSMetric = function(dList, mu1, mu2, band, testdata, testCol){
 }
 
 # Compute weighted statistical extrapolatiion
-ComputeWSExtrapolation = function(data, yCol, mu1, mu2, band){
+ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band){
+  mergedData = rbind(datalist[[1]],datalist[[2]])
+  pw = mergedData[,yCol]
+  pw[pw < 0] = 0
+  binWidth = 100
 
-  # creating bins for combined original data
-  combData = do.call(rbind, data)
-  combData$bin = cut(combData[, yCol], breaks = seq(0, max(combData[, yCol])+100, 100), labels = FALSE)
-  combData$bin = 100 * combData$bin
+  #starting bin value
+  start = 0
 
-  # calculating probability in original data set
-  combDataBinned = combData[, c('bin'), drop = FALSE] %>%  dplyr::group_by(bin) %>% dplyr::summarise(count = length(bin))
-  combDataBinned$prob = (combDataBinned$count) / sum(combDataBinned$count)
+  #ending value based on max power rounded up to the closest multiple of the bin width.
+  #This formulation ensures that the last bin of the original data will never be empty.
+  end = max(pw) + (binWidth - (max(pw)%%binWidth))
+  bins = seq(start,end,binWidth)
 
-  # importing result and checking bins for each period
-  result = data.frame(cbind(mu1, mu2))
-  colnames(result) = c('mu1', 'mu2')
-  result$mu1[result$mu1 < 0] = 0.1
-  result$mu2[result$mu2 < 0] = 0.1
-  result$agg = (result$mu1 + result$mu2) / 2
-  result$delta = result$mu1 - result$mu2
-  result$delta[abs(result$delta) <= band] = 0
-  combDataBinned[, c('avg1', 'delta1', 'avg2', 'delta2')] = NA
+  #Merge the empty bins till there are no empty bins in any of the three: pw, mu1, mu2
+  cumCount = sapply(c(1:length(bins)), function (x) length(which(pw < bins[x]))) #cumulative count for each bin
+  nonEmptyBins = bins[!duplicated(cumCount)] #remove bins with cumulative count same as the previous bin i.e. remove empty bins
 
-  for (i in 1:nrow(combDataBinned)){
+  #Repeat the above two lines for mu1 and mu2
+  cumCount = sapply(c(1:length(nonEmptyBins)), function (x) length(which(mu1 < nonEmptyBins[x])))
+  nonEmptyBins = nonEmptyBins[!duplicated(cumCount)]
+  cumCount = sapply(c(1:length(nonEmptyBins)), function (x) length(which(mu2 < nonEmptyBins[x])))
+  nonEmptyBins = nonEmptyBins[!duplicated(cumCount)]
 
-    if( i == 1){
-      combDataBinned$avg1[i] = mean(result$agg[result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$delta1[i] = mean(result$delta[result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$avg2[i] = mean(result$agg[result$mu2 <= combDataBinned$bin[i]])
-      combDataBinned$delta2[i] = mean(result$delta[result$mu2 <= combDataBinned$bin[i]])
-    }else{
-
-      combDataBinned$avg1[i] = mean(result$agg[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$delta1[i] = mean(result$delta[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$avg2[i] = mean(result$agg[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
-      combDataBinned$delta2[i] = mean(result$delta[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
-    }
+  #Check if the last bin is equal to 'end'. If not, replace last bin value with 'end'
+  if (max(nonEmptyBins)<end){
+    nonEmptyBins[length(nonEmptyBins)] = end
   }
 
-  while(sum(is.na(combDataBinned)) != 0){
+  #Compute probability for each merged bin
+  totalCount = length(pw)
+  probVector = sapply(c(2:length(nonEmptyBins)), function (x) length(which(pw >= nonEmptyBins[x-1] & pw < nonEmptyBins[x]))/totalCount)
 
-    id = max(unique(which(is.na(combDataBinned), arr.ind=TRUE)[, 1]))
-    combDataBinned[is.na(combDataBinned)] = 0
-    combDataBinned[min(id)-1, 'prob'] = sum(combDataBinned[c(min(id-1), id), 'prob'])
-    combDataBinned[min(id)-1, c('avg1', 'delta1', 'avg2', 'delta2')] = apply(combDataBinned[c(min(id-1), id), c('avg1', 'delta1', 'avg2', 'delta2')], 2, mean)
+  #pointwise delta and average mu
+  delta = mu1 - mu2
+  delta[which(abs(delta)<band)] = 0
+  mu = 0.5*(mu1+mu2)
 
-  }
+  #bin wise average delta and mu
+  avgDelta1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+  avgMu1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+  avgDelta2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
+  avgMu2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
 
-  combDataBinned = combDataBinned[-id, ]
-  combDataBinned$avg = (combDataBinned$avg1 + combDataBinned$avg2) / 2
-  combDataBinned$delta = (combDataBinned$delta1 + combDataBinned$delta2) / 2
+  deltaBin = 0.5*(avgDelta1+avgDelta2)
+  muBin = 0.5*(avgMu1+avgMu2)
 
-  extrapolatedDelta = sum(combDataBinned$delta * combDataBinned$prob)
-  extrapolatedDeltaP = round((extrapolatedDelta / sum(combDataBinned$avg * combDataBinned$prob)) * 100, 2)
-  return(extrapolatedDeltaP)
+  scaledDiff = t(probVector)%*%deltaBin
+  percentScaledDiff = scaledDiff*100/(t(probVector)%*%muBin)
+
+  return(as.numeric(percentScaledDiff))
 }
 
 
 # Compute weighted metrics
-ComputeWMetric = function(dList, mu1, mu2, testdata, testCol){
+ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol){
 
   mixedData = rbind(dList[[1]], dList[[2]])
 
@@ -114,59 +112,56 @@ ComputeWMetric = function(dList, mu1, mu2, testdata, testCol){
 }
 
 # Compute weighted extrapolatiion
-ComputeWExtrapolation = function(data, yCol, mu1, mu2){
+ComputeScaledDiff = function(mergedData, yCol, mu1, mu2){
+  mergedData = rbind(datalist[[1]],datalist[[2]])
+  pw = mergedData[,yCol]
+  pw[pw < 0] = 0
+  binWidth = 100
 
-  # creating bins for combined original data
-  combData = do.call(rbind, data)
-  combData$bin = cut(combData[, yCol], breaks = seq(0, max(combData[, yCol])+100, 100), labels = FALSE)
-  combData$bin = 100 * combData$bin
+  #starting bin value
+  start = 0
 
-  # calculating probability in original data set
-  combDataBinned = combData[, c('bin'), drop = FALSE] %>%  dplyr::group_by(bin) %>% dplyr::summarise(count = length(bin))
-  combDataBinned$prob = (combDataBinned$count) / sum(combDataBinned$count)
+  #ending value based on max power rounded up to the closest multiple of the bin width.
+  #This formulation ensures that the last bin of the original data will never be empty.
+  end = max(pw) + (binWidth - (max(pw)%%binWidth))
+  bins = seq(start,end,binWidth)
 
-  # importing result and checking bins for each period
-  result = data.frame(cbind(mu1, mu2))
-  colnames(result) = c('mu1', 'mu2')
-  result$mu1[result$mu1 < 0] = 0.1
-  result$mu2[result$mu2 < 0] = 0.1
-  result$agg = (result$mu1 + result$mu2) / 2
-  result$delta = result$mu1 - result$mu2
-  combDataBinned[, c('avg1', 'delta1', 'avg2', 'delta2')] = NA
+  #Merge the empty bins till there are no empty bins in any of the three: pw, mu1, mu2
+  cumCount = sapply(c(1:length(bins)), function (x) length(which(pw < bins[x]))) #cumulative count for each bin
+  nonEmptyBins = bins[!duplicated(cumCount)] #remove bins with cumulative count same as the previous bin i.e. remove empty bins
 
-  for (i in 1:nrow(combDataBinned)){
+  #Repeat the above two lines for mu1 and mu2
+  cumCount = sapply(c(1:length(nonEmptyBins)), function (x) length(which(mu1 < nonEmptyBins[x])))
+  nonEmptyBins = nonEmptyBins[!duplicated(cumCount)]
+  cumCount = sapply(c(1:length(nonEmptyBins)), function (x) length(which(mu2 < nonEmptyBins[x])))
+  nonEmptyBins = nonEmptyBins[!duplicated(cumCount)]
 
-    if( i == 1){
-      combDataBinned$avg1[i] = mean(result$agg[result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$delta1[i] = mean(result$delta[result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$avg2[i] = mean(result$agg[result$mu2 <= combDataBinned$bin[i]])
-      combDataBinned$delta2[i] = mean(result$delta[result$mu2 <= combDataBinned$bin[i]])
-    }else{
-
-      combDataBinned$avg1[i] = mean(result$agg[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$delta1[i] = mean(result$delta[result$mu1 > combDataBinned$bin[i-1] & result$mu1 <= combDataBinned$bin[i]])
-      combDataBinned$avg2[i] = mean(result$agg[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
-      combDataBinned$delta2[i] = mean(result$delta[result$mu2 > combDataBinned$bin[i-1] & result$mu2 <= combDataBinned$bin[i]])
-    }
+  #Check if the last bin is equal to 'end'. If not, replace last bin value with 'end'
+  if (max(nonEmptyBins)<end){
+    nonEmptyBins[length(nonEmptyBins)] = end
   }
 
-  while(sum(is.na(combDataBinned)) != 0){
+  #Compute probability for each merged bin
+  totalCount = length(pw)
+  probVector = sapply(c(2:length(nonEmptyBins)), function (x) length(which(pw >= nonEmptyBins[x-1] & pw < nonEmptyBins[x]))/totalCount)
 
+  #pointwise delta and average mu
+  delta = mu1 - mu2
+  mu = 0.5*(mu1+mu2)
 
-    id = max(unique(which(is.na(combDataBinned), arr.ind=TRUE)[, 1]))
-    combDataBinned[is.na(combDataBinned)] = 0
-    combDataBinned[min(id)-1, 'prob'] = sum(combDataBinned[c(min(id-1), id), 'prob'])
-    combDataBinned[min(id)-1, c('avg1', 'delta1', 'avg2', 'delta2')] = apply(combDataBinned[c(min(id-1), id), c('avg1', 'delta1', 'avg2', 'delta2')], 2, mean)
+  #bin wise average delta and mu
+  avgDelta1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+  avgMu1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+  avgDelta2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
+  avgMu2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
 
-  }
+  deltaBin = 0.5*(avgDelta1+avgDelta2)
+  muBin = 0.5*(avgMu1+avgMu2)
 
-  combDataBinned = combDataBinned[-id, ]
-  combDataBinned$avg = (combDataBinned$avg1 + combDataBinned$avg2) / 2
-  combDataBinned$delta = (combDataBinned$delta1 + combDataBinned$delta2) / 2
+  scaledDiff = t(probVector)%*%deltaBin
+  percentScaledDiff = scaledDiff*100/(t(probVector)%*%muBin)
 
-  extrapolatedDelta = sum(combDataBinned$delta * combDataBinned$prob)
-  extrapolatedDeltaP = round((extrapolatedDelta / sum(combDataBinned$avg * combDataBinned$prob)) * 100, 2)
-  return(extrapolatedDeltaP)
+  return(as.numeric(percentScaledDiff))
 }
 
 # Compute reduction ratio

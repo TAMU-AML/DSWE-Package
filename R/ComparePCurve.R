@@ -137,17 +137,17 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory)
 
-  resultWSMetric = ComputeWSMetric(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
+  weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
 
-  resultWSExtrapolation = ComputeWSExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band)
+  scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band)
 
-  resultWMetric = ComputeWMetric(data, resultGP$mu1, resultGP$mu2, testSet, testCol)
+  weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol)
 
-  resultWExtrapolation = ComputeWExtrapolation(data, yCol, resultGP$mu1, resultGP$mu2)
+  scaledDiff = ComputeScaledDiff(data, yCol, resultGP$mu1, resultGP$mu2)
 
   reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
 
-  returnList = list(Diff = resultWMetric, scaledDiff = resultWExtrapolation, statDiff = resultWSMetric, scaledStatDiff = resultWSExtrapolation, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$mu2, mu1 = resultGP$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$estimatedParams)
+  returnList = list(weightedDiff = weightedDiff, scaledDiff = scaledDiff, weightedStatDiff = weightedStatDiff, scaledStatDiff = scaledStatDiff, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$mu2, mu1 = resultGP$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$estimatedParams)
 
   return(returnList)
 }
