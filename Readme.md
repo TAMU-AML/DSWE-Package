@@ -162,7 +162,7 @@ The function can be used to model the data by using user supplied arguments. It 
 ```R
 # Preparing the arguments
 data = read.csv('data1.csv')
-trainX = data(, c(1, 3))
+trainX = data[, c(1, 3)]
 trainY = data[, 4]
 testX = data[100:200, c(1, 3)]
 bw = 'dpi_gap'
