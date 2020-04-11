@@ -28,7 +28,7 @@ ComputeStatDiff = function(mu1, mu2, band){
 
   diffMu = sum(mu1 - mu2)
   diffMu[which(abs(diffMu)<band)] = 0
-  diff = sum(diffMu)/lenght(mu1)
+  diff = sum(diffMu)/length(mu1)
   avgMu = mean(mu1 + mu2)/2
   percentDiff = diff*100/avgMu
   return(percentDiff)
