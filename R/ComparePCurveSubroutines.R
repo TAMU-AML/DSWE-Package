@@ -24,7 +24,7 @@ ComputeDiff = function(mu1, mu2){
 }
 
 # Compute statistically significant unweigted difference between the functions
-ComputedStatDiff = function(mu1, mu2, band){
+ComputeStatDiff = function(mu1, mu2, band){
 
   diffMu = sum(mu1 - mu2)
   diffMu[which(abs(Diff)<band)] = 0
