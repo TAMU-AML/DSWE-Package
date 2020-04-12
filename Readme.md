@@ -157,7 +157,7 @@ The function can be used to model the data by using user supplied arguments. It 
 
 *Function :*
 
-*AMK(trainX, trainY, testX, bw = 'dpi-gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA )*
+*AMK(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA )*
 
 ```R
 # Preparing the arguments
