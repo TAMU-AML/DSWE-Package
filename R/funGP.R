@@ -77,7 +77,7 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
 
   diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory)
 
-  muDiff = diffCov$mu2 - diffCov$mu1
+  muDiff = diffCov$mu1 - diffCov$mu2
 
   diffCovMat = diffCov$diffCovMat
 
