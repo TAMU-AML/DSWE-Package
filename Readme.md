@@ -5,11 +5,12 @@
 - [Installation](#installation)
 - [Usage](#Usage)   
     1. [ComparePCurve](#ComparePCurve)  
-    2. [KnnPCFit](#knnPCFit)  
-    3. [KnnPredict](#KnnPredict)  
-    4. [KnnUpdate](#KnnUpdate)  
-    5. [AMK](#AMK)  
-    6. [CovMatch](#CovMatch)  
+    2. [funGP](#funGP)
+    3. [KnnPCFit](#knnPCFit)  
+    4. [KnnPredict](#KnnPredict)  
+    5. [KnnUpdate](#KnnUpdate)  
+    6. [AMK](#AMK)  
+    7. [CovMatch](#CovMatch)  
 - [Details](#details)
 
 # Introduction
@@ -18,6 +19,7 @@ This is an R-package implementing some of the data science methods for wind ener
 Power curve comparison:
 
 * ComparePCurve
+* funGP
 
 Predictive modelling functions:
 
@@ -60,6 +62,7 @@ The package can be accessed either by attaching the package or using the package
 library(DSWE)
 
 ComparePCurve()
+funGP()
 KnnFit()
 KnnPredict()
 KnnUpdate()
@@ -70,6 +73,7 @@ CovMatch()
 *Accesing functions without attaching package*
 ```R
 DSWE::ComparePCurve()
+DSWE::funGP()
 DSWE::KnnFit()
 DSWE::KnnPredict()
 DSWE::KnnUpdate()
@@ -103,7 +107,27 @@ limitMemory = TRUE
 function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, limitMemory)
 ```
 
-### 2. KnnPCFit
+### 2. funGP
+ The function can be used to perform function comparison using Gaussian process and hypothesis testing
+
+ *Function :*
+
+ *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE)*
+
+ ```R
+ # Preparing the arguments
+ datalist = matched_data$matchedData
+ xCol = c(1, 3)
+ yCol = 4
+ confLevel = 0.95
+ testset = read.csv('testset.csv')
+ limitMemory = TRUE
+
+ # Executing the function
+ function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory)
+ ```
+
+### 3. KnnPCFit
 The function can be used to model the data using user supplied arguments, a knn model is returned as an end result. It can also be used to get the best feature subset, if subsetSelection is set TRUE
 
 *Function :*
@@ -136,7 +160,7 @@ testData = data[1:100, ]
 prediction = KnnPredict(knnMdl, testData)
 ```
 
-### 4. KnnUpdate
+### 5. KnnUpdate
 The function can be used to update the knn model whenever new data in available
 
 *Function :*
@@ -152,7 +176,7 @@ newData = data[500:1000, ]
 knn_newmodel = KnnUpdate(knnMdl, newData)
 ```
 
-### 5. AMK
+### 6. AMK
 The function can be used to model the data by using user supplied arguments. It uses a kernel to assign weights to every training data points, the bandwidth of kernel (bw) can be provided as vector of values or character 'dpi' and 'dpi-gap'. If provided character input, the bandwidths are computed internally
 
 *Function :*
@@ -173,7 +197,7 @@ cirCov = NA
 AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
 ```
 
-### 6. CovMatch
+### 7. CovMatch
 The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
 
 *Function :*
