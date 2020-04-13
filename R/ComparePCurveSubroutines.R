@@ -28,6 +28,8 @@ ComputeStatDiff = function(mu1, mu2, band){
 
   diffMu = mu1 - mu2
   diffMu[which(abs(diffMu)<band)] = 0
+  diffMu[which(diffMu>0)] = diffMu[which(diffMu>0)] - band[which(diffMu>0)]
+  diffMu[which(diffMu<0)] = diffMu[which(diffMu<0)] + band[which(diffMu<0)]
   diff = sum(diffMu)/length(mu1)
   avgMu = mean(mu1 + mu2)/2
   percentDiff = diff*100/avgMu
@@ -71,6 +73,8 @@ ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol){
 
   funcDiff = mu1 - mu2
   funcDiff[abs(funcDiff) <= band] = 0
+  funcDiff[which(funcDiff>0)] = funcDiff[which(funcDiff>0)] - band[which(funcDiff>0)]
+  funcDiff[which(funcDiff<0)] = funcDiff[which(funcDiff<0)] + band[which(funcDiff<0)]
   resultP = round((sum((funcDiff) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100, 2)
   resultA = sum(((funcDiff)) * (probTest))
 
@@ -168,7 +172,9 @@ ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band){
 
   #pointwise delta and average mu
   delta = mu1 - mu2
-  delta[which(abs(delta)<band)] = 0
+  delta[which(abs(delta)<=band)] = 0
+  delta[which(delta>0)] = delta[which(delta>0)] - band[which(delta>0)]
+  delta[which(delta<0)] = delta[which(delta<0)] + band[which(delta<0)]
   mu = 0.5*(mu1+mu2)
 
   #bin wise average delta and mu
