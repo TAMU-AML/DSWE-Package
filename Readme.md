@@ -86,7 +86,7 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 *Function :*
 
-*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), limitMemory = TRUE)*
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, limitMemory = T)*
 
 ```R
 # Preparing the arguments
@@ -101,10 +101,11 @@ testSet = NULL
 thrs = 0.2
 confLevel = 0.95
 gridSize = c(50, 50)
+powerbins = 15
 limitMemory = TRUE
 
 # Executing the function
-function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, limitMemory)
+function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, limitMemory)
 ```
 
 ### 2. funGP

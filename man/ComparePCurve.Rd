@@ -14,27 +14,30 @@ ComparePCurve(
   thrs = 0.2,
   conflevel = 0.95,
   gridSize = c(50, 50),
+  powerbins = 15,
   limitMemory = T
 )
 }
 \arguments{
-\item{data}{a list of data sets to be compared}
+\item{data}{A list of data sets to be compared}
 
-\item{xCol}{a numeric or vector stating column number of covariates}
+\item{xCol}{A numeric or vector stating column number of covariates}
 
-\item{xCol.circ}{a numeric or vector stating column number of circular covariates}
+\item{xCol.circ}{A numeric or vector stating column number of circular covariates}
 
-\item{yCol}{A numeric value stating the column number of target}
+\item{yCol}{A numeric value stating the column number of the response}
 
-\item{testCol}{a numeric/vector stating column number of covariates to used in generating test set}
+\item{testCol}{A numeric/vector stating column number of covariates to used in generating test set}
 
-\item{testSet}{a matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables}
+\item{testSet}{A matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables}
 
-\item{thrs}{A single value or vector represnting threshold for each covariates}
+\item{thrs}{A numeric or vector representing threshold for each covariates}
 
-\item{conflevel}{a single value representing the statistical significance level for constructing the band}
+\item{conflevel}{A numeric between (0,1) representing the statistical significance level for constructing the band}
 
 \item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored}
+
+\item{powerbins}{A numeric stating the number of power bins for computing the scaled difference, default is 15.}
 
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference}
 }

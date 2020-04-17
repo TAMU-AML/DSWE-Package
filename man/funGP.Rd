@@ -22,13 +22,13 @@ funGP(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T)
 \value{
 a list containing :
  \itemize{
-  \item muDiff - The testset prediction for each of the data set
-  \item mu1 - The test prediction for first data set
-  \item mu2 - The test prediction for second data set
-  \item band - The allowed statistical difference between functions
-  \item confLevel - a single value representing the statistical significance level for constructing the band
-  \item testset - The test prediction for first data set
-  \item estimatedParams - The function parameter values
+  \item muDiff - A vector of pointwise difference between the predictions from the two datasets (mu1- mu2)
+  \item mu1 - A vector of test prediction for first data set
+  \item mu2 - A vector of test prediction for second data set
+  \item band - A vector of the allowed statistical difference between functions at testpoints in testset
+  \item confLevel - A numeric representing the statistical significance level for constructing the band
+  \item testset - A matrix of test points to compare the functions
+  \item estimatedParams - A list of estimated hyperparameters for GP
 }
 }
 \description{

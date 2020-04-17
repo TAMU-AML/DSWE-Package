@@ -83,11 +83,11 @@ ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol){
 }
 
 # Compute difference in the function scaled to the orginal data
-ComputeScaledDiff = function(datalist, yCol, mu1, mu2){
+ComputeScaledDiff = function(datalist, yCol, mu1, mu2, nbins){
   mergedData = rbind(datalist[[1]],datalist[[2]])
   pw = mergedData[,yCol]
   pw[pw < 0] = 0
-  binWidth = 100
+  binWidth = max(pw)/nbins
 
   #starting bin value
   start = 0
@@ -137,11 +137,11 @@ ComputeScaledDiff = function(datalist, yCol, mu1, mu2){
 
 
 # Compute statistically significant difference in the function scaled to the orginal data
-ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band){
+ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band, nbins){
   mergedData = rbind(datalist[[1]],datalist[[2]])
   pw = mergedData[,yCol]
   pw[pw < 0] = 0
-  binWidth = 100
+  binWidth = max(pw)/nbins
 
   #starting bin value
   start = 0

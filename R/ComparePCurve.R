@@ -1,14 +1,15 @@
 #' @title Power curve comparison
 #'
-#' @param data a list of data sets to be compared
-#' @param xCol a numeric or vector stating column number of covariates
-#' @param xCol.circ a numeric or vector stating column number of circular covariates
-#' @param yCol A numeric value stating the column number of target
-#' @param testCol a numeric/vector stating column number of covariates to used in generating test set
-#' @param testSet a matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables
-#' @param thrs A single value or vector represnting threshold for each covariates
-#' @param conflevel a single value representing the statistical significance level for constructing the band
+#' @param data A list of data sets to be compared
+#' @param xCol A numeric or vector stating column number of covariates
+#' @param xCol.circ A numeric or vector stating column number of circular covariates
+#' @param yCol A numeric value stating the column number of the response
+#' @param testCol A numeric/vector stating column number of covariates to used in generating test set
+#' @param testSet A matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables
+#' @param thrs A numeric or vector representing threshold for each covariates
+#' @param conflevel A numeric between (0,1) representing the statistical significance level for constructing the band
 #' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored
+#' @param powerbins A numeric stating the number of power bins for computing the scaled difference, default is 15.
 #' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference
 #'
 #' @return a list containing :
@@ -33,7 +34,7 @@
 #' @importFrom magrittr %>%
 #' @export
 
-ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), limitMemory = T ){
+ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, limitMemory = T ){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
@@ -143,9 +144,9 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
 
-  scaledDiff = ComputeScaledDiff(data, yCol, resultGP$mu1, resultGP$mu2)
+  scaledDiff = ComputeScaledDiff(data, yCol, resultGP$mu1, resultGP$mu2, powerbins)
 
-  scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band)
+  scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band, powerbins)
 
   unweightedDiff = ComputeDiff(resultGP$mu1, resultGP$mu2)
 
