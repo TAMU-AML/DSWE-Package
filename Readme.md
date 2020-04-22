@@ -197,6 +197,8 @@ cirCov = NA
 # Executing the function
 AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
 ```
+**Note :-** In case an error such as a non-finite bandwidth is generated upon adding a covariate, please remove such covariates
+
 
 ### 7. CovMatch
 The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
