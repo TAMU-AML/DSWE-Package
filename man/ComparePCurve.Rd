@@ -15,12 +15,12 @@ ComparePCurve(
   conflevel = 0.95,
   gridSize = c(50, 50),
   powerbins = 15,
-  baseline = 2,
+  baseline = 1,
   limitMemory = T
 )
 }
 \arguments{
-\item{data}{A list of data sets to be compared}
+\item{data}{A list of data sets to be compared, the difference in the mean function is always computed as (f(data2) - f(data1))}
 
 \item{xCol}{A numeric or vector stating column number of covariates}
 
@@ -40,7 +40,7 @@ ComparePCurve(
 
 \item{powerbins}{A numeric stating the number of power bins for computing the scaled difference, default is 15.}
 
-\item{baseline}{An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 2.}
+\item{baseline}{An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 1.}
 
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference}
 }
@@ -54,9 +54,9 @@ a list containing :
   \item unweightedDiff - a numeric,  \% difference between the functions unweighted
   \item unweightedStatDiff - a numeric,  \% statistically significant difference between the functions unweighted
   \item reductionRatio -  a list consisting of shrinkage ratio of features used in testSet
-  \item muDiff - a vector of the difference in prediction for each test point
   \item mu1 - a vector of prediction on testset using the first data set
   \item mu2 - a vector of prediction on testset using the second data set
+   \item muDiff - a vector of the difference in prediction (mu2 - mu1) for each test point
   \item band - a vector for the confidence band at all the testpoints for the two functions to be the same at a given cofidence level.
   \item confLevel - a numeric representing the statistical significance level for constructing the band
   \item testSet - a vector/matrix of the test points either provided by user, or generated internally

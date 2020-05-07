@@ -22,7 +22,7 @@ ComputeDiff = function(mu1, mu2, baseline){
   } else {
     avgMu = mean(mu1 + mu2)/2
   }
-  diff = mean(mu1 - mu2)
+  diff = mean(mu2 - mu1)
   percentDiff = round(diff*100/avgMu,2)
   return(percentDiff)
 
@@ -37,7 +37,7 @@ ComputeStatDiff = function(mu1, mu2, band, baseline){
   } else {
     avgMu = mean(mu1 + mu2)/2
   }
-  diffMu = mu1 - mu2
+  diffMu = mu2 - mu1
   diffMu[which(abs(diffMu)<band)] = 0
   diffMu[which(diffMu>0)] = diffMu[which(diffMu>0)] - band[which(diffMu>0)]
   diffMu[which(diffMu<0)] = diffMu[which(diffMu<0)] + band[which(diffMu<0)]
@@ -61,7 +61,7 @@ ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol, baseline){
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
-  diff = sum((mu1 - mu2) * (probTest))
+  diff = sum((mu2 - mu1) * (probTest))
   if (baseline == 1){
     avgMu = sum(mu1*probTest)
   } else if (baseline == 2){
@@ -88,7 +88,7 @@ ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol, bas
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
-  muDiff = mu1 - mu2
+  muDiff = mu2 - mu1
   muDiff[abs(muDiff) <= band] = 0
   muDiff[which(muDiff>0)] = muDiff[which(muDiff>0)] - band[which(muDiff>0)]
   muDiff[which(muDiff<0)] = muDiff[which(muDiff<0)] + band[which(muDiff<0)]
@@ -142,7 +142,7 @@ ComputeScaledDiff = function(datalist, yCol, mu1, mu2, nbins, baseline){
   probVector = sapply(c(2:length(nonEmptyBins)), function (x) length(which(pw >= nonEmptyBins[x-1] & pw < nonEmptyBins[x]))/totalCount)
 
   #pointwise delta
-  delta = mu1 - mu2
+  delta = mu2 - mu1
 
   #bin wise average delta and mu
   if (baseline == 1){
@@ -205,7 +205,7 @@ ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band, nbins, baseline
   probVector = sapply(c(2:length(nonEmptyBins)), function (x) length(which(pw >= nonEmptyBins[x-1] & pw < nonEmptyBins[x]))/totalCount)
 
   #pointwise delta
-  delta = mu1 - mu2
+  delta = mu2 - mu1
   delta[which(abs(delta)<=band)] = 0
   delta[which(delta>0)] = delta[which(delta>0)] - band[which(delta>0)]
   delta[which(delta<0)] = delta[which(delta<0)] + band[which(delta<0)]

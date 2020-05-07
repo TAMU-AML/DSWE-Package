@@ -102,7 +102,7 @@ thrs = 0.2
 confLevel = 0.95
 gridSize = c(50, 50)
 powerbins = 15
-baseline = 2
+baseline = 1
 limitMemory = TRUE
 
 # Executing the function
