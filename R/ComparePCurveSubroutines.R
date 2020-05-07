@@ -14,32 +14,42 @@ GenerateTestset = function(data, testCol, gridSize){
 }
 
 # Compute unweigted difference between the functions
-ComputeDiff = function(mu1, mu2){
-
-  diff = sum(mu1 - mu2)/length(mu1)
-  avgMu = mean(mu1 + mu2)/2
-  percentDiff = diff*100/avgMu
+ComputeDiff = function(mu1, mu2, baseline){
+  if (baseline == 1){
+    avgMu = mean(mu1)
+  } else if (baseline == 2){
+    avgMu = mean(mu2)
+  } else {
+    avgMu = mean(mu1 + mu2)/2
+  }
+  diff = mean(mu1 - mu2)
+  percentDiff = round(diff*100/avgMu,2)
   return(percentDiff)
 
 }
 
 # Compute statistically significant unweigted difference between the functions
-ComputeStatDiff = function(mu1, mu2, band){
-
+ComputeStatDiff = function(mu1, mu2, band, baseline){
+  if (baseline == 1){
+    avgMu = mean(mu1)
+  } else if (baseline == 2){
+    avgMu = mean(mu2)
+  } else {
+    avgMu = mean(mu1 + mu2)/2
+  }
   diffMu = mu1 - mu2
   diffMu[which(abs(diffMu)<band)] = 0
   diffMu[which(diffMu>0)] = diffMu[which(diffMu>0)] - band[which(diffMu>0)]
   diffMu[which(diffMu<0)] = diffMu[which(diffMu<0)] + band[which(diffMu<0)]
   diff = sum(diffMu)/length(mu1)
-  avgMu = mean(mu1 + mu2)/2
-  percentDiff = diff*100/avgMu
+  percentDiff = round(diff*100/avgMu,2)
   return(percentDiff)
 
 }
 
 
 # Compute weighted metrics
-ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol){
+ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol, baseline){
 
   mixedData = rbind(dList[[1]], dList[[2]])
 
@@ -51,15 +61,23 @@ ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol){
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
-  resultP = round((sum((mu1 - mu2) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100, 2)
-  resultA = sum(((mu1 - mu2)) * (probTest))
+  diff = sum((mu1 - mu2) * (probTest))
+  if (baseline == 1){
+    avgMu = sum(mu1*probTest)
+  } else if (baseline == 2){
+    avgMu = sum(mu2*probTest)
+  } else {
+    avgMu = sum((mu1 + mu2)* (probTest))/2
+  }
+  percentDiff = round(diff*100/avgMu,2)
 
-  return(resultP)
+
+  return(percentDiff)
 
 }
 
 # Compute statistical weighted metrics
-ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol){
+ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol, baseline){
 
   mixedData = rbind(dList[[1]], dList[[2]])
 
@@ -71,19 +89,30 @@ ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol){
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
-  funcDiff = mu1 - mu2
-  funcDiff[abs(funcDiff) <= band] = 0
-  funcDiff[which(funcDiff>0)] = funcDiff[which(funcDiff>0)] - band[which(funcDiff>0)]
-  funcDiff[which(funcDiff<0)] = funcDiff[which(funcDiff<0)] + band[which(funcDiff<0)]
-  resultP = round((sum((funcDiff) * (probTest)) / (sum((mu1 + mu2)* (probTest)) / 2)) * 100, 2)
-  resultA = sum(((funcDiff)) * (probTest))
+  muDiff = mu1 - mu2
+  muDiff[abs(muDiff) <= band] = 0
+  muDiff[which(muDiff>0)] = muDiff[which(muDiff>0)] - band[which(muDiff>0)]
+  muDiff[which(muDiff<0)] = muDiff[which(muDiff<0)] + band[which(muDiff<0)]
+
+  diff = sum(muDiff*probTest)
+  if (baseline == 1){
+    avgMu = sum(mu1*probTest)
+  } else if (baseline == 2){
+    avgMu = sum(mu2*probTest)
+  } else {
+    avgMu = sum((mu1 + mu2)* (probTest))/2
+  }
+  percentDiff = round(diff*100/avgMu,2)
+
+
+  return(percentDiff)
 
   return(resultP)
 
 }
 
 # Compute difference in the function scaled to the orginal data
-ComputeScaledDiff = function(datalist, yCol, mu1, mu2, nbins){
+ComputeScaledDiff = function(datalist, yCol, mu1, mu2, nbins, baseline){
   mergedData = rbind(datalist[[1]],datalist[[2]])
   pw = mergedData[,yCol]
   pw[pw < 0] = 0
@@ -116,18 +145,27 @@ ComputeScaledDiff = function(datalist, yCol, mu1, mu2, nbins){
   totalCount = length(pw)
   probVector = sapply(c(2:length(nonEmptyBins)), function (x) length(which(pw >= nonEmptyBins[x-1] & pw < nonEmptyBins[x]))/totalCount)
 
-  #pointwise delta and average mu
+  #pointwise delta
   delta = mu1 - mu2
-  mu = 0.5*(mu1+mu2)
 
   #bin wise average delta and mu
-  avgDelta1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
-  avgMu1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
-  avgDelta2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
-  avgMu2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
-
-  deltaBin = 0.5*(avgDelta1+avgDelta2)
-  muBin = 0.5*(avgMu1+avgMu2)
+  if (baseline == 1){
+    mu = mu1
+    deltaBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+    muBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+  } else if (baseline == 2){
+    mu = mu2
+    deltaBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
+    muBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
+  } else {
+    mu = 0.5*(mu1+mu2)
+    deltaRef1 = lapply(c(2:length(nonEmptyBins)), function (x) delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))])
+    deltaRef2 = lapply(c(2:length(nonEmptyBins)), function (x) delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))])
+    deltaBin = sapply(c(1:length(deltaRef1)), function(x) mean(c(deltaRef1[[x]],deltaRef2[[x]])))
+    muRef1 = lapply(c(2:length(nonEmptyBins)), function (x) mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))])
+    muRef2 = lapply(c(2:length(nonEmptyBins)), function (x) mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))])
+    muBin = sapply(c(1:length(muRef1)), function(x) mean(c(muRef1[[x]],muRef2[[x]])))
+  }
 
   scaledDiff = t(probVector)%*%deltaBin
   percentScaledDiff = scaledDiff*100/(t(probVector)%*%muBin)
@@ -137,7 +175,7 @@ ComputeScaledDiff = function(datalist, yCol, mu1, mu2, nbins){
 
 
 # Compute statistically significant difference in the function scaled to the orginal data
-ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band, nbins){
+ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band, nbins, baseline){
   mergedData = rbind(datalist[[1]],datalist[[2]])
   pw = mergedData[,yCol]
   pw[pw < 0] = 0
@@ -170,21 +208,30 @@ ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band, nbins){
   totalCount = length(pw)
   probVector = sapply(c(2:length(nonEmptyBins)), function (x) length(which(pw >= nonEmptyBins[x-1] & pw < nonEmptyBins[x]))/totalCount)
 
-  #pointwise delta and average mu
+  #pointwise delta
   delta = mu1 - mu2
   delta[which(abs(delta)<=band)] = 0
   delta[which(delta>0)] = delta[which(delta>0)] - band[which(delta>0)]
   delta[which(delta<0)] = delta[which(delta<0)] + band[which(delta<0)]
-  mu = 0.5*(mu1+mu2)
 
   #bin wise average delta and mu
-  avgDelta1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
-  avgMu1 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
-  avgDelta2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
-  avgMu2 = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
-
-  deltaBin = 0.5*(avgDelta1+avgDelta2)
-  muBin = 0.5*(avgMu1+avgMu2)
+  if (baseline == 1){
+    mu = mu1
+    deltaBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+    muBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))]))
+  } else if (baseline == 2){
+    mu = mu2
+    deltaBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
+    muBin = sapply(c(2:length(nonEmptyBins)), function (x) mean(mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))]))
+  } else {
+    mu = 0.5*(mu1+mu2)
+    deltaRef1 = lapply(c(2:length(nonEmptyBins)), function (x) delta[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))])
+    deltaRef2 = lapply(c(2:length(nonEmptyBins)), function (x) delta[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))])
+    deltaBin = sapply(c(1:length(deltaRef1)), function(x) mean(c(deltaRef1[[x]],deltaRef2[[x]])))
+    muRef1 = lapply(c(2:length(nonEmptyBins)), function (x) mu[(which(mu1 >= nonEmptyBins[x-1] & mu1 < nonEmptyBins[x]))])
+    muRef2 = lapply(c(2:length(nonEmptyBins)), function (x) mu[(which(mu2 >= nonEmptyBins[x-1] & mu2 < nonEmptyBins[x]))])
+    muBin = sapply(c(1:length(muRef1)), function(x) mean(c(muRef1[[x]],muRef2[[x]])))
+  }
 
   scaledDiff = t(probVector)%*%deltaBin
   percentScaledDiff = scaledDiff*100/(t(probVector)%*%muBin)

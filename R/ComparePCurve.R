@@ -10,6 +10,7 @@
 #' @param conflevel A numeric between (0,1) representing the statistical significance level for constructing the band
 #' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored
 #' @param powerbins A numeric stating the number of power bins for computing the scaled difference, default is 15.
+#' @param baseline An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 2.
 #' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference
 #'
 #' @return a list containing :
@@ -34,7 +35,7 @@
 #' @importFrom magrittr %>%
 #' @export
 
-ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, limitMemory = T ){
+ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 2, limitMemory = T ){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
@@ -109,6 +110,10 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     }
   }
 
+  if ((baseline %in% c(0:2)) == FALSE){
+    stop('baseline must be an integer between 0 to 2')
+  }
+
   resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
 
   if(is.null(testSet)){
@@ -140,19 +145,19 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
   resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory)
 
-  weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol)
+  weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol, baseline)
 
-  weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol)
+  weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol, baseline)
 
-  scaledDiff = ComputeScaledDiff(data, yCol, resultGP$mu1, resultGP$mu2, powerbins)
+  scaledDiff = ComputeScaledDiff(data, yCol, resultGP$mu1, resultGP$mu2, powerbins, baseline)
 
-  scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band, powerbins)
+  scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band, powerbins, baseline)
 
-  unweightedDiff = ComputeDiff(resultGP$mu1, resultGP$mu2)
+  unweightedDiff = ComputeDiff(resultGP$mu1, resultGP$mu2, baseline)
 
-  unweightedStatDiff = ComputeStatDiff(resultGP$mu1, resultGP$mu2, resultGP$band)
+  unweightedStatDiff = ComputeStatDiff(resultGP$mu1, resultGP$mu2, resultGP$band, baseline)
 
-  reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
+  reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol, baseline)
 
   returnList = list(weightedDiff = weightedDiff, weightedStatDiff = weightedStatDiff, scaledDiff = scaledDiff, scaledStatDiff = scaledStatDiff, unweightedDiff = unweightedDiff, unweightedStatDiff = unweightedStatDiff, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$mu2, mu1 = resultGP$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$estimatedParams)
 
