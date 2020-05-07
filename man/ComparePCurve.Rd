@@ -15,6 +15,7 @@ ComparePCurve(
   conflevel = 0.95,
   gridSize = c(50, 50),
   powerbins = 15,
+  baseline = 2,
   limitMemory = T
 )
 }
@@ -38,6 +39,8 @@ ComparePCurve(
 \item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored}
 
 \item{powerbins}{A numeric stating the number of power bins for computing the scaled difference, default is 15.}
+
+\item{baseline}{An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 2.}
 
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference}
 }
