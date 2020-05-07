@@ -71,7 +71,6 @@ ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol, baseline){
   }
   percentDiff = round(diff*100/avgMu,2)
 
-
   return(percentDiff)
 
 }
@@ -104,10 +103,7 @@ ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol, bas
   }
   percentDiff = round(diff*100/avgMu,2)
 
-
   return(percentDiff)
-
-  return(resultP)
 
 }
 
@@ -170,7 +166,7 @@ ComputeScaledDiff = function(datalist, yCol, mu1, mu2, nbins, baseline){
   scaledDiff = t(probVector)%*%deltaBin
   percentScaledDiff = scaledDiff*100/(t(probVector)%*%muBin)
 
-  return(as.numeric(percentScaledDiff))
+  return(round(as.numeric(percentScaledDiff),2))
 }
 
 
@@ -235,8 +231,8 @@ ComputeScaledStatDiff = function(datalist, yCol, mu1, mu2, band, nbins, baseline
 
   scaledDiff = t(probVector)%*%deltaBin
   percentScaledDiff = scaledDiff*100/(t(probVector)%*%muBin)
-
-  return(as.numeric(percentScaledDiff))
+  
+  return(round(as.numeric(percentScaledDiff),2))
 }
 
 
