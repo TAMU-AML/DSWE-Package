@@ -61,7 +61,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
     }
   } else {
     nonFixedCov = setdiff(c(1:nCov),fixedCov)
-    covCombination = combn(nonFixedCov, (nMultiCov - length(fixedCov)))
+    covCombination = utils::combn(nonFixedCov, (nMultiCov - length(fixedCov)))
     weights = matrix(1,nrow(trainX),ncol(covCombination))/nrow(trainX)
     for (i in 1:ncol(covCombination)){
       kernel = rep(1,nrow(trainX))

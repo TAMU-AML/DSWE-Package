@@ -1,12 +1,13 @@
+
 # Generates test set
 GenerateTestset = function(data, testCol, gridSize){
 
-  Var1Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[1]], c(0.025,0.975))[1])))
-  Var1Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[1]], c(0.025,0.975))[2])))
+  Var1Min = max(unlist(lapply(c(1:length(data)), function(x) stats::quantile(data[[x]][, testCol[1]], c(0.025,0.975))[1])))
+  Var1Max = min(unlist(lapply(c(1:length(data)), function(x) stats::quantile(data[[x]][, testCol[1]], c(0.025,0.975))[2])))
   Var1Range = seq(Var1Min, Var1Max, length.out = gridSize[1] )
 
-  Var2Min = max(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[2]], c(0.025,0.975))[1])))
-  Var2Max = min(unlist(lapply(c(1:length(data)), function(x) quantile(data[[x]][, testCol[2]], c(0.025,0.975))[2])))
+  Var2Min = max(unlist(lapply(c(1:length(data)), function(x) stats::quantile(data[[x]][, testCol[2]], c(0.025,0.975))[1])))
+  Var2Max = min(unlist(lapply(c(1:length(data)), function(x) stats::quantile(data[[x]][, testCol[2]], c(0.025,0.975))[2])))
   Var2Range = seq(Var2Min, Var2Max, length.out = gridSize[2] )
 
   return(expand.grid(Var1Range, Var2Range))
@@ -53,11 +54,11 @@ ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol, baseline){
 
   mixedData = rbind(dList[[1]], dList[[2]])
 
-  var1Density = density(mixedData[, testCol[1]])
-  var1Test = approx(var1Density$x, var1Density$y, xout = testdata[, 1])
+  var1Density = stats::density(mixedData[, testCol[1]])
+  var1Test = stats::approx(var1Density$x, var1Density$y, xout = testdata[, 1])
 
-  var2Density = density(mixedData[, testCol[2]])
-  var2Test = approx(var2Density$x, var2Density$y, xout = testdata[, 2])
+  var2Density = stats::density(mixedData[, testCol[2]])
+  var2Test = stats::approx(var2Density$x, var2Density$y, xout = testdata[, 2])
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 
@@ -80,11 +81,11 @@ ComputeWeightedStatDiff = function(dList, mu1, mu2, band, testdata, testCol, bas
 
   mixedData = rbind(dList[[1]], dList[[2]])
 
-  var1Density = density(mixedData[, testCol[1]])
-  var1Test = approx(var1Density$x, var1Density$y, xout = testdata[, 1])
+  var1Density = stats::density(mixedData[, testCol[1]])
+  var1Test = stats::approx(var1Density$x, var1Density$y, xout = testdata[, 1])
 
-  var2Density = density(mixedData[, testCol[2]])
-  var2Test = approx(var2Density$x, var2Density$y, xout = testdata[, 2])
+  var2Density = stats::density(mixedData[, testCol[2]])
+  var2Test = stats::approx(var2Density$x, var2Density$y, xout = testdata[, 2])
 
   probTest = var1Test$y * var2Test$y / (sum(var1Test$y * var2Test$y))
 

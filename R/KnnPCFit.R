@@ -15,7 +15,7 @@
 #'   \item MAE - The MAE calculated using the function for provided data using user defined features and best obtained K
 #'}
 #' @export
-#' @import FNN
+#' @importFrom FNN knn.reg knnx.index
 KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
 
   if(!is.matrix(data) & !is.data.frame(data)){

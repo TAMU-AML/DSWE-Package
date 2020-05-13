@@ -10,8 +10,8 @@
 #'
 #' @return a vector or numeric predictions on user provided test data
 #'
-#' @import KernSmooth
-#' @import mixtools
+#' @importFrom KernSmooth dpill
+#' @importFrom mixtools normalmixEM
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
 

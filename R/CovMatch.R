@@ -17,7 +17,7 @@
 #'   \item MinMaxMatched - The minimum and maximum value in matched data for each covariates used in matching
 #'}
 #' @export
-#' @import foreach
+#' @importFrom foreach %do%
 
 CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
 

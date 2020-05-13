@@ -1,4 +1,4 @@
-###
+
 estimateParameters= function(datalist, covCols, yCol){
   maxDataSample = 500
   for (i in 1:length(datalist)){
@@ -11,17 +11,17 @@ estimateParameters= function(datalist, covCols, yCol){
   nCov = length(covCols)
   theta = rep(0,nCov)
   for (i in 1:length(theta)){
-    theta[i] = mean(unlist(lapply(datalist, function(x) sd(x[,covCols[i]]))))
+    theta[i] = mean(unlist(lapply(datalist, function(x) stats::sd(x[,covCols[i]]))))
   }
   beta = mean(unlist(lapply(datalist, function(x) mean(x[,yCol]))))
-  sigma_f = mean(unlist(lapply(datalist, function(x) sd(x[,yCol])/sqrt(2))))
-  sigma_n = mean(unlist(lapply(datalist, function(x) sd(x[,yCol])/sqrt(2))))
+  sigma_f = mean(unlist(lapply(datalist, function(x) stats::sd(x[,yCol])/sqrt(2))))
+  sigma_n = mean(unlist(lapply(datalist, function(x) stats::sd(x[,yCol])/sqrt(2))))
   parInit = c(theta,sigma_f,sigma_n,beta)
   objFun = function(par){computeloglikSum(datalist,covCols,yCol,
                                           params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
   objGrad = function(par){computeloglikGradSum(datalist,covCols,yCol,
                                                params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
-  optimResult = optim(par = parInit, fn = objFun, gr = objGrad, method = 'BFGS', control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
+  optimResult = stats::optim(par = parInit, fn = objFun, gr = objGrad, method = 'BFGS', control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
   estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
   objVal = optimResult$value
   return(list(estimatedParams = estimatedParams,objVal = objVal))
@@ -97,13 +97,13 @@ computeConfBand = function(diffCovMat, confLevel){
   lastEigIdx = min(which(eigvals < 1e-08 ))
   lambda = diag(eigvals[1:lastEigIdx])
   eigVec = eigDecomp$vectors[,1:lastEigIdx]
-  radius = sqrt(qchisq(confLevel,lastEigIdx))
+  radius = sqrt(stats::qchisq(confLevel,lastEigIdx))
   nSamples = 1000
   Z = matrix(0,nrow = nSamples, ncol = lastEigIdx)
   n = 1
   set.seed(1)
   while (n <= nSamples){
-    zSample = rnorm(lastEigIdx)
+    zSample = stats::rnorm(lastEigIdx)
     if (sqrt(sum(zSample^2))<=radius){
       Z[n,] = zSample
       n = n+1
