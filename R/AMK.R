@@ -8,8 +8,8 @@
 #' @param fixedCov a vector or numeric specifying the fixed covariates column number, default value is NA
 #' @param cirCov a vector or numeric specifying the circular covariates column number, default value is NA
 #'
-#'' @return a vector or numeric predictions on user provided test data
-#'}
+#' @return a vector or numeric predictions on user provided test data
+#'
 #' @import KernSmooth
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){

@@ -20,47 +20,80 @@ ComputeVonMisesKernel = function(D,D0, nu){
 calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov){
   nCov = ncol(trainX)
   if (nMultiCov == "all"){
-    weights = matrix(NA,nrow(trainX),1)
+    weights = matrix(1,nrow(trainX),1)
     kernel = rep(1,nrow(trainX))
     for (i in 1:nCov){
       if (i %in% cirCov){
-        kernel = kernel * ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel = ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        if (sum(covKernel) != 0){
+          kernel = kernel * covKernel
+        }
+        
       } else {
-        kernel = kernel * ComputeGaussianKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel = ComputeGaussianKernel(trainX[,i],testpoint[i],bandwidth[i])
+        if (sum(covKernel) != 0){
+          kernel = kernel * covKernel
+        }
       }
     }
-    weights[,1] = kernel/sum(kernel)
+    if (sum(kernel) != 0){
+      weights[,1] = kernel/sum(kernel)  
+    }
   } else if (nMultiCov == "none"){
-    weights = matrix(NA,nrow(trainX),nCov)
+    weights = matrix(1,nrow(trainX),nCov)
+    kernel = rep(1,nrow(trainX))
     for (i in 1:nCov){
       if (i %in% cirCov){
-        kernel = ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel = ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        if (sum(covKernel) != 0){
+          kernel = kernel * covKernel
+        }
+        
       } else {
-        kernel = ComputeGaussianKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel = ComputeGaussianKernel(trainX[,i],testpoint[i],bandwidth[i])
+        if (sum(covKernel) != 0){
+          kernel = kernel * covKernel
+        }
       }
-      weights[,i] = kernel/sum(kernel)
+      if (sum(kernel) != 0){
+        weights[,i] = kernel/sum(kernel)   
+      }
     }
   } else {
     nonFixedCov = setdiff(c(1:nCov),fixedCov)
     covCombination = combn(nonFixedCov, (nMultiCov - length(fixedCov)))
-    weights = matrix(NA,nrow(trainX),ncol(covCombination))
+    weights = matrix(1,nrow(trainX),ncol(covCombination))
     for (i in 1:ncol(covCombination)){
       kernel = rep(1,nrow(trainX))
       for (f in fixedCov){
         if (f %in% cirCov){
-          kernel = kernel * ComputeVonMisesKernel(trainX[,f],testpoint[f],bandwidth[f])
+          covKernel = ComputeVonMisesKernel(trainX[,f],testpoint[f],bandwidth[f])
+          if (sum(covKernel) != 0){
+            kernel = kernel * covKernel
+          }
         } else {
-          kernel = kernel * ComputeGaussianKernel(trainX[,f],testpoint[f],bandwidth[f])
+          covKernel = ComputeGaussianKernel(trainX[,f],testpoint[f],bandwidth[f])
+          if (sum(covKernel) != 0){
+            kernel = kernel * covKernel
+          }
         }
       }
       for (j in covCombination[,i]){
         if (j %in% cirCov){
-          kernel = kernel * ComputeVonMisesKernel(trainX[,j],testpoint[j],bandwidth[j])
+          covKernel = ComputeVonMisesKernel(trainX[,j],testpoint[j],bandwidth[j])
+          if (sum(covKernel) != 0){
+            kernel = kernel * covKernel
+          }
         } else {
-          kernel = kernel * ComputeGaussianKernel(trainX[,j],testpoint[j],bandwidth[j])
+          covKernel = ComputeGaussianKernel(trainX[,j],testpoint[j],bandwidth[j])
+          if (sum(covKernel) != 0){
+            kernel = kernel * covKernel
+          }
         }
       }
-      weights[,i] = kernel/sum(kernel)
+      if (sum(kernel) != 0){
+        weights[,i] = kernel/sum(kernel) 
+      }
     }
   }
   return(weights)
