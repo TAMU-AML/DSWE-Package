@@ -21,4 +21,6 @@ Imports:
     RcppArmadillo (>= 0.9.870.2.0),
     matrixStats (>= 0.55.0),
     FNN (>= 1.1.3),
-    KernSmooth (>= 2.23-17)
+    KernSmooth (>= 2.23-17),
+    mixtools (>= 1.1.0)
+    
