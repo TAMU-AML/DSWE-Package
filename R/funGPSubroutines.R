@@ -45,154 +45,36 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory)
 
   X1 = as.matrix(datalist[[1]][,covCols])
   y1 = as.numeric(datalist[[1]][,yCol])
-  KX1X1 = (sigma_f^2)*computeCorrelMat(X1,X1,theta)
-  diag(KX1X1) = diag(KX1X1) + (sigma_n^2)
-  upperCholKX1X1 = chol(KX1X1)
-  rm(KX1X1)
-  gc()
-  KXTX1 = (sigma_f^2)*computeCorrelMat(testset,X1,theta)
-  mu1 = beta + (KXTX1%*%backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),y1-beta)))
-  ls24 = backsolve(upperCholKX1X1,forwardsolve(t(upperCholKX1X1),t(KXTX1)))
-  K1 =KXTX1%*%ls24
-  rm(KXTX1,upperCholKX1X1)
-  gc()
 
   X2 = as.matrix(datalist[[2]][,covCols])
   y2 = as.numeric(datalist[[2]][,yCol])
-  KX2X2 = (sigma_f^2)*computeCorrelMat(X2,X2,theta)
-  diag(KX2X2) = diag(KX2X2) + (sigma_n^2)
-  upperCholKX2X2 = chol(KX2X2)
-  rm(KX2X2)
-  gc()
-  KXTX2 = (sigma_f^2)*computeCorrelMat(testset,X2,theta)
-  mu2 = beta + (KXTX2%*%backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),y2-beta)))
-
-
-  ls1 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),t(KXTX2)))
-  K2 = KXTX2%*%ls1
-  rm(ls1)
-  gc()
-
-  KX2X1 = (sigma_f^2)*computeCorrelMat(X2,X1,theta)
-  ls3 = backsolve(upperCholKX2X2,forwardsolve(t(upperCholKX2X2),KX2X1))
-  rm(upperCholKX2X2,KX2X1)
-  gc()
-
-  K21 =KXTX2%*%ls3%*%ls24
-  rm(KXTX2,ls3,ls24)
-  gc()
-  diffCovMat =  K2 + K1 - (2*K21)
-  rm(K1,K2,K21)
-  gc()
-  diffCovMat = (diffCovMat + t(diffCovMat))/2
-
-  returnList = list(diffCovMat = diffCovMat, mu2 = mu2, mu1 = mu1)
+  
+  testset = as.matrix(testset)
+  
+  returnList = computeDiffCov_(X1, y1, X2, y2, testset, theta, sigma_f, sigma_n, beta)
+  
   return(returnList)
 }
 
 ###
 computeConfBand = function(diffCovMat, confLevel){
-  eigDecomp = eigen(diffCovMat, symmetric = T)
-  eigvals = eigDecomp$values
-  lastEigIdx = min(which(eigvals < 1e-08 ))
-  lambda = diag(eigvals[1:lastEigIdx])
-  eigVec = eigDecomp$vectors[,1:lastEigIdx]
-  radius = sqrt(stats::qchisq(confLevel,lastEigIdx))
-  nSamples = 1000
-  Z = matrix(0,nrow = nSamples, ncol = lastEigIdx)
-  n = 1
   set.seed(1)
-  while (n <= nSamples){
-    zSample = stats::rnorm(lastEigIdx)
-    if (sqrt(sum(zSample^2))<=radius){
-      Z[n,] = zSample
-      n = n+1
-    }
-  }
-  G = eigVec%*%sqrt(lambda)%*%t(Z)
-  band = cbind(apply(G,1,max),apply(G,1,min))
-  band = abs(band)
-  band = apply(band,1,max)
-  return(band)
+  band = computeConfBand_(diffCovMat, confLevel)
+  return(as.numeric(band))
+
 }
 
 ###
 computeloglikSum = function(datalist,covCols,yCol,params){
-  logliksum = sum(unlist(lapply(datalist, function(X) computeloglik(as.matrix(X[,covCols]),as.numeric(X[,yCol]),params))))
+  logliksum = sum(unlist(lapply(datalist, function(X) computeLogLikGP_(as.matrix(X[,covCols]),as.numeric(X[,yCol]),params))))
   return(logliksum)
 }
 
 
 ###
-computeloglik = function(x,y,params){
-  theta = params$theta
-  sigma_f = params$sigma_f
-  sigma_n = params$sigma_n
-  beta = params$beta
-  correlMat = computeCorrelMat(x,x,theta)
-  covMat = (sigma_f^2)*correlMat
-  diag(covMat) = diag(covMat) + (sigma_n^2)
-  upperCholMat = chol(covMat)
-  rm(covMat)
-  gc()
-  loglik = ((1/2)*t(y-beta)%*%backsolve(upperCholMat,forwardsolve(t(upperCholMat),y-beta))) + (sum(log(abs(diag(upperCholMat))))) + (nrow(upperCholMat)*log(2*pi)/2)
-  rm(upperCholMat)
-  gc()
-  return(as.numeric(loglik))
-}
-
-###
 computeloglikGradSum = function(datalist,covCols,yCol,params){
 
-  loglikGradSum = Reduce("+",lapply(datalist, function(X) computeloglikGradient(as.matrix(X[,covCols]),as.numeric(X[,yCol]),params)))
+  loglikGradSum = Reduce("+",lapply(datalist, function(X) computeLogLikGradGP_(as.matrix(X[,covCols]),as.numeric(X[,yCol]),params)))
   return(loglikGradSum)
-}
-
-###
-computeloglikGradient = function(x,y,params){
-  theta = params$theta
-  sigma_f = params$sigma_f
-  sigma_n = params$sigma_n
-  beta = params$beta
-  correlMat = computeCorrelMat(x,x,theta)
-  covMat = (sigma_f^2)*correlMat
-  diag(covMat) = diag(covMat) + (sigma_n^2)
-  upperCholMat = chol(covMat)
-
-  gradVal = rep(0,length(theta)+3)
-
-  alpha = backsolve(upperCholMat,forwardsolve(t(upperCholMat),y-beta))
-
-  for (i in 1:length(theta)){
-    delThetaMat = ((sigma_f^2)*(outer(x[,i],x[,i],"-")^2)/(theta[i]^3))*correlMat
-    gradVal[i] = -0.5*sum(diag((alpha%*%t(alpha)%*%delThetaMat)-(backsolve(upperCholMat,forwardsolve(t(upperCholMat),delThetaMat)))))
-  }
-  rm(delThetaMat)
-  gc()
-  delSigma_fMat = 2*sigma_f*correlMat
-  gradVal[length(theta)+1] = -0.5*sum(diag((alpha%*%t(alpha)%*%delSigma_fMat)-(backsolve(upperCholMat,forwardsolve(t(upperCholMat),delSigma_fMat)))))
-  rm(delSigma_fMat)
-  gc()
-  gradVal[length(theta)+2] = -0.5*sum(diag((alpha%*%t(alpha)%*%(2*sigma_n*diag(nrow(upperCholMat))))-
-                                             (backsolve(upperCholMat,forwardsolve(t(upperCholMat),(2*sigma_n*diag(nrow(upperCholMat))))))))
-  oneVec = rep(1,nrow(upperCholMat))
-  solOneVec =  backsolve(upperCholMat,forwardsolve(t(upperCholMat),oneVec))
-  rm(upperCholMat)
-  gc()
-  gradVal[length(theta)+3] = 0.5*((2*beta*(t(oneVec)%*%solOneVec))-(t(y)%*%solOneVec)-(t(oneVec)%*%(alpha+(beta*solOneVec))))
-  return(gradVal)
-
-}
-
-###
-computeCorrelMat = function(x1,x2,theta){
-
-    correlMat = matrix(0,nrow = nrow(x1),ncol = nrow(x2))
-    for (i in 1:length(theta)){
-      correlMat = correlMat + ((outer(x1[,i],x2[,i],"-")/theta[i])^2)
-    }
-    correlMat = exp(-0.5*correlMat)
-
-  return(correlMat)
 }
 

@@ -5,3 +5,19 @@ matchcov <- function(ref, obj, thres, circ_pos, flag) {
     .Call('_DSWE_matchcov', PACKAGE = 'DSWE', ref, obj, thres, circ_pos, flag)
 }
 
+computeLogLikGP_ <- function(X, y, params) {
+    .Call('_DSWE_computeLogLikGP_', PACKAGE = 'DSWE', X, y, params)
+}
+
+computeLogLikGradGP_ <- function(X, y, params) {
+    .Call('_DSWE_computeLogLikGradGP_', PACKAGE = 'DSWE', X, y, params)
+}
+
+computeDiffCov_ <- function(X1, y1, X2, y2, XT, theta, sigma_f, sigma_n, beta) {
+    .Call('_DSWE_computeDiffCov_', PACKAGE = 'DSWE', X1, y1, X2, y2, XT, theta, sigma_f, sigma_n, beta)
+}
+
+computeConfBand_ <- function(diffCovMat, confLevel) {
+    .Call('_DSWE_computeConfBand_', PACKAGE = 'DSWE', diffCovMat, confLevel)
+}
+

@@ -79,9 +79,7 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
 
   muDiff = diffCov$mu2 - diffCov$mu1
 
-  diffCovMat = diffCov$diffCovMat
-
-  band = computeConfBand(diffCovMat, confLevel)
+  band = computeConfBand(diffCov$diffCovMat, confLevel)
 
   returnList = list(muDiff = muDiff,mu2 = diffCov$mu2, mu1= diffCov$mu1,band = band, confLevel = confLevel, testset = testset, estimatedParams = params)
 
