@@ -31,8 +31,6 @@
 #'   \item estimatedParams - a list of estimated hyperaparameters for the Gaussian process model
 #' }
 #'
-#' @import dplyr
-#' @importFrom magrittr %>%
 #' @export
 
 ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T ){
