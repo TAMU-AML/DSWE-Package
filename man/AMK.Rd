@@ -25,7 +25,12 @@ AMK(
 
 \item{nMultiCov}{a numerical value specifying the number of covariates in multiplicative term}
 
-\item{fixedCov}{a vector or numeric specifying the fixed covariates column number, default value is NA}
+\item{fixedCov}{a vector or numeric specifying the fixed covariates column number, default value is c(1,2)}
+
+\item{cirCov}{a vector or numeric specifying the circular covariates column number, default value is NA}
+}
+\value{
+a vector or numeric predictions on user provided test data
 }
 \description{
 Additive Multiplicative Kernel Regression

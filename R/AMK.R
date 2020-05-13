@@ -5,7 +5,7 @@
 #' @param testX a matrix or dataframe, to be used in computing the predictions
 #' @param bw a vector or character input. If character, the input should be 'dpi' or 'dpi_gap'
 #' @param nMultiCov a numerical value specifying the number of covariates in multiplicative term
-#' @param fixedCov a vector or numeric specifying the fixed covariates column number, default value is NA
+#' @param fixedCov a vector or numeric specifying the fixed covariates column number, default value is c(1,2)
 #' @param cirCov a vector or numeric specifying the circular covariates column number, default value is NA
 #'
 #' @return a vector or numeric predictions on user provided test data
