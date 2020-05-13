@@ -1,5 +1,6 @@
 #' @importFrom  matrixStats colMins colMaxs colSds
 #' @useDynLib DSWE
+#' @importFrom Rcpp sourceCpp
 
 CovMatch.Mult = function(dname, cov, wgt, cov.circ){
 

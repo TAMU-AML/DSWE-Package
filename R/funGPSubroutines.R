@@ -1,4 +1,6 @@
-
+#' @useDynLib DSWE
+#' @importFrom Rcpp sourceCpp
+#' 
 estimateParameters= function(datalist, covCols, yCol){
   maxDataSample = 500
   for (i in 1:length(datalist)){
