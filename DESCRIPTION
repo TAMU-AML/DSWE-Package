@@ -15,10 +15,12 @@ RoxygenNote: 7.1.0
 LinkingTo: 
     Rcpp (>= 1.0.4.6) ,
     RcppArmadillo (>= 0.9.870.2.0)
-Imports: 
-    foreach (>= 1.5.0),
-    matrixStats (>= 0.55.0),
-    FNN (>= 1.1.3),
-    KernSmooth (>= 2.23-16),
-    mixtools (>= 1.1.0) ,
-    Rcpp (>= 1.0.4.6)
+Imports:
+    Rcpp (>= 1.0.4.6) ,
+    foreach (>= 1.5.0) ,
+    matrixStats (>= 0.55.0) ,
+    FNN (>= 1.1.3) ,
+    KernSmooth (>= 2.23-16) ,
+    mixtools (>= 1.1.0) 
+
+
