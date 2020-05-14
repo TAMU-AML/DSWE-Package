@@ -17,7 +17,6 @@
 #'   \item MinMaxMatched - The minimum and maximum value in matched data for each covariates used in matching
 #'}
 #' @export
-#' @import foreach
 
 CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
 
@@ -96,12 +95,10 @@ CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
   filelist_ = list(dname1_, dname2_)
 
   # sequential computation
-  `%do%` = foreach::`%do%`
   matcheddata_ = rep(list(), 2)
-  foreach::foreach(i = 1:2) %do% {
+  for(i in 1:2){
 
     matcheddata_[[i]] = CovMatch.Mult(filelist_[[i]], xCol, thrs, xCol.circ)
-
   }
 
   ############# Retrieving datasets from 1st matching #########################
