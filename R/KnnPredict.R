@@ -15,11 +15,7 @@
 #'
 KnnPredict = function(knnMdl, testData){
 
-  testData = as.matrix(testData)
   trainData = knnMdl$data
-  if (ncol(testData) != ncol(trainData)){
-    stop('testdata must have the same number of columns as knnMdl$data')
-  }
   xCol = knnMdl$xCol
   yCol = knnMdl$yCol
   bestK = knnMdl$bestK
