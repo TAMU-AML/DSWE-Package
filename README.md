@@ -33,23 +33,28 @@ Covariate matching function :
 * CovMatch
 
 # Installation
-The package building relies on certain tool chains in windows and mac respectively, as the compiler for C++ code, along with package devtools
+The package building relies on certain tool chains in Windows and Mac respectively, as the compiler for C++ code, along with package `remotes`
 
 **Step 1 (Download necessary tool chain):**
 
-Tool chain : [Rtools - Windows](https://cran.r-project.org/bin/windows/Rtools/), [GFortran - Mac OS](https://gcc.gnu.org/wiki/GFortranBinariesMacOS)
+Tool chain : [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [gFortran](https://mac.r-project.org/tools/) for Mac OS
 
-**Step 2 (Install package devtools in R):**
+**Step 2 (Install package remotes in R):**
 
-Install package devtools:
+Install package remotes:
 ```R
-install.packages("devtools")
+install.packages("remotes")
 ```
 
-**Step 3 (Build package using devtools):**
+**Step 3 (Build package using remotes):**
 
 ```R
-devtools::install_github("TAMU-AML/DSWE-Package")
+remotes::install_github("TAMU-AML/DSWE-Package")
+```
+
+You can also specify the version (for example, version 1.3.1) as follows:
+```R
+remotes::install_github("TAMU-AML/DSWE-Package@v1.3.1")
 ```
 
 # Usage
