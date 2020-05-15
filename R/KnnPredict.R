@@ -15,12 +15,25 @@
 #'
 KnnPredict = function(knnMdl, testData){
 
+  testData = as.matrix(testData)
   trainData = knnMdl$data
+  if (ncol(testData) != ncol(trainData)){
+    stop('testdata must have the same number of columns as knnMdl$data')
+  }
   xCol = knnMdl$xCol
   yCol = knnMdl$yCol
   bestK = knnMdl$bestK
+  
+  normalizedTrainData = trainData
+  normalizedTestData = testData
+  
+  for (feature in xCol) {
+    
+    normalizedTrainData[, feature] = (trainData[, feature] - min(trainData[, feature])) / (max(trainData[, feature]) - min(trainData[, feature]))
+    normalizedTestData[, feature] = (testData[, feature] - min(trainData[, feature])) / (max(trainData[, feature]) - min(trainData[, feature]))
+  }
 
-  prediction = knn.reg(trainData[, xCol], testData[, xCol], trainData[, yCol], k = bestK )
+  prediction = FNN::knn.reg(normalizedTrainData[, xCol, drop =F], normalizedTestData[, xCol, drop = F], trainData[, yCol], k = bestK )
 
   return(prediction$pred)
 }
