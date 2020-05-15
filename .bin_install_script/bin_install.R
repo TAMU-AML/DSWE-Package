@@ -24,9 +24,13 @@ for (.i in c(1:length(.DEPENDENCIES))){
   if (.DEPENDENCIES[[.i]]$name %in% .packageList){
     .available_version = utils::packageVersion(.DEPENDENCIES[[.i]]$name)
     if (.available_version < .DEPENDENCIES[[.i]]$version){
-      update.packages(.DEPENDENCIES[[.i]]$name)
+      cat(.DEPENDENCIES[[.i]]$name,"version",as.character(.available_version),"is installed, but",.DEPENDENCIES[[.i]]$version,"required",'\n')
+      cat("Updating package",.DEPENDENCIES[[.i]]$name,'\n')
+      install.packages(.DEPENDENCIES[[.i]]$name)
     }
   } else {
+    cat(.DEPENDENCIES[[.i]]$name,"is not installed",'\n')
+    cat("Installing package",.DEPENDENCIES[[.i]]$name,'\n')
     utils::install.packages(.DEPENDENCIES[[.i]]$name)
   }
 }
