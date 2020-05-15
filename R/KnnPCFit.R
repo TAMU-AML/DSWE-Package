@@ -68,7 +68,7 @@ KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
 
     result = computeBestSubset(normalizedData, xCol, yCol, rangeK)
     pred = FNN::knn.reg(normalizedData[, xCol, drop = F], normalizedData[, xCol, drop = F], normalizedData[, yCol], result$bestK)
-    mae = mean(abs(normalizedData[, yCol] - pred$pred))
+    mae = mean(abs((normalizedData[, yCol] - pred$pred)/(1 - (1 / result$bestK))))
     returnList = list(bestK = result$bestK, RMSE = result$bestRMSE, MAE = mae, data = data, xCol = result$bestSubset, yCol = yCol )
   }
 
