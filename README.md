@@ -37,7 +37,7 @@ The package building relies on certain tool chains in Windows and Mac respective
 
 **Step 1 (Download necessary tool chain):**
 
-Tool chain : [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [gFortran](https://mac.r-project.org/tools/) for Mac OS
+Tool chain : [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [GFortran](https://mac.r-project.org/tools/) for Mac OS
 
 **Step 2 (Install package remotes in R):**
 
