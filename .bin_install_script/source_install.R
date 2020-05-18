@@ -13,7 +13,7 @@
 )
 
 
-.FILENAME = paste0("https://github.com/TAMU-AML/DSWE-Package/tarball/v",.PACKAGE_VERSION)  
+.FILENAME = paste0("https://github.com/TAMU-AML/DSWE-Package/archive/v",.PACKAGE_VERSION,".tar.gz")  
 
 
 .packageList = utils::installed.packages()[,1]
