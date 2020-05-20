@@ -42,6 +42,7 @@ if (.Platform$OS.type == "windows" ){
         cat("Rtools added to PATH",'\n')
       }
     } 
+    rm(".action")
   }
 }
 .packageList = utils::installed.packages()[,1]
@@ -71,5 +72,5 @@ download.file(url = .downloadURL, destfile = .destfile)
 untar(.destfile, exdir = .rootdir )
 .folder = list.dirs(.rootdir, full.names = T, recursive = F)
 utils::install.packages(.folder,repos=NULL,type = "source")
-rm(list = c(".PACKAGE_VERSION",".DEPENDENCIES",".downloadURL",".rootdir",".destfile",".folder",".action",".packageList",".i"))
+rm(list = c(".PACKAGE_VERSION",".DEPENDENCIES",".downloadURL",".rootdir",".destfile",".folder",".packageList",".i"))
 
