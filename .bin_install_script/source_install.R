@@ -21,30 +21,6 @@ if (.Rversion < .requiredRversion){
   stop("R version 3.5.0 or higher is required for DSWE package", call. = FALSE)
 }
 message("Proceeding Installation ... ")
-if (.Platform$OS.type == "windows" ){
-  .foundRtools = grepl("Rtools",Sys.getenv("PATH"))
-  if (!.foundRtools) {
-    message("We could not find Rtools in 'PATH', Please select an appropriate action:")
-    cat("1:","Abort installation. I don't have Rtools installed.",'\n')
-    cat("2:","Add Rtools to PATH",'\n')
-    cat("3:","Continue anyway. I am confident that I have Rtools in PATH",'\n')
-    .action = readline("Enter a number indicating your response: ")
-    if (!(as.integer(.action) %in% c(1,2,3))){
-      stop("Invalid option, aborting installation ... ", call. = FALSE)
-    } else if (as.integer(.action) == 1){
-      rm(".PACKAGE_VERSION",".DEPENDENCIES",".action",".foundRtools")
-      message("Aborting Installation ... ")
-      stop("Aborted by user", call. = FALSE)
-    } else if (as.integer(.action) == 2 || as.integer(.action) == 3){
-      if (as.integer(.action) == 2){
-        .pathRtools = readline("Enter the path to Rtools, C:\\Rtools\\bin, for example: ")
-        Sys.setenv("PATH" = paste(.pathRtools,Sys.getenv("PATH"),sep = ";"))
-        cat("Rtools added to PATH",'\n')
-      }
-    } 
-    rm(".action")
-  }
-}
 .packageList = utils::installed.packages()[,1]
 for (.i in c(1:length(.DEPENDENCIES))){
   if (.DEPENDENCIES[[.i]]$name %in% .packageList){
