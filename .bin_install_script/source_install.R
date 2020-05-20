@@ -51,17 +51,17 @@ if (.action != ""){
     if (.DEPENDENCIES[[.i]]$name %in% .packageList){
       .available_version = utils::packageVersion(.DEPENDENCIES[[.i]]$name)
       if (.available_version < .DEPENDENCIES[[.i]]$version){
-        cat(.DEPENDENCIES[[.i]]$name,"version",as.character(.available_version),"is installed, but",.DEPENDENCIES[[.i]]$version,"required",'\n')
-        cat("Updating package",.DEPENDENCIES[[.i]]$name,'\n')
-        cat("Please select a version higher or equal to",.DEPENDENCIES[[.i]]$version,", if asked",'\n')
-        cat("Please select 'compile from source' if asked",'\n')
+        message(.DEPENDENCIES[[.i]]$name,"version",as.character(.available_version),"is installed, but",.DEPENDENCIES[[.i]]$version,"required",'\n')
+        message("Updating package",.DEPENDENCIES[[.i]]$name,'\n')
+        message("Please select a version higher or equal to",.DEPENDENCIES[[.i]]$version,", if asked",'\n')
+        message("Please select 'compile from source' if asked",'\n')
         install.packages(.DEPENDENCIES[[.i]]$name)
       }
     } else {
-      cat(.DEPENDENCIES[[.i]]$name,"is not installed",'\n')
-      cat("Installing package",.DEPENDENCIES[[.i]]$name,'\n')
-      cat("Please select a version higher or equal to",.DEPENDENCIES[[.i]]$version,", if asked",'\n')
-      cat("Please select 'compile from source', if asked",'\n')
+      message(.DEPENDENCIES[[.i]]$name,"is not installed",'\n')
+      message("Installing package",.DEPENDENCIES[[.i]]$name,'\n')
+      message("Please select a version higher or equal to",.DEPENDENCIES[[.i]]$version,", if asked",'\n')
+      message("Please select 'compile from source', if asked",'\n')
       utils::install.packages(.DEPENDENCIES[[.i]]$name)
     }
   }
