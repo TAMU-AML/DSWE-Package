@@ -9,7 +9,8 @@
   list(name = "matrixStats",version = "0.55.0"),
   list(name = "FNN",version = "1.1.3"),
   list(name = "KernSmooth",version = "2.23-16"),
-  list(name = "mixtools",version = "1.1.0")
+  list(name = "mixtools",version = "1.1.0"),
+  list(name = "RcppArmadillo",version = "0.9.870.2.0")
 )
 
 
