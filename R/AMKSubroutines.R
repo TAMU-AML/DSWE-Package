@@ -123,6 +123,7 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
   if (class(bw)=="character"){
     if (bw == "dpi"){
       bandwidth = computeBandwidth(trainY,trainX,cirCov)
+      bandwidth[is.na(bandwidth)] = var(trainX[, is.na(bandwidth)])
       if (any(!is.finite(bandwidth))){
         message("Bandwidths not finite for some of the covariates. Bandwidths are:")
         for (i in 1:ncol(trainX)){
@@ -142,6 +143,7 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
         prediction = rep(NA, nrow(testX))
         for(i in 1:nrow(testX)){
           bandwidth = find.bw(trainY, trainX, testX[i, , drop = F], band)
+          bandwidth[is.na(bandwidth)] = var(trainX[, is.na(bandwidth)])
           prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = F], bandwidth, nMultiCov, fixedCov, cirCov)
         }
         if (any(!is.finite(prediction))){
