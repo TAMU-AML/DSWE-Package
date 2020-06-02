@@ -28,7 +28,8 @@
 #' @param confLevel a single value representing the statistical significance level for constructing the band
 #' @param testset Test points at which the functions will be compared
 #' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.
-#'
+#' @param opt_method A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.
+#' 
 #' @return a list containing :
 #'  \itemize{
 #'   \item muDiff - A vector of pointwise difference between the predictions from the two datasets (mu1- mu2)
@@ -40,7 +41,7 @@
 #'   \item estimatedParams - A list of estimated hyperparameters for GP
 #' }
 #'@export
-funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T){
+funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T, opt_method = 'L-BFGS-B'){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
@@ -93,9 +94,11 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
       }
     }
 
+  if (opt_method != 'L-BFGS-B' | opt_method != 'BFGS'){
+    stop("opt_method must be L-BFGS-B or BFGS.")
+  }
 
-
-  params = estimateParameters(datalist, xCol, yCol)$estimatedParams
+  params = estimateParameters(datalist, xCol, yCol, opt_method)$estimatedParams
 
   diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory)
 
