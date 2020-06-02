@@ -94,7 +94,7 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
       }
     }
 
-  if (opt_method != 'L-BFGS-B' | opt_method != 'BFGS'){
+  if (opt_method != 'L-BFGS-B' && opt_method != 'BFGS'){
     stop("opt_method must be L-BFGS-B or BFGS.")
   }
 
