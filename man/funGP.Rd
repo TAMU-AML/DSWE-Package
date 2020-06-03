@@ -4,7 +4,15 @@
 \alias{funGP}
 \title{Function comparison using Gaussian Process and Hypothesis testing}
 \usage{
-funGP(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T)
+funGP(
+  datalist,
+  xCol,
+  yCol,
+  confLevel = 0.95,
+  testset,
+  limitMemory = T,
+  opt_method = "L-BFGS-B"
+)
 }
 \arguments{
 \item{datalist}{a list of data sets to compute a function for each of them}
@@ -18,6 +26,8 @@ funGP(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T)
 \item{testset}{Test points at which the functions will be compared}
 
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.}
+
+\item{opt_method}{A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.}
 }
 \value{
 a list containing :

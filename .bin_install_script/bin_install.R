@@ -3,7 +3,7 @@
 #DESCRIPTION: This script can be used to install DSWE package from its binary file
 ##################################################################################
 
-.PACKAGE_VERSION = "1.3.2" #Update this line when version changes
+.PACKAGE_VERSION = "1.3.3" #Update this line when version changes
 .DEPENDENCIES = list(
   list(name = "Rcpp",version = "1.0.4.6"),
   list(name = "matrixStats",version = "0.55.0"),

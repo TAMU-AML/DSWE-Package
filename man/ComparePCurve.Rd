@@ -16,7 +16,8 @@ ComparePCurve(
   gridSize = c(50, 50),
   powerbins = 15,
   baseline = 1,
-  limitMemory = T
+  limitMemory = T,
+  opt_method = "L-BFGS-B"
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ ComparePCurve(
 \item{baseline}{An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 1.}
 
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference}
+
+\item{opt_method}{A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.}
 }
 \value{
 a list containing :

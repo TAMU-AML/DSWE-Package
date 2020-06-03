@@ -91,7 +91,7 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 *Function :*
 
-*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T)*
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'L-BFGS-B')*
 
 ```R
 # Preparing the arguments
@@ -109,9 +109,10 @@ gridSize = c(50, 50)
 powerbins = 15
 baseline = 1
 limitMemory = TRUE
+opt_method = 'L-BFGS-B'
 
 # Executing the function
-function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, baseline, limitMemory)
+function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, baseline, limitMemory, opt_method)
 ```
 
 ### 2. funGP
@@ -119,7 +120,7 @@ function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSe
 
  *Function :*
 
- *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE)*
+ *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'L-BFGS-B')*
 
  ```R
  # Preparing the arguments
@@ -129,9 +130,10 @@ function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSe
  confLevel = 0.95
  testset = read.csv('testset.csv')
  limitMemory = TRUE
+ opt_method = 'L-BFGS-B'
 
  # Executing the function
- function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory)
+ function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
  ```
 
 ### 3. KnnPCFit
