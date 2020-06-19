@@ -32,7 +32,7 @@
 #' @importFrom gss ssanova
 #' @export
 
-SsanovaPCFit = function(data, xCol, yCol, testP){
+SplinePCFit = function(data, xCol, yCol, testP){
   
   if (!is.matrix(data) && !is.data.frame(data)) {
     
