@@ -23,20 +23,29 @@
 #' @title Smoothing spline Anova method
 #'
 #' @param data a matrix or dataframe to be used in modelling
-#' @param xCol a numeric or vector stating the column number of covariates
-#' @param yCol A numeric value stating the column number of target
-#' @param testX a matrix or dataframe, to be used in computing the predictions
-#'
+#' @param xCol a numeric or vector stating the column number of covariates, should be Null if modelFormula is provided
+#' @param yCol A numeric value stating the column number of target, should be Null if modelFormula is provided
+#' @param testP a matrix or dataframe, to be used in computing the predictions
+#' @param modelFormula model formula specifying target and features
+#' 
 #' @return a vector or numeric predictions on user provided test data
 #'
 #' @importFrom gss ssanova
 #' @export
 
-SplinePCFit = function(data, xCol, yCol, testP){
+SplinePCFit = function(data, xCol = NULL, yCol = NULL, testP, modelFormula = NULL){
   
-  if (!is.matrix(data) && !is.data.frame(data)) {
+  if(!is.matrix(data) && !is.data.frame(data)) {
     
     stop("data must be a matrix or a dataframe.")
+  }
+  
+  if(is.null(modelFormula)){
+    
+    if(is.null(xCol) | is.null(yCol)){
+      
+      stop("xCol and yCol should be provided if modelformula is Null")
+    }
   }
   
   
@@ -68,16 +77,20 @@ SplinePCFit = function(data, xCol, yCol, testP){
     stop("test set must be a matrix or a dataframe.")
   }
   
+  if(is.null(modelFormula)){
+    
   # manipulating data and test set column names
   colnames(data) = paste('col', 1:ncol(data), sep = '')
   colnames(testP) =  paste('col', xCol, sep = '')
-  
+    
   # preparing x and y for the formula
   xCombined = (paste('col', xCol, sep = '', collapse = '+'))
   yTarget = paste('col', yCol, sep = '')
   
   # model formula
   modelFormula = paste(yTarget, xCombined, sep = '~')
+  
+  }
   
   #model fitting
   modelFit = gss::ssanova(data = data, formula = modelFormula, skip.iter = F)
