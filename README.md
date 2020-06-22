@@ -10,7 +10,9 @@
     4. [KnnPredict](#KnnPredict)  
     5. [KnnUpdate](#KnnUpdate)  
     6. [AMK](#AMK)  
-    7. [CovMatch](#CovMatch)  
+	7. [BayesTreePCFit](#BayesTreePCFit)
+	8. [SplinePCFit](#SplinePCFit)
+    9. [CovMatch](#CovMatch)  
 - [Details](#details)
 
 # Introduction
@@ -27,6 +29,8 @@ Predictive modelling functions:
 * KnnPredict
 * KnnUpdate
 * AMK
+* BayesTreePCFit
+* SplinePCFit
 
 Covariate matching function :
 
@@ -72,6 +76,8 @@ KnnFit()
 KnnPredict()
 KnnUpdate()
 AMK()
+BayesTreePCFit()
+SplinePCFit()
 CovMatch()
 ```
 
@@ -83,6 +89,8 @@ DSWE::KnnFit()
 DSWE::KnnPredict()
 DSWE::KnnUpdate()
 DSWE::AMK()
+DSWE::BayesTreePCFit
+DSWE::SplinePCFit
 DSWE::CovMatch()
 ```
 
@@ -207,8 +215,42 @@ AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
 ```
 **Note :-** In case an error such as a non-finite bandwidth is generated upon adding a covariate, please remove such covariates
 
+### 7. BayesTreePCFit
+The function can be used to model the data by using user supplied arguments. It uses tree based method to model the supplied data set
 
-### 7. CovMatch
+*Function :*
+
+*BayesTreePCFit(trainX, trainY, testX, nTree = 50)*
+
+```R
+# Preparing the arguments
+data = read.csv('C:/Files/Nitesh/data/data1.csv')
+trainX = data[, c(1, 3)]
+trainY = data[, 4]
+testX = data[100:200, c(1, 3)]
+
+# Executing the function
+Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
+```
+### 8. SplinePCFit
+The function can be used to model the data by using user supplied arguments. It uses spline based method to model the data set. Users can leverage the modelFormula argument to model data set using interactions among features
+
+*Function :*
+
+*SplinePCFit(data, xCol, yCol, testP, modelFormula = NULL)*
+
+```R
+# Preparing the arguments
+data = read.csv('C:/Files/Nitesh/data/data1.csv')
+xCol = c(1, 3)
+yCol = 4
+testP = data[100:200, ]
+
+# Executing the function
+Spline_prediction = SplinePCFit(data, xCol, yCol, testP)
+```
+
+### 9. CovMatch
 The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
 
 *Function :*
