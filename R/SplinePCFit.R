@@ -87,7 +87,7 @@ SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
   }
   
   #model fitting
-  modelFit = gss::ssanova(data = data, formula = modelFormula, skip.iter = F)
+  modelFit = ssanova(data = data, formula = modelFormula, skip.iter = F)
   
   #predcition on test points
   for(col in xCol){  
