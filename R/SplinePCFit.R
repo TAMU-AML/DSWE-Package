@@ -71,25 +71,7 @@ SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
     stop("testP and data should have same number of columns")
   }
   
-  if(is.null(modelFormula)){
-    
-  # manipulating data and test set column names
-  colnames(data) = paste('col', 1:ncol(data), sep = '')
-  colnames(testP) =  paste('col', xCol, sep = '')
-    
-  # preparing x and y for the formula
-  xCombined = (paste('col', xCol, sep = '', collapse = '+'))
-  yTarget = paste('col', yCol, sep = '')
-  
-  # model formula
-  modelFormula = paste(yTarget, xCombined, sep = '~')
-  
-  }
-  
-  #model fitting
-  modelFit = ssanova(data = data, formula = modelFormula, skip.iter = F)
-  
-  #predcition on test points
+  # adjusting test points which are outliers
   for(col in xCol){  
     
     upperRange = max(data[, col]) * 1.04
@@ -98,6 +80,29 @@ SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
     testP[testP[, col] < lowerRange, col] = lowerRange
     
   }
+  
+  if(is.null(modelFormula)){
+    
+    # manipulating data and test set column names
+    colnames(data) = paste('col', 1:ncol(data), sep = '')
+    colnames(testP) = paste('col', 1:ncol(testP), sep = '')
+    
+    # preparing x and y for the formula
+    xCombined = (paste('col', xCol, sep = '', collapse = '+'))
+    yTarget = paste('col', yCol, sep = '')
+    
+    # model formula
+    modelFormula = paste(yTarget, xCombined, sep = '~')
+    
+    # modified xCol and yCol
+    xCol = (paste('col', xCol, sep = ''))
+    yCol = (paste('col', yCol, sep = ''))
+  }
+  
+  #model fitting
+  modelFit = ssanova(data = data, formula = modelFormula, skip.iter = F)
+  
+  #predcition on test points
   testPred = predict(modelFit, testP[, xCol])
   return(testPred)
 }
