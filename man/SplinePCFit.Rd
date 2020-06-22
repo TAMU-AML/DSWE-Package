@@ -4,16 +4,18 @@
 \alias{SplinePCFit}
 \title{Smoothing spline Anova method}
 \usage{
-SplinePCFit(data, xCol, yCol, testP)
+SplinePCFit(data, xCol, yCol, testP, modelFormula = NULL)
 }
 \arguments{
 \item{data}{a matrix or dataframe to be used in modelling}
 
-\item{xCol}{a numeric or vector stating the column number of covariates}
+\item{xCol}{a numeric or vector stating the column number of feature covariates}
 
-\item{yCol}{A numeric value stating the column number of target}
+\item{yCol}{a numeric value stating the column number of target}
 
-\item{testX}{a matrix or dataframe, to be used in computing the predictions}
+\item{testP}{a matrix or dataframe, to be used in computing the predictions}
+
+\item{modelFormula}{default is NULL else a model formula specifying target and features}
 }
 \value{
 a vector or numeric predictions on user provided test data
