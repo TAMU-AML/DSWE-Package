@@ -23,31 +23,22 @@
 #' @title Smoothing spline Anova method
 #'
 #' @param data a matrix or dataframe to be used in modelling
-#' @param xCol a numeric or vector stating the column number of covariates, should be Null if modelFormula is provided
-#' @param yCol A numeric value stating the column number of target, should be Null if modelFormula is provided
+#' @param xCol a numeric or vector stating the column number of feature covariates
+#' @param yCol a numeric value stating the column number of target
 #' @param testP a matrix or dataframe, to be used in computing the predictions
-#' @param modelFormula model formula specifying target and features
+#' @param modelFormula default is NULL else a model formula specifying target and features
 #' 
 #' @return a vector or numeric predictions on user provided test data
 #'
 #' @importFrom gss ssanova
 #' @export
 
-SplinePCFit = function(data, xCol = NULL, yCol = NULL, testP, modelFormula = NULL){
+SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
   
   if(!is.matrix(data) && !is.data.frame(data)) {
     
     stop("data must be a matrix or a dataframe.")
   }
-  
-  if(is.null(modelFormula)){
-    
-    if(is.null(xCol) | is.null(yCol)){
-      
-      stop("xCol and yCol should be provided if modelformula is Null")
-    }
-  }
-  
   
   if(!is.vector(xCol) & !is.numeric(xCol)){
     
@@ -74,7 +65,10 @@ SplinePCFit = function(data, xCol = NULL, yCol = NULL, testP, modelFormula = NUL
   
   if (!is.matrix(testP) && !is.data.frame(testP)) {
     
-    stop("test set must be a matrix or a dataframe.")
+    stop("testP must be a matrix or a dataframe.")
+  }else if(ncol(data) != ncol(testP)){
+    
+    stop("testP and data should have same number of columns")
   }
   
   if(is.null(modelFormula)){
@@ -96,7 +90,14 @@ SplinePCFit = function(data, xCol = NULL, yCol = NULL, testP, modelFormula = NUL
   modelFit = gss::ssanova(data = data, formula = modelFormula, skip.iter = F)
   
   #predcition on test points
-  testPred = predict(modelFit, testP)
-  
+  for(col in xCol){  
+    
+    upperRange = max(data[, col]) * 1.04
+    lowerRange = min(data[, col]) * 0.96
+    testP[testP[, col] > upperRange, col] = upperRange
+    testP[testP[, col] < lowerRange, col] = lowerRange
+    
+  }
+  testPred = predict(modelFit, testP[, xCol])
   return(testPred)
 }
