@@ -30,6 +30,7 @@
 #' @return a vector or numeric predictions on user provided test data
 #'
 #' @importFrom BayesTree bart
+#' @importFrom stats predict
 #' @export
 
 
