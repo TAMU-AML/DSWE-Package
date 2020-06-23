@@ -25,15 +25,15 @@
 #' @param data a matrix or dataframe to be used in modelling
 #' @param xCol a numeric or vector stating the column number of feature covariates
 #' @param yCol a numeric value stating the column number of target
-#' @param testP a matrix or dataframe, to be used in computing the predictions
-#' @param modelFormula default is NULL else a model formula specifying target and features
+#' @param testX a matrix or dataframe, to be used in computing the predictions
+#' @param modelFormula default is NULL else a model formula specifying target and features.Please refer 'gss' package documentation for more details
 #' 
 #' @return a vector or numeric predictions on user provided test data
 #'
 #' @importFrom gss ssanova
 #' @export
 
-SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
+SplinePCFit = function(data, xCol, yCol, testX, modelFormula = NULL){
   
   if(!is.matrix(data) && !is.data.frame(data)) {
     
@@ -63,12 +63,12 @@ SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
     stop('yCol must be provided as a single numeric value')
   }
   
-  if (!is.matrix(testP) && !is.data.frame(testP)) {
+  if (!is.matrix(testX) && !is.data.frame(testX)) {
     
-    stop("testP must be a matrix or a dataframe.")
-  }else if(ncol(data) != ncol(testP)){
+    stop("testX must be a matrix or a dataframe.")
+  }else if(ncol(data) != ncol(testX)){
     
-    stop("testP and data should have same number of columns")
+    stop("testX and data should have same number of columns")
   }
   
   # adjusting test points which are outliers
@@ -76,8 +76,8 @@ SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
     
     upperRange = max(data[, col]) * 1.04
     lowerRange = min(data[, col]) * 0.96
-    testP[testP[, col] > upperRange, col] = upperRange
-    testP[testP[, col] < lowerRange, col] = lowerRange
+    testX[testX[, col] > upperRange, col] = upperRange
+    testX[testX[, col] < lowerRange, col] = lowerRange
     
   }
   
@@ -85,7 +85,7 @@ SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
     
     # manipulating data and test set column names
     colnames(data) = paste('col', 1:ncol(data), sep = '')
-    colnames(testP) = paste('col', 1:ncol(testP), sep = '')
+    colnames(testX) = paste('col', 1:ncol(testX), sep = '')
     
     # preparing x and y for the formula
     xCombined = (paste('col', xCol, sep = '', collapse = '+'))
@@ -103,6 +103,6 @@ SplinePCFit = function(data, xCol, yCol, testP, modelFormula = NULL){
   modelFit = ssanova(data = data, formula = modelFormula, skip.iter = F)
   
   #predcition on test points
-  testPred = predict(modelFit, testP[, xCol])
+  testPred = predict(modelFit, testX[, xCol])
   return(testPred)
 }
