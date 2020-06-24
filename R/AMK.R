@@ -36,21 +36,21 @@
 #' @importFrom mixtools normalmixEM
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
-
+  
+  nCov = ncol(trainX)
+  
   if (!is.matrix(trainX) && !is.data.frame(trainX)) {
     stop("trainX must be a matrix or a dataframe.")
   }
-
-  nCov = ncol(trainX)
-
+  
   if (!is.numeric(trainY)){
     stop("trainY must be numeric/vector.")
   }
-
+  
   if (length(trainY) != nrow(trainX)){
     stop("number of datapoints in trainX and trainY must be the same.")
   }
-
+  
   if (!is.numeric(bw)) {
     if (bw != "dpi" && bw != "dpi_gap"){
       {
@@ -60,43 +60,43 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
   }else if (length(bw)!= nCov){
     stop("length of bw must be same as the number of covariates.")
   }
-
+  
   if (nMultiCov != "all" && nMultiCov != "none"){
-
+    
     if (!is.numeric(nMultiCov) || nMultiCov%%1 != 0){
-
+      
       stop("if nMultiCov is not set to 'all' or 'none', then it must be set to an integer greater than 1, and less than or equal to the number of covariates.")
-
+      
     }else if(nMultiCov > nCov){
-
+      
       stop('The value of nMultiCov cannot be greater than number of columns in trainX')
-
+      
     }else if(nMultiCov == nCov){
-
+      
       nMultiCov = 'all'
+      fixedCov = NA
+      
+    }else if(nMultiCov < nCov){
+      
+      if(!is.null(fixedCov) && !is.na(fixedCov)){
+        
+        if(!is.numeric(fixedCov) && !is.vector(fixedCov)){
+          
+          stop('fixedCov should be provided as Null, NA or numeric/vector')
+        }else if (sum(fixedCov %in% 1:nCov) != length(fixedCov)){
+          
+          stop('Any or all the values in fixedCov exceeds the numbr of columns in trainX')
+          
+        }else if(length(fixedCov) > nMultiCov){
+          
+          stop('fixedCov should be less than or equal to nMulticov')
+          
+        }
+      }    
     }
-  }
-
-  if(!is.null(fixedCov) && !is.na(fixedCov)){
-
-    if(!is.numeric(fixedCov) && !is.vector(fixedCov)){
-
-      stop('fixedCov should be provided as Null, NA or numeric/vector')
-    }else if (sum(fixedCov %in% 1:nCov) != length(fixedCov)){
-
-      stop('Any or all the values in fixedCov exceeds the numbr of columns in trainX')
-
-    }else if(length(fixedCov) > nMultiCov){
-
-      stop('fixedCov should be less than or equal to nMulticov')
-
-    }else if(length(fixedCov) == nMultiCov){
-
-      nMultiCov = 'all'
-    }
-  }else{
-
-    nMultiCov = 'all'
+  }else if(nMultiCov == 'all' || nMultiCov == 'none'){
+    
+    fixedCov = NA
   }
 
   returnObj = kernpred(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
