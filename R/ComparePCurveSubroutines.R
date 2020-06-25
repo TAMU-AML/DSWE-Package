@@ -269,3 +269,19 @@ ComputeRatio = function(dataList1, dataList2, testCol){
 
   return(list(ratioCol1 = ratioCol1, ratioCol2 = ratioCol2))
 }
+
+computeWeightedDiffExtern = function(muDiff, weights, base, statDiff, confBand){
+  
+  if (statDiff){
+    muDiff[abs(muDiff) <= confBand] = 0
+    muDiff[which(muDiff>0)] = muDiff[which(muDiff>0)] - confBand[which(muDiff>0)]
+    muDiff[which(muDiff<0)] = muDiff[which(muDiff<0)] + bconfBand[which(muDiff<0)]
+  }
+  
+  diff = sum(muDiff * weights)
+  avgMu = sum(base * weights)
+  
+  percentDiff = round(diff*100/avgMu, 2)
+  return(percentDiff)
+  
+}
