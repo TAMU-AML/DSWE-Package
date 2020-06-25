@@ -32,7 +32,7 @@
 #' 
 #' @return a list containing :
 #'  \itemize{
-#'   \item muDiff - A vector of pointwise difference between the predictions from the two datasets (mu1- mu2)
+#'   \item muDiff - A vector of pointwise difference between the predictions from the two datasets \code{(mu2- mu1)}
 #'   \item mu1 - A vector of test prediction for first data set
 #'   \item mu2 - A vector of test prediction for second data set
 #'   \item band - A vector of the allowed statistical difference between functions at testpoints in testset
