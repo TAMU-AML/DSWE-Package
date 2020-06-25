@@ -167,8 +167,10 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
         band$bw.fix[i] = 1/((band$bw.fix[i])^2)
       }
       }
+      if(any(is.na(band$bw.fix))){
       for(i in which(is.na(band$bw.fix))){
         band$bw.fix[i] = sqrt(var(trainX[, i]))
+      }
       }
       if(is.na(band$bw.adp)){
         pred = computePred(trainX, trainY, testX, band$bw.fix, nMultiCov, fixedCov, cirCov )
@@ -183,8 +185,11 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
             bandwidth[i] = 1/((bandwidth[i])^2)
           }
           }
+          
+          if(any(is.na(bandwidth))){
           for(i in which(is.na(bandwidth))){
             bandwidth[i] = sqrt(var(trainX[, i]))
+          }
           }
           prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = F], bandwidth, nMultiCov, fixedCov, cirCov)
         }
