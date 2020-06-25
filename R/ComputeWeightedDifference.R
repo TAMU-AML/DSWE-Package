@@ -36,13 +36,13 @@
 #' @export
 
 ComputeWeightedDifference = function(muDiff, weights, base, statDiff = FALSE, confBand = NULL){
-  if (!as.numeric(muDiff)){
+  if (!is.numeric(muDiff)){
     stop('muDiff must be a numeric vector' )
   }
-  if (!as.numeric(weights)){
+  if (!is.numeric(weights)){
     stop('weights must be a numeric vector')
   }
-  if (!as.numeric(base)){
+  if (!is.numeric(base)){
     stop('base must be a numeric vector')
   }
   if (length(muDiff) != length(weights) || length(muDiff) != length(base)){
@@ -57,7 +57,7 @@ ComputeWeightedDifference = function(muDiff, weights, base, statDiff = FALSE, co
     if (is.null(confBand)){
       stop('confBand must be provided when statDiff is set to TRUE')
     }
-    if (!as.numeric(confBand)){
+    if (!is.numeric(confBand)){
       stop('confBand must be a numeric vector when statDiff is set to TRUE')
     }
     if (length(muDiff) != length(confBand)){
@@ -65,4 +65,5 @@ ComputeWeightedDifference = function(muDiff, weights, base, statDiff = FALSE, co
     }
   }
   weightedDiff = computeWeightedDiffExtern(muDiff, weights, base, statDiff, confBand)
+  return(as.numeric(weightedDiff))
 }
