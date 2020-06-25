@@ -127,9 +127,11 @@ computeBandwidth = function(trainY,trainX,cirCov){
   for (i in 1:ncol(trainX)){
     bandwidth[i] = KernSmooth::dpill(trainX[,i],trainY)
   }
+  if(all(!is.na(cirCov))){
   for (i in cirCov){
     bandwidth[i] = bandwidth[i]*pi/180
     bandwidth[i] = 1/((bandwidth[i])^2)
+  }
   }
   return(bandwidth)
 }
@@ -159,9 +161,11 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
       pred = computePred(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, cirCov )
     }else if (bw == "dpi_gap"){
       band = bw.gap(trainY, trainX, id.dir = cirCov)
+      if(all(!is.na(cirCov))){
       for (i in cirCov){
         band$bw.fix[i] = band$bw.fix[i]* pi/180
         band$bw.fix[i] = 1/((band$bw.fix[i])^2)
+      }
       }
       for(i in which(is.na(band$bw.fix))){
         band$bw.fix[i] = sqrt(var(trainX[, i]))
@@ -173,9 +177,11 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
         prediction = rep(NA, nrow(testX))
         for(i in 1:nrow(testX)){
           bandwidth = find.bw(trainY, trainX, testX[i, , drop = F], band)
+          if(all(!is.na(cirCov))){
           for (i in cirCov){
             bandwidth[i] = bandwidth[i]*pi/180
             bandwidth[i] = 1/((bandwidth[i])^2)
+          }
           }
           for(i in which(is.na(bandwidth))){
             bandwidth[i] = sqrt(var(trainX[, i]))
