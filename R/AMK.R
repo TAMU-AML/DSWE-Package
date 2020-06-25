@@ -43,6 +43,17 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
     stop("trainX must be a matrix or a dataframe.")
   }
   
+  if (!is.matrix(testX) && !is.data.frame(testX)) {
+    
+    stop("testX must be a matrix or a dataframe.")
+    
+  }else if(ncol(testX) != ncol(trainX)){
+    
+    stop("number of columns in testX and trainX must be the same")
+  }
+  
+  
+  
   if (!is.numeric(trainY)){
     stop("trainY must be numeric/vector.")
   }
