@@ -275,7 +275,7 @@ computeWeightedDiffExtern = function(muDiff, weights, base, statDiff, confBand){
   if (statDiff){
     muDiff[abs(muDiff) <= confBand] = 0
     muDiff[which(muDiff>0)] = muDiff[which(muDiff>0)] - confBand[which(muDiff>0)]
-    muDiff[which(muDiff<0)] = muDiff[which(muDiff<0)] + bconfBand[which(muDiff<0)]
+    muDiff[which(muDiff<0)] = muDiff[which(muDiff<0)] + confBand[which(muDiff<0)]
   }
   
   diff = sum(muDiff * weights)
