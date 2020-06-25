@@ -3,6 +3,7 @@
 export(AMK)
 export(BayesTreePCFit)
 export(ComparePCurve)
+export(ComputeWeightedDifference)
 export(CovMatch)
 export(KnnPCFit)
 export(KnnPredict)
