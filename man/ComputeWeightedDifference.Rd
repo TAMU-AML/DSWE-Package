@@ -30,7 +30,7 @@ a numeric percentage weighted difference or statistical significant percetage we
 Computes percentage weighted difference between power curves based on user provided weights instead of the weights computed from the data. Please see \code{details} for more information.
 }
 \details{
-The function is a modification to the percentage weighted difference defined in Ding et. al. (2020). It computes a weighted difference between power curves on a testset, where the weights have to be provided by the user based on any probability distribution of their choice. The weights must sum to 1 to be a valid.
+The function is a modification to the percentage weighted difference defined in Ding et. al. (2020). It computes a weighted difference between power curves on a testset, where the weights have to be provided by the user based on any probability distribution of their choice rather than the weights being computed from the data. The weights must sum to 1 to be valid.
 }
 \references{
 For details, see Ding et. al. (2020) available on \code{arxiv} at this \href{https://arxiv.org/abs/2005.08652}{link}.
