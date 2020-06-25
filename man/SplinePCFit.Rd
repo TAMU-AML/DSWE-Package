@@ -4,7 +4,7 @@
 \alias{SplinePCFit}
 \title{Smoothing spline Anova method}
 \usage{
-SplinePCFit(data, xCol, yCol, testP, modelFormula = NULL)
+SplinePCFit(data, xCol, yCol, testX, modelFormula = NULL)
 }
 \arguments{
 \item{data}{a matrix or dataframe to be used in modelling}
@@ -13,9 +13,9 @@ SplinePCFit(data, xCol, yCol, testP, modelFormula = NULL)
 
 \item{yCol}{a numeric value stating the column number of target}
 
-\item{testP}{a matrix or dataframe, to be used in computing the predictions}
+\item{testX}{a matrix or dataframe, to be used in computing the predictions}
 
-\item{modelFormula}{default is NULL else a model formula specifying target and features}
+\item{modelFormula}{default is NULL else a model formula specifying target and features.Please refer 'gss' package documentation for more details}
 }
 \value{
 a vector or numeric predictions on user provided test data
