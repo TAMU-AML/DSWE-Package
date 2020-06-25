@@ -98,6 +98,20 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
     
     fixedCov = NA
   }
+  
+  if(!is.na(cirCov) && !is.null(cirCov)){
+    
+    if(!is.numeric(cirCov) && !is.vector(cirCov)){
+      
+      stop('cirCov should be provided as NA or numeric/vector')
+      
+    }else if (sum(cirCov %in% 1:nCov) != length(cirCov)){
+      
+      stop('Any or all the values in cirCov exceeds the numbr of columns in trainX')
+      
+    }
+    
+  }
 
   returnObj = kernpred(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
   return(returnObj)
