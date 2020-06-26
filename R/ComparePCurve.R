@@ -159,7 +159,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
 
     stop('The test set provided should be a matrix or a dataframe')
 
-  }else if (ncol(testCol) != ncol(testSet)){
+  }else if (length(testCol) != ncol(testSet)){
 
     stop('The length of testCol should be equal to the number of columns in testSet')
   }
