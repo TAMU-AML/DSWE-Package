@@ -4,15 +4,16 @@
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#Usage)   
-    1. [ComparePCurve](#ComparePCurve)  
-    2. [funGP](#funGP)
-    3. [KnnPCFit](#knnPCFit)  
-    4. [KnnPredict](#KnnPredict)  
-    5. [KnnUpdate](#KnnUpdate)  
-    6. [AMK](#AMK)  
-	7. [BayesTreePCFit](#BayesTreePCFit)
-	8. [SplinePCFit](#SplinePCFit)
-    9. [CovMatch](#CovMatch)  
+    1. [ComparePCurve](#ComparePCurve) 
+    2. [ComputeWeightedDifference](#ComputeWeightedDifference) 
+    3. [funGP](#funGP)
+    4. [KnnPCFit](#KnnPCFit)  
+    5. [KnnPredict](#KnnPredict)  
+    6. [KnnUpdate](#KnnUpdate)  
+    7. [AMK](#AMK)  
+	8. [BayesTreePCFit](#BayesTreePCFit)
+	9. [SplinePCFit](#SplinePCFit)
+    10. [CovMatch](#CovMatch)  
 - [Details](#details)
 
 # Introduction
@@ -21,11 +22,13 @@ This is an R-package implementing some of the data science methods for wind ener
 Power curve comparison:
 
 * ComparePCurve
+* ComputeWeightedDifference
 * funGP
+
 
 Predictive modelling functions:
 
-* KnnFit
+* KnnPCFit
 * KnnPredict
 * KnnUpdate
 * AMK
@@ -71,8 +74,9 @@ The package can be accessed either by attaching the package or using the package
 library(DSWE)
 
 ComparePCurve()
+ComputeWeightedDifference()
 funGP()
-KnnFit()
+KnnPCFit()
 KnnPredict()
 KnnUpdate()
 AMK()
@@ -84,8 +88,9 @@ CovMatch()
 *Accesing functions without attaching package*
 ```R
 DSWE::ComparePCurve()
+DSWE::ComputeWeightedDifference()
 DSWE::funGP()
-DSWE::KnnFit()
+DSWE::KnnPCFit()
 DSWE::KnnPredict()
 DSWE::KnnUpdate()
 DSWE::AMK()
@@ -123,7 +128,45 @@ opt_method = 'L-BFGS-B'
 function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, baseline, limitMemory, opt_method)
 ```
 
-### 2. funGP
+### 2. ComputeWeightedDifference
+This function is used to compute the weighted difference between power curves using user-specified weights.
+*Function :*
+
+*ComputeWeightedDifference(muDiff, weights, base, statDiff = FALSE, confBand = NULL)*
+
+
+ ```R
+ # Construct a desired testset and calculate weights based on any probability distribution
+ ws_test = seq(3,15,length.out = 50) #generate 50 grid points for wind speed.
+ temp_test = seq(-10, 25, length.out = 50) #generate 50 grid points for temperature.
+ 
+ #Combine ws_test and temp_test to create a 50 by 50 mesh grid.
+ testset = expand.grid(ws_test,temp_test)
+
+ #computing weights based on a Weibull ditribution for wind speed and a uniform distribution for ambient temperature 
+ userweights = dweibull(testset[,1], shape = 2.25, scale = 6.5)*1 #assuming uniform distribution for ambient temperature
+ userweights = userweights/sum(userweights) #normalizing the weights to ensure they sum to 1
+ 
+ # Read the data
+ data1 = read.csv('data1.csv')
+ data2 = read.csv('data2.csv')
+ datalist = list(data1, data2)
+ xCol = c(1, 3, 6) 
+ xCol.circ = NULL
+ yCol = 4
+ testCol = c(1, 3)
+ 
+ # Compute power curve difference on the constructed testset
+ output = ComparePCurve(data = datalist, xCol = xCol, yCol = yCol, testCol = testCol, testSet = testset) 
+ 
+ #Compute weighted diff based on the calculated weights 
+ weightedDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1)
+
+ #Compute statistically significant weighted diff
+ weightedStatDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1, statDiff = TRUE, confBand = output$band)
+ ```
+
+### 3. funGP
  The function can be used to perform function comparison using Gaussian process and hypothesis testing
 
  *Function :*
@@ -144,7 +187,7 @@ function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSe
  function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
  ```
 
-### 3. KnnPCFit
+### 4. KnnPCFit
 The function can be used to model the data using user supplied arguments, a knn model is returned as an end result. It can also be used to get the best feature subset, if subsetSelection is set TRUE
 
 *Function :*
@@ -161,7 +204,7 @@ subsetSelection = FALSE
 # Executing the function
 knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 ```
-### 3. KnnPredict
+### 5. KnnPredict
 The function can be used to evaluate a prediction on a new test point using model generated using KnnPCFit
 
 *Function :*
@@ -177,7 +220,7 @@ testData = data[1:100, ]
 prediction = KnnPredict(knnMdl, testData)
 ```
 
-### 5. KnnUpdate
+### 6. KnnUpdate
 The function can be used to update the knn model whenever new data in available
 
 *Function :*
@@ -193,7 +236,7 @@ newData = data[500:1000, ]
 knn_newmodel = KnnUpdate(knnMdl, newData)
 ```
 
-### 6. AMK
+### 7. AMK
 The function can be used to model the data by using user supplied arguments. It uses a kernel to assign weights to every training data points, the bandwidth of kernel (bw) can be provided as vector of values or character 'dpi' and 'dpi-gap'. If provided character input, the bandwidths are computed internally
 
 *Function :*
@@ -215,7 +258,7 @@ AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
 ```
 **Note :-** In case an error such as a non-finite bandwidth is generated upon adding a covariate, please remove such covariates
 
-### 7. BayesTreePCFit
+### 8. BayesTreePCFit
 The function can be used to model the data by using user supplied arguments. It uses tree based method to model the supplied data set
 
 *Function :*
@@ -232,7 +275,7 @@ testX = data[100:200, c(1, 3)]
 # Executing the function
 Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
 ```
-### 8. SplinePCFit
+### 9. SplinePCFit
 The function can be used to model the data by using user supplied arguments. It uses spline based method to model the data set. Users can leverage the modelFormula argument to model data set using interactions among features
 
 *Function :*
@@ -250,7 +293,7 @@ testP = data[100:200, ]
 Spline_prediction = SplinePCFit(data, xCol, yCol, testP)
 ```
 
-### 9. CovMatch
+### 10. CovMatch
 The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
 
 *Function :*
