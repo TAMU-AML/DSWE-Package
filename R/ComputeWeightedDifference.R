@@ -48,7 +48,7 @@ ComputeWeightedDifference = function(muDiff, weights, base, statDiff = FALSE, co
   if (length(muDiff) != length(weights) || length(muDiff) != length(base)){
     stop('length of muDiff, weights and base must be the same')
   }
-  if(sum(weights) != 1){
+  if(abs(sum(weights) - 1) > .Machine$double.eps){
     stop('the weights must sum to 1 for being a valid weights')
   }
   if (!is.logical(statDiff)){
