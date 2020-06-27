@@ -77,7 +77,13 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
   }else if (length(bw)!= nCov){
     stop("length of bw must be same as the number of covariates.")
   }
-
+  
+  if (!is.numeric(nMultiCov) ){
+    if (nMultiCov != "all" && nMultiCov != "none"){
+      stop("nMultiCov must be set to 'all' or 'none' or an integer")
+    }
+  }
+  
   if (nCov == 1){
     nMultiCov = 'all'
   } else if (nCov == 2){
