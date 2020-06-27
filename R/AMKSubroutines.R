@@ -47,6 +47,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
     for (i in 1:nCov){
       if (i %in% cirCov){
         covKernel = ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel[is.nan(covKernel)] = 0
         if (sum(covKernel) != 0){
           kernel = kernel * covKernel
         }
@@ -67,6 +68,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
     for (i in 1:nCov){
       if (i %in% cirCov){
         covKernel = ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel[is.nan(covKernel)] = 0
         if (sum(covKernel) != 0){
           kernel = kernel * covKernel
         }
@@ -90,6 +92,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
       for (f in fixedCov){
         if (f %in% cirCov){
           covKernel = ComputeVonMisesKernel(trainX[,f],testpoint[f],bandwidth[f])
+          covKernel[is.nan(covKernel)] = 0
           if (sum(covKernel) != 0){
             kernel = kernel * covKernel
           }
@@ -103,6 +106,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
       for (j in covCombination[,i]){
         if (j %in% cirCov){
           covKernel = ComputeVonMisesKernel(trainX[,j],testpoint[j],bandwidth[j])
+          covKernel[is.nan(covKernel)] = 0
           if (sum(covKernel) != 0){
             kernel = kernel * covKernel
           }
