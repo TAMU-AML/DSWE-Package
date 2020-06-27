@@ -21,19 +21,25 @@
 # SOFTWARE.
 
 #' @title Additive Multiplicative Kernel Regression
+#' @description An additive multiplicative kernel regression based on Lee et al. (2015).
+#' @param trainX a matrix or dataframe of input variable values in the training dataset.
+#' @param trainY a numeric vector for response values in the training dataset.
+#' @param testX a matrix or dataframe of test input variable values to compute predictions.
+#' @param bw a numeric vector or a character input for bandwidth. If character, bandwidth computed internally; the input should be either \code{'dpi'} or \code{'dpi_gap'}. Default is \code{'dpi_gap'}. See \code{details} for more information.
+#' @param nMultiCov an integer or a character input specifying the number of multiplicative covariates in each additive term. Default is 3 (same as Lee et al., 2015). The character inputs can be: \code{'all'} for a completely multiplicative model, or \code{'none'} for a completely additive model. Ignored if the number of covariates is 1.
+#' @param fixedCov an integer vector specifying the fixed covariates column number(s), default value is \code{c(1,2)}. Ignored if \code{nMultiCov} is set to \code{'all'} or \code{'none'} or if the number of covariates is less than 3.
+#' @param cirCov an integer vector specifying the circular covariates column number(s) in \code{trainX}, default value is \code{NA}.
 #'
-#' @param trainX a matrix or dataframe to be used in modelling
-#' @param trainY a numeric or vector as a target
-#' @param testX a matrix or dataframe, to be used in computing the predictions
-#' @param bw a vector or character input. If character, the input should be 'dpi' or 'dpi_gap'
-#' @param nMultiCov a numerical value specifying the number of covariates in multiplicative term
-#' @param fixedCov a vector or numeric specifying the fixed covariates column number, default value is c(1,2)
-#' @param cirCov a vector or numeric specifying the circular covariates column number, default value is NA
-#'
-#' @return a vector or numeric predictions on user provided test data
-#'
+#' @return a numeric vector for predictions at the data points in \code{testX}.
+#' @details This function is based on Lee et al. (2015). Main features  are: 
+#' \itemize{
+#' \item Flexible number of multiplicative covariates in each additive term, which can be set using \code{nMultiCov}.
+#' \item Flexible number and columns for fixed covariates, which can be set using \code{fixedCov}. The default option \code{c(1,2)} sets the first two columns as fixed covariates in each additive term.
+#' \item Handling the data with gaps when the direct plug-in estimator used in Lee et al. fails to return a finite bandwidth. This is set using the option \code{bw = 'dpi_gap'} for bandwidth estimation.  
+#' }
 #' @importFrom KernSmooth dpill
 #' @importFrom mixtools normalmixEM
+#' @references  Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67. 
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
   
@@ -71,7 +77,7 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
   }else if (length(bw)!= nCov){
     stop("length of bw must be same as the number of covariates.")
   }
-  
+
   if (nCov == 1){
     nMultiCov = 'all'
   } else if (nCov == 2){
