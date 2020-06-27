@@ -37,11 +37,11 @@
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
   
-  nCov = ncol(trainX)
-  
   if (!is.matrix(trainX) && !is.data.frame(trainX)) {
     stop("trainX must be a matrix or a dataframe.")
   }
+  
+  nCov = ncol(trainX)
   
   if (!is.matrix(testX) && !is.data.frame(testX)) {
     
