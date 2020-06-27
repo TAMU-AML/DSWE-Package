@@ -105,15 +105,15 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
     }else if(nMultiCov == nCov){
       
       nMultiCov = 'all'
-      fixedCov = NA
+      fixedCov = NULL
       
     }else if(nMultiCov < nCov){
       
-      if(!is.null(fixedCov) && !is.na(fixedCov)){
+      if(!is.null(fixedCov)){
         
-        if(!is.numeric(fixedCov) && !is.vector(fixedCov)){
+        if(!is.numeric(fixedCov)){
           
-          stop('fixedCov should be provided as Null, NA or numeric/vector')
+          stop('fixedCov should either be an integer vector or NULL')
         }else if (sum(fixedCov %in% 1:nCov) != length(fixedCov)){
           
           stop('Any or all the values in fixedCov exceeds the numbr of columns in trainX')
@@ -127,7 +127,7 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
     }
   }else if(nMultiCov == 'all' || nMultiCov == 'none'){
     
-    fixedCov = NA
+    fixedCov = NULL
   }
   
   if(!is.na(cirCov) && !is.null(cirCov)){

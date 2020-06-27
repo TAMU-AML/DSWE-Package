@@ -251,7 +251,7 @@ trainY = data[, 4]
 testX = data[100:200, c(1, 3)]
 bw = 'dpi_gap'
 nMultiCov = 2
-fixedCov = NA
+fixedCov = NULL
 cirCov = NA
 # Executing the function
 AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
