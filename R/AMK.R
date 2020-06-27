@@ -118,9 +118,9 @@ AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = 
           
           stop('Any or all the values in fixedCov exceeds the numbr of columns in trainX')
           
-        }else if(length(fixedCov) > nMultiCov){
+        }else if(length(fixedCov) >= nMultiCov){
           
-          stop('fixedCov should be less than or equal to nMulticov')
+          stop('fixedCov should be less than nMulticov')
           
         }
       }    
