@@ -137,8 +137,6 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     stop('baseline must be an integer between 0 to 2')
   }
   
-  resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
-  
   if(is.null(testSet)){
     
     if(!is.numeric(gridSize)){
@@ -155,8 +153,6 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
       gridSize = 1000
     }
     
-    testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
-    
   }else if(!is.matrix(testSet) & !is.data.frame(testSet)){
     
     stop('The test set provided should be a matrix or a data frame')
@@ -164,6 +160,17 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
   }else if (length(testCol) != ncol(testSet)){
     
     stop('The length of testCol should be equal to the number of columns in testSet')
+  }
+  
+  if(is.null(testSet)){
+    
+    resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
+    
+    testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
+    
+  }else{
+    
+    resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
   }
   
   resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory, opt_method)
