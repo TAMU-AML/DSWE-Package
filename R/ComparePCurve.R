@@ -58,130 +58,132 @@
 #' @export
 
 ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'L-BFGS-B' ){
-
+  
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
   }
-
+  
   if(!is.list(data)){
-
+    
     stop('The data must be provided as a list containing data sets')
-
+    
   }
-
+  
   if(length(data) != 2){
-
-
+    
+    
     stop('The data length should be equal to two')
-
+    
   }
-
-  if(!is.vector(xCol)){
-
+  
+  if(!is.numeric(xCol)){
+    
     stop('The xcol.circ must be provided as a numeric/vector')
-
+    
   }else if(!all(xCol %in% 1:ncol(data[[1]]))){
-
+    
     stop('The xCol values should be the column number of data set')
   }
-
-
+  
+  
   if(!is.null(xCol.circ)){
-
-    if(!is.vector(xCol.circ)){
-
+    
+    if(!is.numeric(xCol.circ)){
+      
       stop('The xCol must be provided as a numeric/vector')
-
+      
     }else if(!all(xCol.circ %in% xCol)){
-
+      
       stop('xCol.circ should be present in xCol')
     }
   }
-
+  
   if(length(thrs) > 1){
-
+    
     if(!(length(thrs) == length(xCol))){
-
+      
       stop('The thrs must be provided as a single value or vector with weight for each covariate')
-
+      
     }
   }
-
-  if(!is.vector(testCol)){
-
-    stop('The testCol must be provided as a numeric/vector')
-
-  }else if(length(testCol) != 2){
-
-    stop('The length of testcol vector should be of size two')
+  
+  if(!is.numeric(testCol)){
+    
+    stop('The testCol must be provided as a numeric')
+    
+  }else if(length(testCol) > 2){
+    
+    stop('The length of testcol vector should be less than or equal to two')
+    
   }
-
-  if(!is.vector(conflevel)){
-
-    stop('conflevel must be provided as a numeric/vector')
-
+  
+  if(!is.numeric(conflevel)){
+    
+    stop('conflevel must be provided as a numeric')
+    
   }else{
-
+    
     if(length(conflevel) != 1){
-
+      
       stop('conflevel must be provided as a single numeric value')
-
+      
     }else if(!(conflevel > 0 & conflevel < 1)){
-
+      
       stop('conflevel must be between 0 to 1')
     }
   }
-
+  
   if ((baseline %in% c(0:2)) == FALSE){
     stop('baseline must be an integer between 0 to 2')
   }
-
-  resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
-
+  
+  
   if(is.null(testSet)){
-
-    if(!is.vector(gridSize)){
-
-      stop('The gridsize must be provided as a vector')
-
-    }else if(length(gridSize) != 2){
-
-      stop('The length of gridSize vector should be of size two')
-
-    }else if((gridSize[1] * gridSize[2] > 2500)){
-
-      stop('The product of gridSize should not be more than 2500')
-
+    
+    if(!is.numeric(gridSize)){
+      
+      stop('The gridsize must be provided as a numeric/vector')
+      
+    }else if(length(gridSize) > 2){
+      
+      stop('The length of gridSize vector should be less than or equal to two')
+      
     }
-
+    
+    if(length(testCol) == 1){
+      gridSize = 1000
+    }
+    
     testSet = GenerateTestset(resultMatching$matchedData, testCol, gridSize )
-
+    
   }else if(!is.matrix(testSet) & !is.data.frame(testSet)){
-
-    stop('The test set provided should be a matrix or a dataframe')
-
+    
+    stop('The test set provided should be a matrix or a data frame')
+    
   }else if (length(testCol) != ncol(testSet)){
-
+    
     stop('The length of testCol should be equal to the number of columns in testSet')
   }
-
+  
+  resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
+  
   resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory, opt_method)
-
+  
   weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol, baseline)
-
+  
   weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol, baseline)
-
+  
   scaledDiff = ComputeScaledDiff(data, yCol, resultGP$mu1, resultGP$mu2, powerbins, baseline)
-
+  
   scaledStatDiff = ComputeScaledStatDiff(data, yCol, resultGP$mu1, resultGP$mu2, resultGP$band, powerbins, baseline)
-
+  
   unweightedDiff = ComputeDiff(resultGP$mu1, resultGP$mu2, baseline)
-
+  
   unweightedStatDiff = ComputeStatDiff(resultGP$mu1, resultGP$mu2, resultGP$band, baseline)
-
+  
   reductionRatio = ComputeRatio(data, resultMatching$matchedData, testCol)
-
+  
   returnList = list(weightedDiff = weightedDiff, weightedStatDiff = weightedStatDiff, scaledDiff = scaledDiff, scaledStatDiff = scaledStatDiff, unweightedDiff = unweightedDiff, unweightedStatDiff = unweightedStatDiff, reductionRatio = reductionRatio, muDiff = resultGP$muDiff, mu2 = resultGP$mu2, mu1 = resultGP$mu1, band = resultGP$band, confLevel = conflevel, testSet = testSet, estimatedParams = resultGP$estimatedParams, matchedData = resultMatching$matchedData)
-
+  
   return(returnList)
 }
