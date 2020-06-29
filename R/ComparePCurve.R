@@ -151,6 +151,12 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     
     if(length(testCol) == 1){
       gridSize = 1000
+    } 
+    
+    if (prod(gridSize) > 2500){
+      
+      stop('The number of test points should be less than or equal to 2500; reduce gridsize')
+      
     }
     
   }else if(!is.matrix(testSet) & !is.data.frame(testSet)){
