@@ -3,13 +3,15 @@
 #DESCRIPTION: This script can be used to install DSWE package from its binary file
 ##################################################################################
 
-.PACKAGE_VERSION = "1.3.4" #Update this line when version changes
+.PACKAGE_VERSION = "1.4.0" #Update this line when version changes
 .DEPENDENCIES = list(
   list(name = "Rcpp",version = "1.0.4.6"),
   list(name = "matrixStats",version = "0.55.0"),
   list(name = "FNN",version = "1.1.3"),
   list(name = "KernSmooth",version = "2.23-16"),
   list(name = "mixtools",version = "1.1.0")
+  list(name = "BayesTree",version = "0.3-1.4")
+  list(name = "gss",version = "2.2-2")
 )
 
 if (Sys.info()["sysname"]=="Windows"){
