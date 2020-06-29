@@ -26,11 +26,11 @@
 #' @param xCol A numeric or vector stating column number of covariates
 #' @param xCol.circ A numeric or vector stating column number of circular covariates
 #' @param yCol A numeric value stating the column number of the response
-#' @param testCol A numeric/vector stating column number of covariates to used in generating test set
-#' @param testSet A matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables
+#' @param testCol A numeric/vector stating column number of covariates to used in generating test set. 
+#' @param testSet A matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables.
 #' @param thrs A numeric or vector representing threshold for each covariates
 #' @param conflevel A numeric between (0,1) representing the statistical significance level for constructing the band
-#' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored
+#' @param gridSize A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored. 
 #' @param powerbins A numeric stating the number of power bins for computing the scaled difference, default is 15.
 #' @param baseline An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 1.
 #' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference
@@ -143,15 +143,20 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
       
       stop('The gridsize must be provided as a numeric/vector')
       
-    }else if(length(gridSize) != 2){
+    } else if(length(gridSize) != 2 && length(testCol) == 2){
       
-      stop('The length of gridSize vector should be equal to two when length of testCol is equal to two, else it is ignored')
+      stop('The length of gridSize vector should be equal to two when length of testCol is equal to two')
       
     }
     
-    if(length(testCol) == 1){
+    if(length(testCol) == 1 && gridSize == c(50,50)){
+      #Convert the 2-dim default gridSize to 1-dim default internally when length(testCol) == 1.
       gridSize = 1000
-    } 
+      
+    } else if (length(testCol) == 1 && length(gridSize) != 1){
+      
+      stop('The length of gridSize vector should be equal to one when length of testCol is equal to one, or use the default gridSize option')
+    }
     
     if (prod(gridSize) > 2500){
       
