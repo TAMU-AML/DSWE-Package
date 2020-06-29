@@ -47,6 +47,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
     for (i in 1:nCov){
       if (i %in% cirCov){
         covKernel = ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel[is.nan(covKernel)] = 0
         if (sum(covKernel) != 0){
           kernel = kernel * covKernel
         }
@@ -67,6 +68,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
     for (i in 1:nCov){
       if (i %in% cirCov){
         covKernel = ComputeVonMisesKernel(trainX[,i],testpoint[i],bandwidth[i])
+        covKernel[is.nan(covKernel)] = 0
         if (sum(covKernel) != 0){
           kernel = kernel * covKernel
         }
@@ -90,6 +92,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
       for (f in fixedCov){
         if (f %in% cirCov){
           covKernel = ComputeVonMisesKernel(trainX[,f],testpoint[f],bandwidth[f])
+          covKernel[is.nan(covKernel)] = 0
           if (sum(covKernel) != 0){
             kernel = kernel * covKernel
           }
@@ -103,6 +106,7 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
       for (j in covCombination[,i]){
         if (j %in% cirCov){
           covKernel = ComputeVonMisesKernel(trainX[,j],testpoint[j],bandwidth[j])
+          covKernel[is.nan(covKernel)] = 0
           if (sum(covKernel) != 0){
             kernel = kernel * covKernel
           }
@@ -127,25 +131,30 @@ computeBandwidth = function(trainY,trainX,cirCov){
   for (i in 1:ncol(trainX)){
     bandwidth[i] = KernSmooth::dpill(trainX[,i],trainY)
   }
+  if(all(!is.na(cirCov))){
   for (i in cirCov){
     bandwidth[i] = bandwidth[i]*pi/180
     bandwidth[i] = 1/((bandwidth[i])^2)
+  }
   }
   return(bandwidth)
 }
 
 
-
 ### Function to get mean estimate
 kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
-
+  
   trainX = as.matrix(trainX)
   trainY = as.numeric(trainY)
   testX = as.matrix(testX)
   if (class(bw)=="character"){
     if (bw == "dpi"){
       bandwidth = computeBandwidth(trainY,trainX,cirCov)
-      bandwidth[is.na(bandwidth)] = colSds(trainX[, is.na(bandwidth)])
+      if(any(is.na(bandwidth))){
+        for(i in which(is.na(bandwidth))){
+          bandwidth[i] = sqrt(var(trainX[, i]))
+        }
+      }
       if (any(!is.finite(bandwidth))){
         message("Bandwidths not finite for some of the covariates. Bandwidths are:")
         for (i in 1:ncol(trainX)){
@@ -156,24 +165,44 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
       pred = computePred(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, cirCov )
     }else if (bw == "dpi_gap"){
       band = bw.gap(trainY, trainX, id.dir = cirCov)
+      if(all(!is.na(cirCov))){
+      for (i in cirCov){
+        band$bw.fix[i] = band$bw.fix[i]* pi/180
+        band$bw.fix[i] = 1/((band$bw.fix[i])^2)
+      }
+      }
+      if(any(is.na(band$bw.fix))){
+      for(i in which(is.na(band$bw.fix))){
+        band$bw.fix[i] = sqrt(var(trainX[, i]))
+      }
+      }
       if(is.na(band$bw.adp)){
-        band$bw.fix[is.na(band$bw.fix)] = colSds(trainX[, is.na(band$bw.fix)])
         pred = computePred(trainX, trainY, testX, band$bw.fix, nMultiCov, fixedCov, cirCov )
-
+        
       }else{
-
         prediction = rep(NA, nrow(testX))
         for(i in 1:nrow(testX)){
           bandwidth = find.bw(trainY, trainX, testX[i, , drop = F], band)
-          bandwidth[is.na(bandwidth)] = colSds(trainX[, is.na(bandwidth)])
+          if(all(!is.na(cirCov))){
+          for (i in cirCov){
+            bandwidth[i] = bandwidth[i]*pi/180
+            bandwidth[i] = 1/((bandwidth[i])^2)
+          }
+          }
+          
+          if(any(is.na(bandwidth))){
+          for(i in which(is.na(bandwidth))){
+            bandwidth[i] = sqrt(var(trainX[, i]))
+          }
+          }
           prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = F], bandwidth, nMultiCov, fixedCov, cirCov)
         }
         if (any(!is.finite(prediction))){
           warning("some of the testpoints resulted in non-finite predictions.")
         }
-
+        
         pred = list(pred = prediction)
-
+        
       }
     }
   }else {
@@ -200,4 +229,3 @@ computePred = function(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, ci
   }
   return(pred)
 }
-
