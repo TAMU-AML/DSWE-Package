@@ -143,9 +143,9 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
       
       stop('The gridsize must be provided as a numeric/vector')
       
-    }else if(length(gridSize) > 2){
+    }else if(length(gridSize) != 2){
       
-      stop('The length of gridSize vector should be less than or equal to two')
+      stop('The length of gridSize vector should be equal to two when length of testCol is equal to two, else it is ignored')
       
     }
     
