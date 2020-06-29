@@ -166,6 +166,9 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
   }else if (length(testCol) != ncol(testSet)){
     
     stop('The length of testCol should be equal to the number of columns in testSet')
+  }else if(nrow(testSet) > 2500){
+    
+       stop('The number of test points should be less than 2500')
   }
   
   if(is.null(testSet)){
