@@ -9,8 +9,8 @@
   list(name = "matrixStats",version = "0.55.0"),
   list(name = "FNN",version = "1.1.3"),
   list(name = "KernSmooth",version = "2.23-16"),
-  list(name = "mixtools",version = "1.1.0")
-  list(name = "BayesTree",version = "0.3-1.4")
+  list(name = "mixtools",version = "1.1.0"),
+  list(name = "BayesTree",version = "0.3-1.4"),
   list(name = "gss",version = "2.2-2")
 )
 
