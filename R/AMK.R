@@ -39,6 +39,7 @@
 #' }
 #' @importFrom KernSmooth dpill
 #' @importFrom mixtools normalmixEM
+#' @importFrom stats var
 #' @references  Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67. 
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
