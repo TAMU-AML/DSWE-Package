@@ -29,15 +29,15 @@ ComparePCurve(
 
 \item{yCol}{A numeric value stating the column number of the response}
 
-\item{testCol}{A numeric/vector stating column number of covariates to used in generating test set}
+\item{testCol}{A numeric/vector stating column number of covariates to used in generating test set. Maximum of two columns to be used.}
 
-\item{testSet}{A matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables}
+\item{testSet}{A matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables. If not NULL, total number of test points must be less than or equal to 2500.}
 
 \item{thrs}{A numeric or vector representing threshold for each covariates}
 
 \item{conflevel}{A numeric between (0,1) representing the statistical significance level for constructing the band}
 
-\item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored}
+\item{gridSize}{A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored. Default is \code{c(50,50)} for 2-dim input which is converted internally to a default of \code{c(1000)} for 1-dim input. Total number of test points (product of gridSize vector components) must be less than or equal to 2500.}
 
 \item{powerbins}{A numeric stating the number of power bins for computing the scaled difference, default is 15.}
 
@@ -69,4 +69,7 @@ a list containing :
 }
 \description{
 Power curve comparison
+}
+\references{
+For details, see Ding et al. (2020) available on \code{arxiv} at this \href{https://arxiv.org/abs/2005.08652}{link}.
 }
