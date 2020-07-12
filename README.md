@@ -13,7 +13,8 @@
     7. [AMK](#AMK)  
 	8. [BayesTreePCFit](#BayesTreePCFit)
 	9. [SplinePCFit](#SplinePCFit)
-    10. [CovMatch](#CovMatch)  
+	10. [SvmPCFit](#SvmPCFit)
+    11. [CovMatch](#CovMatch)  
 - [Details](#details)
 
 # Introduction
@@ -287,13 +288,29 @@ The function can be used to model the data by using user supplied arguments. It 
 data = read.csv('C:/Files/Nitesh/data/data1.csv')
 xCol = c(1, 3)
 yCol = 4
-testP = data[100:200, ]
+testX = data[100:200, ]
 
 # Executing the function
-Spline_prediction = SplinePCFit(data, xCol, yCol, testP)
+Spline_prediction = SplinePCFit(data, xCol, yCol, testX)
 ```
+### 10. SvmPCFit
+The function can be used to model the data by using user supplied arguments. It uses support vector machine to model the data set.
 
-### 10. CovMatch
+*Function :*
+
+*SvmPCFit(trainX, trainY, testX, kernel = 'radial')*
+
+```R
+# Preparing the arguments
+data = read.csv('C:/Files/Nitesh/data/data1.csv')
+trainX = data[, c(1, 3)]
+trainY = data[, 4]
+testX = data[100:200, c(1, 3)]
+
+# Executing the function
+Svm_prediction = SplinePCFit(trainX, trainY, testX)
+```
+### 11. CovMatch
 The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
 
 *Function :*
