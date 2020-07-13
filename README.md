@@ -35,6 +35,7 @@ Predictive modelling functions:
 * AMK
 * BayesTreePCFit
 * SplinePCFit
+* SvmPCFit
 
 Covariate matching function :
 
@@ -308,7 +309,7 @@ trainY = data[, 4]
 testX = data[100:200, c(1, 3)]
 
 # Executing the function
-Svm_prediction = SplinePCFit(trainX, trainY, testX)
+Svm_prediction = SvmPCFit(trainX, trainY, testX)
 ```
 ### 11. CovMatch
 The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
