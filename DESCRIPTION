@@ -1,6 +1,6 @@
 Package: DSWE
 Title: Data Science for wind energy
-Version: 1.4.0
+Version: 1.4.1
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut","cre"), email = "nitesh.kumar@tamu.edu"),
     person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@tamu.edu"),
@@ -11,7 +11,7 @@ Depends:
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 LinkingTo: 
     Rcpp (>= 1.0.4.6) ,
     RcppArmadillo (>= 0.9.870.2.0)
@@ -23,6 +23,5 @@ Imports:
     mixtools (>= 1.1.0),
     BayesTree (>= 0.3-1.4),
     gss (>= 2.2-2),
+    e1071 (>= 1.7-3),
     stats (>= 3.5.0)
-
-
