@@ -47,7 +47,7 @@
 #' knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 #' newData = data[500:1000, ]
 #' 
-#' knn_newmodel = KnnUpdate(knnMdl, newData)
+#' knn_newmodel = KnnUpdate(knn_model, newData)
 #' @export
 #'
 KnnUpdate = function(knnMdl, newData){
