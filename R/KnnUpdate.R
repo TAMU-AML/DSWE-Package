@@ -38,6 +38,16 @@
 #'   \item yCol - The column number of target provided by user
 #'   \item bestK - The best k nearest neighbor calculated for the new data using user specified features and target
 #'}
+#' @examples 
+#' data = data1
+#' xCol = c(2, 4)
+#' yCol = 7
+#' subsetSelection = FALSE
+#' 
+#' knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
+#' newData = data[500:1000, ]
+#' 
+#' knn_newmodel = KnnUpdate(knnMdl, newData)
 #' @export
 #'
 KnnUpdate = function(knnMdl, newData){

@@ -29,3 +29,14 @@ a list containing :
 \description{
 The function can be used to update KNN model when new data is provided
 }
+\examples{
+data = data1
+xCol = c(2, 4)
+yCol = 7
+subsetSelection = FALSE
+
+knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
+newData = data[500:1000, ]
+
+knn_newmodel = KnnUpdate(knnMdl, newData)
+}
