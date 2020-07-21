@@ -32,5 +32,5 @@ subsetSelection = FALSE
 knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 testData = data[1:100, ]
 
-prediction = KnnPredict(knnMdl, testData)
+prediction = KnnPredict(knn_model, testData)
 }
