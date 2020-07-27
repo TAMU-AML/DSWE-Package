@@ -30,11 +30,12 @@ a list containing :
 The function models the powercurve using KNN, against supplied arguments
 }
 \examples{
+\donttest{
 data = data1
 xCol = c(2, 4)
 yCol = 7
 subsetSelection = FALSE
 
 knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
-
+}
 }

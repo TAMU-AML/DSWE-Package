@@ -32,6 +32,25 @@ Computes percentage weighted difference between power curves based on user provi
 \details{
 The function is a modification to the percentage weighted difference defined in Ding et. al. (2020). It computes a weighted difference between power curves on a testset, where the weights have to be provided by the user based on any probability distribution of their choice rather than the weights being computed from the data. The weights must sum to 1 to be valid.
 }
+\examples{
+\donttest{
+ws_test = seq(3,15,length.out = 10) 
+density_test = seq(1.12, 1.16, length.out = 10) 
+testset = expand.grid(ws_test,density_test)
+userweights = dweibull(testset[,1], shape = 2.25, scale = 6.5)*1 
+userweights = userweights/sum(userweights) 
+data1 = data1[1:100, ]
+data2 = data2[1:100, ]
+datalist = list(data1, data2)
+xCol = c(2, 4) 
+xCol.circ = NULL
+yCol = 7
+testCol = c(2, 4)
+output = ComparePCurve(data = datalist, xCol = xCol, yCol = yCol, testCol = testCol, testSet = testset) 
+weightedDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1)
+weightedStatDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1, statDiff = TRUE, confBand = output$band)
+}
+}
 \references{
 For details, see Ding et. al. (2020) available on \code{arxiv} at this \href{https://arxiv.org/abs/2005.08652}{link}.
 }

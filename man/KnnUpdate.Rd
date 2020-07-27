@@ -30,6 +30,7 @@ a list containing :
 The function can be used to update KNN model when new data is provided
 }
 \examples{
+\donttest{
 data = data1
 xCol = c(2, 4)
 yCol = 7
@@ -39,4 +40,5 @@ knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 newData = data[500:1000, ]
 
 knn_newmodel = KnnUpdate(knn_model, newData)
+}
 }
