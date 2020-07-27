@@ -39,8 +39,8 @@
 #'   \item MinMaxMatched - The minimum and maximum value in matched data for each covariates used in matching
 #'}
 #' @examples 
-#' data1 = data1
-#' data2 = data2
+#' data1 = data1[1:100, ]
+#' data2 = data2[1:100, ]
 
 #' data = list(data1, data2)
 #' xCol = c(2, 4)
