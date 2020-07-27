@@ -39,6 +39,7 @@
 #'   \item MinMaxMatched - The minimum and maximum value in matched data for each covariates used in matching
 #'}
 #' @examples 
+#' \donttest{
 #' data1 = data1[1:100, ]
 #' data2 = data2[1:100, ]
 
@@ -49,6 +50,7 @@
 #' priority = FALSE
 
 #' matched_data = CovMatch(data, xCol, xCol.circ, thrs, priority)
+#' }
 #' @export
 
 CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){

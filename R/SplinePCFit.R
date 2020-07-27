@@ -32,12 +32,14 @@
 #'
 #' @importFrom gss ssanova
 #' @examples 
+#' \donttest{
 #' data = data1
 #' xCol = c(2, 4)
 #' yCol = 7
 #' testX = data[100:110, ]
 
 #' Spline_prediction = SplinePCFit(data, xCol, yCol, testX)
+#' }
 #' @export
 
 SplinePCFit = function(data, xCol, yCol, testX, modelFormula = NULL){
