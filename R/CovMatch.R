@@ -38,6 +38,17 @@
 #'   \item MinMaxOriginal - The minimum and maximum value in original data for each covariate used in matching
 #'   \item MinMaxMatched - The minimum and maximum value in matched data for each covariates used in matching
 #'}
+#' @examples 
+#' data1 = data1
+#' data2 = data2
+
+#' data = list(data1, data2)
+#' xCol = c(2, 4)
+#' xCol.circ = NULL
+#' thrs = c(0.1, 0.1)
+#' priority = FALSE
+
+#' matched_data = CovMatch(data, xCol, xCol.circ, thrs, priority)
 #' @export
 
 CovMatch = function(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE){
