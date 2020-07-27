@@ -40,6 +40,16 @@
 #'   \item testset - A matrix of test points to compare the functions
 #'   \item estimatedParams - A list of estimated hyperparameters for GP
 #' }
+#' @examples 
+#' datalist = list(data1[1:100,], data2[1:100, ])
+#' xCol = c(2, 4)
+#' yCol = 7
+#' confLevel = 0.95
+#' testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
+#' limitMemory = TRUE
+#' opt_method = 'L-BFGS-B'
+
+#' function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
 #'@export
 funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T, opt_method = 'L-BFGS-B'){
 
