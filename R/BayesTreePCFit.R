@@ -31,6 +31,13 @@
 #'
 #' @importFrom BayesTree bart
 #' @importFrom stats predict
+#' @examples 
+#' data = data1
+#' trainX = data[, c(2, 4)]
+#' trainY = data[, 7]
+#' testX = data[100:110, c(2, 4)]
+#' 
+#' Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
 #' @export
 
 
