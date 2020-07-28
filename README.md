@@ -110,17 +110,17 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 ```R
 # Preparing the arguments
-data1 = read.csv('data1.csv')
-data2 = read.csv('data2.csv')
+data1 = data1[1:100, ]
+data2 = data2[1:100, ]
 data = list(data1, data2)
-xCol = c(1, 3, 6)
+xCol = c(2, 4)
 xCol.circ = NULL
-yCol = 4
-testCol = c(1, 3)
+yCol = 7
+testCol = c(2, 4)
 testSet = NULL
 thrs = 0.2
 confLevel = 0.95
-gridSize = c(50, 50)
+gridSize = c(10, 10)
 powerbins = 15
 baseline = 1
 limitMemory = TRUE
@@ -139,24 +139,24 @@ This function is used to compute the weighted difference between power curves us
 
  ```R
  # Construct a desired testset and calculate weights based on any probability distribution
- ws_test = seq(3,15,length.out = 50) #generate 50 grid points for wind speed.
- temp_test = seq(-10, 25, length.out = 50) #generate 50 grid points for temperature.
+ ws_test = seq(3,15,length.out = 10)  #generate 10 grid points for wind speed.
+ density_test = seq(1.12, 1.16, length.out = 10) #generate 10 grid points for temperature.
  
  #Combine ws_test and temp_test to create a 50 by 50 mesh grid.
- testset = expand.grid(ws_test,temp_test)
+ testset = expand.grid(ws_test,density_test)
 
  #computing weights based on a Weibull ditribution for wind speed and a uniform distribution for ambient temperature 
  userweights = dweibull(testset[,1], shape = 2.25, scale = 6.5)*1 #assuming uniform distribution for ambient temperature
  userweights = userweights/sum(userweights) #normalizing the weights to ensure they sum to 1
  
  # Read the data
- data1 = read.csv('data1.csv')
- data2 = read.csv('data2.csv')
- datalist = list(data1, data2)
- xCol = c(1, 3, 6) 
- xCol.circ = NULL
- yCol = 4
- testCol = c(1, 3)
+data1 = data1[1:100, ]
+data2 = data2[1:100, ]
+datalist = list(data1, data2)
+xCol = c(2, 4) 
+xCol.circ = NULL
+yCol = 7
+testCol = c(2, 4)
  
  # Compute power curve difference on the constructed testset
  output = ComparePCurve(data = datalist, xCol = xCol, yCol = yCol, testCol = testCol, testSet = testset) 
@@ -177,16 +177,16 @@ This function is used to compute the weighted difference between power curves us
 
  ```R
  # Preparing the arguments
- datalist = matched_data$matchedData
- xCol = c(1, 3)
- yCol = 4
- confLevel = 0.95
- testset = read.csv('testset.csv')
- limitMemory = TRUE
- opt_method = 'L-BFGS-B'
+datalist = list(data1[1:100,], data2[1:100, ])
+xCol = c(2, 4)
+yCol = 7
+confLevel = 0.95
+testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
+limitMemory = TRUE
+opt_method = 'L-BFGS-B'
 
  # Executing the function
- function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
+function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
  ```
 
 ### 4. KnnPCFit
@@ -198,9 +198,9 @@ The function can be used to model the data using user supplied arguments, a knn 
 
 ```R
 # Preparing the arguments
-data = read.csv('data1.csv')
-xCol = c(1, 3)
-yCol = 4
+data = data1
+xCol = c(2, 4)
+yCol = 7
 subsetSelection = FALSE
 
 # Executing the function
@@ -215,11 +215,16 @@ The function can be used to evaluate a prediction on a new test point using mode
 
 ```R
 # Preparing the arguments
-knnMdl = knn_model
+data = data1
+xCol = c(2, 4)
+yCol = 7
+subsetSelection = FALSE
+
+knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 testData = data[1:100, ]
 
 # Executing the function
-prediction = KnnPredict(knnMdl, testData)
+prediction = KnnPredict(knn_model, testData)
 ```
 
 ### 6. KnnUpdate
@@ -231,11 +236,16 @@ The function can be used to update the knn model whenever new data in available
 
 ```R
 # Preparing the arguments
-knnMdl = knn_model
+data = data1
+xCol = c(2, 4)
+yCol = 7
+subsetSelection = FALSE
+
+knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 newData = data[500:1000, ]
 
 # Executing the function
-knn_newmodel = KnnUpdate(knnMdl, newData)
+knn_newmodel = KnnUpdate(knn_model, newData)
 ```
 
 ### 7. AMK
@@ -247,14 +257,15 @@ The function can be used to model the data by using user supplied arguments. It 
 
 ```R
 # Preparing the arguments
-data = read.csv('data1.csv')
-trainX = data[, c(1, 3)]
-trainY = data[, 4]
-testX = data[100:200, c(1, 3)]
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:140, c(2, 4)]
 bw = 'dpi_gap'
 nMultiCov = 2
 fixedCov = NULL
 cirCov = NA
+
 # Executing the function
 AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
 ```
@@ -269,10 +280,10 @@ The function can be used to model the data by using user supplied arguments. It 
 
 ```R
 # Preparing the arguments
-data = read.csv('C:/Files/Nitesh/data/data1.csv')
-trainX = data[, c(1, 3)]
-trainY = data[, 4]
-testX = data[100:200, c(1, 3)]
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:110, c(2, 4)]
 
 # Executing the function
 Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
@@ -286,10 +297,10 @@ The function can be used to model the data by using user supplied arguments. It 
 
 ```R
 # Preparing the arguments
-data = read.csv('C:/Files/Nitesh/data/data1.csv')
-xCol = c(1, 3)
-yCol = 4
-testX = data[100:200, ]
+data = data1
+xCol = c(2, 4)
+yCol = 7
+testX = data[100:110, ]
 
 # Executing the function
 Spline_prediction = SplinePCFit(data, xCol, yCol, testX)
@@ -303,10 +314,10 @@ The function can be used to model the data by using user supplied arguments. It 
 
 ```R
 # Preparing the arguments
-data = read.csv('C:/Files/Nitesh/data/data1.csv')
-trainX = data[, c(1, 3)]
-trainY = data[, 4]
-testX = data[100:200, c(1, 3)]
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:110, c(2, 4)]
 
 # Executing the function
 Svm_prediction = SvmPCFit(trainX, trainY, testX)
@@ -320,13 +331,13 @@ The function can be used to match different data sets. It can only be used to ma
 
 ```R
 # Preparing the arguments
-data1 = read.csv('data1.csv')
-data2 = read.csv('data2.csv')
+data1 = data1[1:100, ]
+data2 = data2[1:100, ]
 
 data = list(data1, data2)
-xCol = c(1, 3, 6)
+xCol = c(2, 4)
 xCol.circ = NULL
-thrs = c(0.1, 0.1, 0.05)
+thrs = c(0.1, 0.1)
 priority = FALSE
 
 # Executing the function
