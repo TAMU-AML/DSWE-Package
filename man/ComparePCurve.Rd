@@ -83,11 +83,8 @@ testSet = NULL
 thrs = 0.2
 confLevel = 0.95
 gridSize = c(10, 10)
-powerbins = 15
-baseline = 1
-limitMemory = TRUE
-opt_method = 'L-BFGS-B'
-function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, baseline, limitMemory, opt_method)
+function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol,
+testCol, testSet, thrs, confLevel, gridSize)
 }
 }
 \references{

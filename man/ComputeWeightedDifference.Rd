@@ -46,9 +46,11 @@ xCol = c(2, 4)
 xCol.circ = NULL
 yCol = 7
 testCol = c(2, 4)
-output = ComparePCurve(data = datalist, xCol = xCol, yCol = yCol, testCol = testCol, testSet = testset) 
-weightedDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1)
-weightedStatDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1, statDiff = TRUE, confBand = output$band)
+output = ComparePCurve(data = datalist, xCol = xCol, yCol = yCol, 
+testCol = testCol, testSet = testset) 
+weightedDiff = ComputeWeightedDifference(output$muDiff, userweights, output$mu1)
+weightedStatDiff = ComputeWeightedDifference(output$muDiff, userweights, output$mu1, 
+statDiff = TRUE, confBand = output$band)
 }
 }
 \references{
