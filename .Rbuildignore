@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^\.bin_install_script$
 ^README.md$
+^data-raw$
