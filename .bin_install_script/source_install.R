@@ -3,7 +3,7 @@
 #DESCRIPTION: This script can be used to install DSWE package from its source file
 ##################################################################################
 
-.PACKAGE_VERSION = "1.4.0" #Update this line when version changes
+.PACKAGE_VERSION = "1.4.1" #Update this line when version changes
 .requiredRversion = "3.5.0"
 .DEPENDENCIES = list(
   list(name = "Rcpp",version = "1.0.4.6"),
@@ -13,7 +13,8 @@
   list(name = "mixtools",version = "1.1.0"),
   list(name = "RcppArmadillo",version = "0.9.870.2.0"),
   list(name = "BayesTree",version = "0.3-1.4"),
-  list(name = "gss",version = "2.2-2")
+  list(name = "gss",version = "2.2-2"),
+  list(name = "e1071",version = "1.7-3")
 )
 
 
