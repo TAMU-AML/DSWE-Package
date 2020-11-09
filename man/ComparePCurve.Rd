@@ -17,7 +17,9 @@ ComparePCurve(
   powerbins = 15,
   baseline = 1,
   limitMemory = T,
-  opt_method = "L-BFGS-B"
+  opt_method = "L-BFGS-B",
+  sampleSize = list(optimSize = 500, bandSize = 5000),
+  rngSeed = 1
 )
 }
 \arguments{
@@ -46,6 +48,10 @@ ComparePCurve(
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference}
 
 \item{opt_method}{A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.}
+
+\item{sampleSize}{A named list of two integer items: \code{optimSize} and \code{bandSize}, denoting the sample size for each dataset for hyperparameter optimization and confidence band computation, respectively, when \code{limitMemory = TRUE}. Default value is \code{list(optimSize = 500, bandSize = 5000)}.}
+
+\item{rngSeed}{Random seed for sampling data when \code{limitMemory = TRUE}. Default is 1.}
 }
 \value{
 a list containing :

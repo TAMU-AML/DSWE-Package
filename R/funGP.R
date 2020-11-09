@@ -22,13 +22,15 @@
 
 #' @title Function comparison using Gaussian Process and Hypothesis testing
 #'
-#' @param datalist a list of data sets to compute a function for each of them
-#' @param xCol a numeric or vector stating the column number of covariates
+#' @param datalist A list of data sets to compute a function for each of them
+#' @param xCol A numeric or vector stating the column number of covariates
 #' @param yCol A numeric value stating the column number of target
-#' @param confLevel a single value representing the statistical significance level for constructing the band
+#' @param confLevel A single value representing the statistical significance level for constructing the band
 #' @param testset Test points at which the functions will be compared
 #' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.
 #' @param opt_method A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.
+#' @param sampleSize A named list of two integer items: \code{optimSize} and \code{bandSize}, denoting the sample size for each dataset for hyperparameter optimization and confidence band computation, respectively, when \code{limitMemory = TRUE}. Default value is \code{list(optimSize = 500, bandSize = 5000)}. 
+#' @param rngSeed Random seed for sampling data when \code{limitMemory = TRUE}. Default is 1.
 #' 
 #' @return a list containing :
 #'  \itemize{
@@ -53,10 +55,22 @@
 #' function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
 #' }
 #'@export
-funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T, opt_method = 'L-BFGS-B'){
+funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T, opt_method = 'L-BFGS-B', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
+  }
+  
+  if (limitMemory){
+    if(!is.list(sampleSize)){
+      stop('If limitMemory is TRUE, sampleSize must be a list with two named items: optimSize and bandSize.')
+    }
+    if(length(sampleSize) != 2){
+      stop('If limitMemory is TRUE, sampleSize must be a list with two named items: optimSize and bandSize.')
+    }
+    if(!all(names(sampleSize)%in%c("optimSize","bandSize"))){
+      stop('If limitMemory is TRUE, sampleSize must be a list with two named items: optimSize and bandSize.')
+    }
   }
 
   if(!is.list(datalist)){
@@ -110,9 +124,9 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
     stop("opt_method must be L-BFGS-B or BFGS.")
   }
 
-  params = estimateParameters(datalist, xCol, yCol, opt_method)$estimatedParams
+  params = estimateParameters(datalist, xCol, yCol, opt_method, limitMemory, sampleSize$optimSize, rngSeed)$estimatedParams
 
-  diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory)
+  diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory, sampleSize$bandSize, rngSeed)
 
   muDiff = diffCov$mu2 - diffCov$mu1
 

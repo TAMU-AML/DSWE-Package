@@ -1,5 +1,6 @@
 <center> <h1>DSWE (Data Science for Wind Energy)</h1> </center>
 
+**Note**: A graphical installation and usage guide is available on TAMU **Advanced Metrology Lab**'s website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/05/DSWE_HELP.pdf).
 
 - [Introduction](#introduction)
 - [Installation](#installation)
@@ -106,7 +107,7 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 *Function :*
 
-*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'L-BFGS-B')*
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'L-BFGS-B', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1)*
 
 ```R
 # Preparing the arguments
@@ -125,9 +126,11 @@ powerbins = 15
 baseline = 1
 limitMemory = TRUE
 opt_method = 'L-BFGS-B'
+sampleSize = list(optimSize = 500, bandSize = 5000) 
+rngSeed = 1 
 
 # Executing the function
-function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, baseline, limitMemory, opt_method)
+function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, baseline, limitMemory, opt_method, sampleSize, rngSeed)
 ```
 
 ### 2. ComputeWeightedDifference
@@ -173,7 +176,7 @@ testCol = c(2, 4)
 
  *Function :*
 
- *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'L-BFGS-B')*
+ *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'L-BFGS-B', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1 )*
 
  ```R
  # Preparing the arguments
@@ -184,9 +187,11 @@ confLevel = 0.95
 testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
 limitMemory = TRUE
 opt_method = 'L-BFGS-B'
+sampleSize = list(optimSize = 500, bandSize = 5000) 
+rngSeed = 1 
 
  # Executing the function
-function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
+function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method, sampleSize, rngSeed)
  ```
 
 ### 4. KnnPCFit
