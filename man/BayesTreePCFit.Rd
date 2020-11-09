@@ -21,3 +21,13 @@ a vector or numeric predictions on user provided test data
 \description{
 Tree based power curve estimate
 }
+\examples{
+\donttest{
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:110, c(2, 4)]
+
+Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
+}
+}

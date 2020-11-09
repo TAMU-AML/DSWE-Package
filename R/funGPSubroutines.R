@@ -23,15 +23,17 @@
 #' @useDynLib DSWE
 #' @importFrom Rcpp sourceCpp
 #' 
-estimateParameters= function(datalist, covCols, yCol, opt_method){
-  maxDataSample = 500
-  for (i in 1:length(datalist)){
-    if (nrow(datalist[[i]]) > maxDataSample){
-      set.seed(1)
-      datalist[[i]] = datalist[[i]][sample(nrow(datalist[[i]]), maxDataSample),]
+estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, optimSize, rngSeed){
+  
+  if (limitMemory){
+    maxDataSample = optimSize
+    for (i in 1:length(datalist)){
+      if (nrow(datalist[[i]]) > maxDataSample){
+        set.seed(rngSeed)
+        datalist[[i]] = datalist[[i]][sample(nrow(datalist[[i]]), maxDataSample),]
+      }
     }
   }
-
   nCov = length(covCols)
   theta = rep(0,nCov)
   for (i in 1:length(theta)){
@@ -52,16 +54,16 @@ estimateParameters= function(datalist, covCols, yCol, opt_method){
 }
 
 ###
-computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory){
+computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory, bandSize, rngSeed){
   theta = params$theta
   sigma_f = params$sigma_f
   sigma_n = params$sigma_n
   beta = params$beta
   if (limitMemory == T){
-    maxDataSample = 5000
+    maxDataSample = bandSize
     for (i in 1:length(datalist)){
       if (nrow(datalist[[i]]) > maxDataSample){
-        set.seed(1)
+        set.seed(rngSeed)
         datalist[[i]] = datalist[[i]][sample(nrow(datalist[[i]]), maxDataSample),]
       }
     }

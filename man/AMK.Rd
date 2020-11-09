@@ -43,6 +43,19 @@ This function is based on Lee et al. (2015). Main features  are:
 \item Handling the data with gaps when the direct plug-in estimator used in Lee et al. fails to return a finite bandwidth. This is set using the option \code{bw = 'dpi_gap'} for bandwidth estimation.  
 }
 }
+\examples{
+\donttest{
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:140, c(2, 4)]
+bw = 'dpi_gap'
+nMultiCov = 2
+fixedCov = NULL
+cirCov = NA
+AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
+}
+}
 \references{
 Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67.
 }

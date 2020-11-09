@@ -11,23 +11,29 @@ funGP(
   confLevel = 0.95,
   testset,
   limitMemory = T,
-  opt_method = "L-BFGS-B"
+  opt_method = "L-BFGS-B",
+  sampleSize = list(optimSize = 500, bandSize = 5000),
+  rngSeed = 1
 )
 }
 \arguments{
-\item{datalist}{a list of data sets to compute a function for each of them}
+\item{datalist}{A list of data sets to compute a function for each of them}
 
-\item{xCol}{a numeric or vector stating the column number of covariates}
+\item{xCol}{A numeric or vector stating the column number of covariates}
 
 \item{yCol}{A numeric value stating the column number of target}
 
-\item{confLevel}{a single value representing the statistical significance level for constructing the band}
+\item{confLevel}{A single value representing the statistical significance level for constructing the band}
 
 \item{testset}{Test points at which the functions will be compared}
 
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.}
 
 \item{opt_method}{A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.}
+
+\item{sampleSize}{A named list of two integer items: \code{optimSize} and \code{bandSize}, denoting the sample size for each dataset for hyperparameter optimization and confidence band computation, respectively, when \code{limitMemory = TRUE}. Default value is \code{list(optimSize = 500, bandSize = 5000)}.}
+
+\item{rngSeed}{Random seed for sampling data when \code{limitMemory = TRUE}. Default is 1.}
 }
 \value{
 a list containing :
@@ -43,4 +49,16 @@ a list containing :
 }
 \description{
 Function comparison using Gaussian Process and Hypothesis testing
+}
+\examples{
+\donttest{
+datalist = list(data1[1:100,], data2[1:100, ])
+xCol = c(2, 4)
+yCol = 7
+confLevel = 0.95
+testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
+limitMemory = TRUE
+opt_method = 'L-BFGS-B'
+function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
+}
 }

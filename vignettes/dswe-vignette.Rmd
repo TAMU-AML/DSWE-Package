@@ -1,0 +1,542 @@
+---
+title: "dswe-vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{dswe-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(DSWE)
+```
+
+<center> <h1>DSWE (Data Science for Wind Energy)</h1> </center>
+
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#Usage)   
+    1. [ComparePCurve](#ComparePCurve) 
+    2. [ComputeWeightedDifference](#ComputeWeightedDifference) 
+    3. [funGP](#funGP)
+    4. [KnnPCFit](#KnnPCFit)  
+    5. [KnnPredict](#KnnPredict)  
+    6. [KnnUpdate](#KnnUpdate)  
+    7. [AMK](#AMK)  
+	8. [BayesTreePCFit](#BayesTreePCFit)
+	9. [SplinePCFit](#SplinePCFit)
+	10. [SvmPCFit](#SvmPCFit)
+    11. [CovMatch](#CovMatch)  
+- [Details](#details)
+
+# Introduction
+This is an R-package implementing some of the data science methods for wind energy applications (DSWE). The current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching:
+
+Power curve comparison:
+
+* ComparePCurve
+* ComputeWeightedDifference
+* funGP
+
+
+Predictive modelling functions:
+
+* KnnPCFit
+* KnnPredict
+* KnnUpdate
+* AMK
+* BayesTreePCFit
+* SplinePCFit
+* SvmPCFit
+
+Covariate matching function :
+
+* CovMatch
+
+# Installation
+The package building relies on certain tool chains in Windows and Mac respectively, as the compiler for C++ code, along with package `remotes`
+
+**Step 1 (Download necessary tool chain):**
+
+Tool chain : [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [GFortran](https://mac.r-project.org/tools/) for Mac OS
+
+**Step 2 (Install package remotes in R):**
+
+Install package remotes:
+```R
+install.packages("remotes")
+```
+
+**Step 3 (Build package using remotes):**
+
+```R
+remotes::install_github("TAMU-AML/DSWE-Package")
+```
+
+You can also specify the version (for example, version 1.3.1) as follows:
+```R
+remotes::install_github("TAMU-AML/DSWE-Package@v1.3.1")
+```
+
+# Usage
+
+The package can be accessed either by attaching the package or using the package name.
+
+*Attaching package and accessing functions*
+
+```R
+library(DSWE)
+
+ComparePCurve()
+ComputeWeightedDifference()
+funGP()
+KnnPCFit()
+KnnPredict()
+KnnUpdate()
+AMK()
+BayesTreePCFit()
+SplinePCFit()
+CovMatch()
+```
+
+*Accesing functions without attaching package*
+```R
+DSWE::ComparePCurve()
+DSWE::ComputeWeightedDifference()
+DSWE::funGP()
+DSWE::KnnPCFit()
+DSWE::KnnPredict()
+DSWE::KnnUpdate()
+DSWE::AMK()
+DSWE::BayesTreePCFit
+DSWE::SplinePCFit
+DSWE::CovMatch()
+```
+
+### 1. ComparePCurve
+The function can be used to quantify the difference using CovMatch and funGP functions internally.
+
+*Function :*
+
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'L-BFGS-B')*
+
+* data - A list of data sets to be compared, the difference in the mean function is always computed as (f(data2) - f(data1)) 
+* xCol - A numeric or vector stating column number of covariates
+* xCol.circ - A numeric or vector stating column number of circular covariates
+* yCol - A numeric value stating the column number of the response
+* testCol - A numeric/vector stating column number of covariates to used in generating test set. Maximum of two columns to be used.
+* testSet - A matrix or dataframe consisting of test points, default value NULL, if NULL computes test points internally using testCol variables. If not NULL, total number of test points must be less than or equal to 2500.
+* thrs - A numeric or vector representing threshold for each covariates
+* conflevel - A numeric between (0,1) representing the statistical significance level for constructing the band
+* gridSize - A numeric / vector to be used in constructing test set, should be provided when testSet is NuLL, else it is ignored. Default is c(50,50) for 2-dim input which is converted internally to a default of c(1000) for 1-dim input. Total number of test points (product of gridSize vector components) must be less than or equal to 2500. 
+* powerbins - A numeric stating the number of power bins for computing the scaled difference, default is 15.
+* baseline - An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 1.
+* limitMemory - A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference
+* opt_method - A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.
+
+*Example :*
+
+```R
+# Preparing the arguments
+data1 = data1[1:100, ]
+data2 = data2[1:100, ]
+data = list(data1, data2)
+xCol = c(2, 4)
+xCol.circ = NULL
+yCol = 7
+testCol = c(2, 4)
+testSet = NULL
+thrs = 0.2
+confLevel = 0.95
+gridSize = c(10, 10)
+powerbins = 15
+baseline = 1
+limitMemory = TRUE
+opt_method = 'L-BFGS-B'
+
+# Executing the function
+function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol, testCol, testSet, thrs, confLevel, gridSize, powerbins, baseline, limitMemory, opt_method)
+```
+*Results :*
+
+* weightedDiff - a numeric, % difference between the functions weighted using the density of the covariates
+* weightedStatDiff - a numeric, % statistically significant difference between the functions weighted using the density of the covariates
+* scaledDiff -  a numeric, % difference between the functions scaled to the orginal data
+* scaledStatDiff - a numeric, % statistically significant difference between the functions scaled to the orginal data
+* unweightedDiff - a numeric,  % difference between the functions unweighted
+* unweightedStatDiff - a numeric,  % statistically significant difference between the functions unweighted
+* reductionRatio -  a list consisting of shrinkage ratio of features used in testSet
+* mu1 - a vector of prediction on testset using the first data set
+* mu2 - a vector of prediction on testset using the second data set
+* muDiff - a vector of the difference in prediction (mu2 - mu1) for each test point
+item band - a vector for the confidence band at all the testpoints for the two functions to be the same at a given cofidence level.
+* confLevel - a numeric representing the statistical significance level for constructing the band
+* testSet - a vector/matrix of the test points either provided by user, or generated internally
+* estimatedParams - a list of estimated hyperaparameters for the Gaussian process model
+* matchedData - a list of two matched datasets as generated by covariate matching
+
+### 2. ComputeWeightedDifference
+This function is used to compute the weighted difference between power curves using user-specified weights.
+*Function :*
+
+*ComputeWeightedDifference(muDiff, weights, base, statDiff = FALSE, confBand = NULL)*
+
+* muDiff - a vector of pointwise difference between two power curves on a testset as obtained from ComparePCurve() or funGP() function.
+* weights - a vector of user specified weights for each element of muDiff. It can be based on any probability distribution of user's choice. The weights must sum to 1.
+* base - a vector of predictions from a power curve; to be used as the denominator in computing the percentage difference. It can be either mu1 or mu2 as obtained from ComparePCurve() or funGP() function. 
+* statDiff - a boolean specifying whether to compute the statistical significant difference or not. Default is set to FALSE, i.e. statistical significant difference is not computed. If set to TRUE, confBand must be provided.
+* confBand - a vector of pointwise confidence band for all the points in the testset as obtained from ComparePCurve() or funGP() function, named as band. Should only be provided when statDiff is set to TRUE. Default value is NULL.
+
+*Example :*
+
+ ```R
+ # Construct a desired testset and calculate weights based on any probability distribution
+ ws_test = seq(3,15,length.out = 10)  #generate 10 grid points for wind speed.
+ density_test = seq(1.12, 1.16, length.out = 10) #generate 10 grid points for temperature.
+ 
+ #Combine ws_test and temp_test to create a 50 by 50 mesh grid.
+ testset = expand.grid(ws_test,density_test)
+
+ #computing weights based on a Weibull ditribution for wind speed and a uniform distribution for ambient temperature 
+ userweights = dweibull(testset[,1], shape = 2.25, scale = 6.5)*1 #assuming uniform distribution for ambient temperature
+ userweights = userweights/sum(userweights) #normalizing the weights to ensure they sum to 1
+ 
+ # Read the data
+data1 = data1[1:100, ]
+data2 = data2[1:100, ]
+datalist = list(data1, data2)
+xCol = c(2, 4) 
+xCol.circ = NULL
+yCol = 7
+testCol = c(2, 4)
+ 
+ # Compute power curve difference on the constructed testset
+ output = ComparePCurve(data = datalist, xCol = xCol, yCol = yCol, testCol = testCol, testSet = testset) 
+ 
+ #Compute weighted diff based on the calculated weights 
+ weightedDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1)
+
+ #Compute statistically significant weighted diff
+ weightedStatDiff = ComputeWeightedDifference(muDiff = output$muDiff, weights = userweights, base = output$mu1, statDiff = TRUE, confBand = output$band)
+ ```
+*Results :*
+
+* a numeric percentage weighted difference or statistical significant percetage weighted difference based on whether statDiff is set to FALSE or TRUE. 
+
+### 3. funGP
+ The function can be used to perform function comparison using Gaussian process and hypothesis testing
+
+ *Function :*
+
+ *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'L-BFGS-B')*
+ 
+* datalist -  a list of data sets to compute a function for each of them
+* xCol -  a numeric or vector stating the column number of covariates
+* yCol -  A numeric value stating the column number of target
+* confLevel - a single value representing the statistical significance level for constructing the band
+* testset - Test points at which the functions will be compared
+* limitMemory - A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.
+* opt_method - A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.
+
+*Example :*
+
+ ```R
+ # Preparing the arguments
+datalist = list(data1[1:100,], data2[1:100, ])
+xCol = c(2, 4)
+yCol = 7
+confLevel = 0.95
+testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
+limitMemory = TRUE
+opt_method = 'L-BFGS-B'
+
+ # Executing the function
+function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
+ ```
+*Results :*
+
+* muDiff - A vector of pointwise difference between the predictions from the two datasets (mu2- mu1)
+* mu1 - A vector of test prediction for first data set
+* mu2 - A vector of test prediction for second data set
+band - A vector of the allowed statistical difference between functions at testpoints in testset
+* confLevel - A numeric representing the statistical significance level for constructing the band
+* testset - A matrix of test points to compare the functions
+* estimatedParams - A list of estimated hyperparameters for GP
+
+### 4. KnnPCFit
+The function can be used to model the data using user supplied arguments, a knn model is returned as an end result. It can also be used to get the best feature subset, if subsetSelection is set TRUE
+
+*Function :*
+
+*KnnPCFit(data, xCol, yCol, subsetSelection = FALSE)*
+
+* data - a dataframe or a matrix, to be used in modelling
+* xCol - a vector or numeric values stating the column number of features
+* yCol - a numerical or a vector value stating the column number of target
+* subsetSelection - a boolean, default value is FALSE, if TRUE returns the best feature column number as xCol
+
+*Example :*
+
+```R
+# Preparing the arguments
+data = data1
+xCol = c(2, 4)
+yCol = 7
+subsetSelection = FALSE
+
+# Executing the function
+knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
+```
+*Results :*
+
+* data - The data set provided by user
+* xCol - The column number of features provided by user or the best subset column number
+* yCol - The column number of target provided by user
+* bestK - The best k nearest neighbor calculated using the function
+* RMSE - The RMSE calculated using the function for provided data using user defined features and best obtained K
+* MAE - The MAE calculated using the function for provided data using user defined features and best obtained K
+
+### 5. KnnPredict
+The function can be used to evaluate a prediction on a new test point using model generated using KnnPCFit
+
+
+*Function :*
+
+*KnnPredict(knnMdl, testData)*
+
+* knnMdl - a list containing:
+
+        knnMdl$data - The data set provided by user
+        knnMdl$xCol - The column number of features provided by user or the best   subset column number
+        knnMdl$yCol - The column number of target provided by user
+        knn$bestK - The best k nearest neighbor calculated using the function KnnFit
+* testData - a data frame or matrix, to compute the predictions
+
+*Example :*
+
+```R
+# Preparing the arguments
+data = data1
+xCol = c(2, 4)
+yCol = 7
+subsetSelection = FALSE
+
+knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
+testData = data[1:100, ]
+
+# Executing the function
+prediction = KnnPredict(knn_model, testData)
+```
+*Results :*
+
+* a numeric / vector with prediction on test data using model generated by KnnFit
+
+### 6. KnnUpdate
+The function can be used to update the knn model whenever new data in available
+
+*Function :*
+
+*KnnUpdate = function(knnMdl, newData)*
+
+* knnMdl - a list containing:
+
+        knnMdl$data - The data set provided by user
+        knnMdl$xCol - The column number of features provided by user or the best   subset column number
+        knnMdl$yCol - The column number of target provided by user
+        knn$bestK - The best k nearest neighbor calculated using the function KnnFit
+* newData - a dataframe or a matrix, to be used for updating the model
+
+*Example :*
+
+```R
+# Preparing the arguments
+data = data1
+xCol = c(2, 4)
+yCol = 7
+subsetSelection = FALSE
+
+knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
+newData = data[500:1000, ]
+
+# Executing the function
+knn_newmodel = KnnUpdate(knn_model, newData)
+```
+*Results :*
+
+* data - The updated data using old data set and new data
+* xCol - The column number of features provided by user or the best subset column number
+* yCol - The column number of target provided by user
+* bestK - The best k nearest neighbor calculated using the function
+
+### 7. AMK
+The function can be used to model the data by using user supplied arguments. It uses a kernel to assign weights to every training data points, the bandwidth of kernel (bw) can be provided as vector of values or character 'dpi' and 'dpi-gap'. If provided character input, the bandwidths are computed internally
+
+*Function :*
+
+*AMK(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA )*
+
+* trainX a matrix or dataframe of input variable values in the training dataset.
+* trainY a numeric vector for response values in the training dataset.
+* testX a matrix or dataframe of test input variable values to compute predictions.
+* bw a numeric vector or a character input for bandwidth. If character, bandwidth computed internally; the input should be either 'dpi' or 'dpi_gap'. Default is 'dpi_gap'.
+* nMultiCov an integer or a character input specifying the number of multiplicative covariates in each additive term. Default is 3 (same as Lee et al., 2015). The character inputs can be: 'all' for a completely multiplicative model, or 'none' for a completely additive model. Ignored if the number of covariates is 1.
+* fixedCov an integer vector specifying the fixed covariates column number(s), default value is c(1,2). Ignored if nMultiCov is set to 'all' or 'none' or if the number of covariates is less than 3.
+* cirCov an integer vector specifying the circular covariates column number(s) in trainX, default value is NA.
+
+*Example :*
+
+* a numeric vector for predictions at the data points in \code{testX}.
+
+```R
+# Preparing the arguments
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:140, c(2, 4)]
+bw = 'dpi_gap'
+nMultiCov = 2
+fixedCov = NULL
+cirCov = NA
+
+# Executing the function
+AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
+```
+*Results :*
+
+**Note :-** In case an error such as a non-finite bandwidth is generated upon adding a covariate, please remove such covariates
+
+### 8. BayesTreePCFit
+The function can be used to model the data by using user supplied arguments. It uses tree based method to model the supplied data set
+
+*Function :*
+
+*BayesTreePCFit(trainX, trainY, testX, nTree = 50)*
+
+* trainX - a matrix or dataframe to be used in modelling
+* trainY - a numeric or vector as a target
+* testX - a matrix or dataframe, to be used in computing the predictions
+* nTree - a numeric value specifying number of trees to be constructed in model 
+
+*Example :*
+
+```R
+# Preparing the arguments
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:110, c(2, 4)]
+
+# Executing the function
+Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
+```
+*Results :*
+
+* a vector or numeric predictions on user provided test data
+
+### 9. SplinePCFit
+The function can be used to model the data by using user supplied arguments. It uses spline based method to model the data set. Users can leverage the modelFormula argument to model data set using interactions among features
+
+*Function :*
+
+*SplinePCFit(data, xCol, yCol, testP, modelFormula = NULL)*
+
+* data - a matrix or dataframe to be used in modelling
+* xCol - a numeric or vector stating the column number of feature covariates
+* yCol - a numeric value stating the column number of target
+* testX - a matrix or dataframe, to be used in computing the predictions
+* modelFormula - default is NULL else a model formula specifying target and features.Please refer 'gss' package documentation for more details
+
+*Example :*
+
+```R
+# Preparing the arguments
+data = data1
+xCol = c(2, 4)
+yCol = 7
+testX = data[100:110, ]
+
+# Executing the function
+Spline_prediction = SplinePCFit(data, xCol, yCol, testX)
+```
+*Results :*
+
+* a vector or numeric predictions on user provided test data
+
+### 10. SvmPCFit
+The function can be used to model the data by using user supplied arguments. It uses support vector machine to model the data set.
+
+*Function :*
+
+*SvmPCFit(trainX, trainY, testX, kernel = 'radial')*
+
+* trainX - a matrix or dataframe to be used in modelling
+* trainY - a numeric or vector as a target
+* testX - a matrix or dataframe, to be used in computing the predictions
+* kernel - default is 'radial' else can be 'linear', 'polynomial' and 'sigmoid'
+
+*Example :*
+
+```R
+# Preparing the arguments
+data = data1
+trainX = data[, c(2, 4)]
+trainY = data[, 7]
+testX = data[100:110, c(2, 4)]
+
+# Executing the function
+Svm_prediction = SvmPCFit(trainX, trainY, testX)
+```
+*Results :*
+
+* a vector or numeric predictions on user provided test data
+
+### 11. CovMatch
+The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
+
+*Function :*
+
+*CovMatch(data, xCol, xCol.circ = NULL, thrs = 0.2, priority = FALSE)*
+
+* data - a list, consisting of data sets to match, also each of the individual data set can be dataframe or a matrix
+* thrs - a numerical or a vector of threshold values for each covariates, against which matching happens. It should be a single value or a vector of values representing threshold for each of the covariate
+* xCol - a vector stating the column position of covariates used
+* xCol.circ - a vector stating the column position of circular variables
+* priority - a boolean, default value False, otherwise computes the sequence of matching
+
+*Example :*
+
+```R
+# Preparing the arguments
+data1 = data1[1:100, ]
+data2 = data2[1:100, ]
+
+data = list(data1, data2)
+xCol = c(2, 4)
+xCol.circ = NULL
+thrs = c(0.1, 0.1)
+priority = FALSE
+
+# Executing the function
+matched_data = CovMatch(data, xCol, xCol.circ, thrs, priority)
+```
+*Results :*
+
+* originalData - The data sets provided for matching
+* matchedData - The data sets after matching
+* MinMaxOriginal - The minimum and maximum value in original data for each covariate used in matching
+* MinMaxMatched - The minimum and maximum value in matched data for each covariates used in matching
+
+**Note :-** Arguments usage detail for each of the functions can be accessed through R documentation using:
+
+```R
+help(functionname)
+?functionname
+```

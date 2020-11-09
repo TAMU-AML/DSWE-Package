@@ -23,3 +23,12 @@ a vector or numeric predictions on user provided test data
 \description{
 Smoothing spline Anova method
 }
+\examples{
+\donttest{
+data = data1
+xCol = c(2, 4)
+yCol = 7
+testX = data[100:110, ]
+Spline_prediction = SplinePCFit(data, xCol, yCol, testX)
+}
+}

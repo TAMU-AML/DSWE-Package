@@ -36,6 +36,15 @@
 #'   \item RMSE - The RMSE calculated using the function for provided data using user defined features and best obtained K
 #'   \item MAE - The MAE calculated using the function for provided data using user defined features and best obtained K
 #'}
+#' @examples 
+#' \donttest{
+#' data = data1
+#' xCol = c(2, 4)
+#' yCol = 7
+#' subsetSelection = FALSE
+#' 
+#' knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
+#' }
 #' @export
 #' @importFrom FNN knn.reg knnx.index
 KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
