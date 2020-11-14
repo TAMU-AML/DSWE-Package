@@ -44,21 +44,28 @@ arma::mat computeCorrelMat_(const arma::mat & X1,const arma::mat & X2,const arma
 } 
 
 // [[Rcpp::export]]
-arma::vec predictGP(const arma::mat& X, const arma::vec& y, const arma::mat& Xnew, List params){
-  arma::vec pred = arma::zeros(Xnew.n_rows,1);
+arma::vec computeWeightedY(const arma::mat& X, const arma::vec& y, List params){
   arma::vec theta = params["theta"];
   double sigma_f = params["sigma_f"];
   double sigma_n = params["sigma_n"];
   double beta = params["beta"];
   arma::mat trainMat = pow(sigma_f,2)*computeCorrelMat_(X,X, theta);
   trainMat.diag() +=  pow(sigma_n,2);
-  arma::mat upperCholTrainMat = chol(trainMat);
+  arma::mat upperCholTrainMat = arma::chol(trainMat);
   trainMat = arma::mat();
   arma::vec y_dash = y - beta;
-  arma::vec linsoln = arma::solve(arma::trimatu(upperCholTrainMat),arma::solve(arma::trimatl(upperCholTrainMat.t()),y_dash));
-  upperCholTrainMat = arma::mat();
+  arma::vec weightedY = arma::solve(arma::trimatu(upperCholTrainMat),arma::solve(arma::trimatl(upperCholTrainMat.t()),y_dash));
+  return weightedY;
+}
+
+// [[Rcpp::export]]
+arma::vec predictGP(const arma::mat& X, const arma::vec& weightedY, const arma::mat& Xnew, List params){
+  arma::vec pred = arma::zeros(Xnew.n_rows,1);
+  arma::vec theta = params["theta"];
+  double sigma_f = params["sigma_f"];
+  double beta = params["beta"];
   arma::mat testCovMat = pow(sigma_f,2)*computeCorrelMat_(Xnew,X, theta);
-  pred = beta + (testCovMat*linsoln);
+  pred = beta + (testCovMat*weightedY);
   return pred;
 }
 

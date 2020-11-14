@@ -22,7 +22,7 @@
 
 computeThinningNumber = function(trainX){
   thinningNumber = max(apply(trainX,2,function(col) 
-    min(which(abs(stats::pacf(col, plot = FALSE)$acf[,1,1]) <= (2/sqrt(nrow(trainX)))))),1) -1 
+    min(which(c(1,abs(stats::pacf(col, plot = FALSE)$acf[,1,1])) <= (2/sqrt(nrow(trainX)))))))
   return(thinningNumber)
 }
 
@@ -78,7 +78,7 @@ estimateLocalFunctionParams= function(trainT, residual){
   sigma_f = sd(residual)/sqrt(2)
   sigma_n = sigma_f
   parInit = c(theta,sigma_f,sigma_n)
-  objFun = function(par){computeLogLik_(as.matrix(trainT), residual,
+  objFun = function(par){computeLogLikGP_(as.matrix(trainT), residual,
                                           params = list(theta=par[1],sigma_f=par[2],sigma_n=par[3],beta=0))}
   objGrad = function(par){computeLogLikGradGPZeroMean_(as.matrix(trainT), residual,
                                                        params = list(theta=par[1],sigma_f=par[2],sigma_n=par[3],beta=0))}
@@ -96,7 +96,8 @@ computeLocalFunction = function(residual, traindataT, testdataT, neighbourhood){
     trainIdx = which(distance < neighbourhood)
     if (length(trainIdx)>1){
       params = estimateLocalFunctionParams(traindataT[trainIdx],residual[trainIdx])
-      pred[i] = predictGP(as.matrix(traindataT[trainIdx]),residual[trainIdx],as.matrix(testdataT[i]),params$estimatedParams)
+      weightedRes = computeWeightedY(as.matrix(traindataT[trainIdx]),residual[trainIdx],params$estimatedParams)
+      pred[i] = predictGP(as.matrix(traindataT[trainIdx]),weightedRes,as.matrix(testdataT[i]),params$estimatedParams)
     } else {
       pred[i] = 0
     }
