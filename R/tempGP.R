@@ -21,21 +21,33 @@
 # SOFTWARE.
 
 #' @title temporal Gaussian process
-#' @description A Gaussian process based power curve model which explicitly models the temporal aspect of the power curve.
+#' @description A Gaussian process based power curve model which explicitly models the temporal aspect of the power curve. The model consists of two parts: \code{f(x)} and \code{g(t)}.
 #' @param trainX A matrix with each column corresponding to one input variable. 
 #' @param trainY A vector with each element corresponding to the output at the corresponding row of \code{trainX}.
+#' @param trainT A vector for time indices of the data points. By default, the function assigns natural numbers starting from 1 as the time indices. 
 #'
 #' @return An object of class \code{tempGP} with the following attributes:
 #' \itemize{
-#' \item trainX
-#' \item trainY
-#' \item thinningNumber
-#' \item estimatedParams
-#' \item llval
-#' \item gradval
+#' \item trainX - same as the input matrix \code{trainX}.
+#' \item trainY - same as the input vector \code{trainY}.
+#' \item thinningNumber - the thinning number computed by the algorithm.
+#' \item modelF - A list containing the details of the model for predicting function \code{f(x)}:
+#' \itemize{
+#' \item X - The input variable matrix for computing the cross-covariance for predictions, same as \code{trainX} unless the model is updated. See \code{\link{updateData.tempGP}} method for details on updating the model.
+#' \item y - The response vector, again same as \code{trainY} unless the model is updated.
+#' \item weightedY - The weighted response, that is, the response left multiplied by the inverse of the covariance matrix.
+#' } 
+#' \item modelG - A list containing the details of the model for predicting function \code{g(t)}:
+#' \itemize{
+#' \item residuals - The residuals after subtracting function \code{f(x)} from the response. Used to predict \code{g(t)}. See \code{\link{updateData.tempGP}} method for updating the residuals.
+#' \item time_index - The time indices of the residuals, same as \code{trainT}.
+#' }
+#' \item estimatedParams - Estimated hyperparameters for function \code{f(x)}.
+#' \item llval - log-likelihood value of the hyperparameter optimization for \code{f(x)}.
+#' \item gradval - gradient vector at the optimal log-likelihood value.
 #' }
 #' 
-#' @seealso [predict.tempGP()] for computing predictions and [updateData.tempGP()] for updating data in a tempGP object.
+#' @seealso \code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
 #' @importFrom stats pacf
 #' @export
 #' 
@@ -113,11 +125,13 @@ tempGP = function(trainX, trainY, trainT = NULL){
 
 
 #' @title predict from temporal Gaussian process
-#' @description predict function for tempGP objects
-#' @param tempGPObj An object of class tempGP
+#' @description predict function for tempGP objects. This function computes the prediction \code{f(x)} or \code{f(x) + g(t)} depending on the temporal distance between training and test points and whether the time indices for the test points are provided. 
+#' @param tempGPObj An object of class tempGP.
 #' @param testX A matrix with each column corresponding to one input variable.
+#' @param testT A vector of time indices of the test points. When \code{NULL}, only function \code{f(x)} is used for prediction. Default is \code{NULL}.
+#' @param trainT Optional argument to override the existing trainT indices of the \code{tempGP} object.
 #'
-#' @return a vector of predictions at the testpoints in \code{testX}.
+#' @return A vector of predictions at the testpoints in \code{testX}.
 #' @export
 #' 
 predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
@@ -201,13 +215,15 @@ predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
 }
 
 #' @title Update the data in a tempGP object
-#' @description This function updates the trainX, trainY and trainT in a tempGP object. By default, if the new data has \code{m} data points, the function replaces top \code{m} data points from the tempGP object and appends the new data at the bottom, thus keeping the total number of data points same. This can be overwritten by setting \code{replace = FALSE}.
-#' @param tempGPObj An object of class tempGP
+#' @description This function updates \code{trainX}, \code{trainY}, and \code{trainT} in a \code{tempGP} object. By default, if the new data has \code{m} data points, the function removes top \code{m} data points from the tempGP object and appends the new data at the bottom, thus keeping the total number of data points the same. This can be overwritten by setting \code{replace = FALSE} to keep all the data points (old and new). The method also updates \code{modelG} by computing and updating residuals at the new data points. \code{modelF} can be also be updated by setting the argument \code{updateModelF} to \code{TRUE}, though not required generally (see comments in the \code{Arguments}.)
+#' @param tempGPObj An object of class tempGP.
 #' @param newX A matrix with each column corresponding to one input variable.
 #' @param newY A vector with each element corresponding to the output at the corresponding row of \code{newX}.
-#' @param replace A boolean to specify whether to replace the old data with the new one, or to append the new data. Default is TRUE, which replaces the old data.
+#' @param newT A vector with time indices of the new datapoints. If \code{NULL}, the function assigns natural numbers starting with one larger than the existing time indices in \code{trainT}.
+#' @param replace A boolean to specify whether to replace the old data with the new one, or to add the new data while still keeping all the old data. Default is TRUE, which replaces the top \code{m} rows from the old data, where \code{m} is the number of data points in the new data.
+#' @param updateModelF A boolean to specify whether to update \code{modelF} as well. If the original \code{tempGP} model is trained on a sufficiently large dataset (say one year), updating \code{modelF} regularly may not result in any significant improvement, but can be computationally expensive.
 #'
-#' @return updated object of class tempGP.
+#' @return An updated object of class \code{tempGP}.
 #' @export
 #' 
 updateData.tempGP = function(tempGPObj,newX, newY, newT = NULL, replace = TRUE, updateModelF = FALSE){

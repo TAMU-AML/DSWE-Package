@@ -4,24 +4,40 @@
 \alias{tempGP}
 \title{temporal Gaussian process}
 \usage{
-tempGP(trainX, trainY)
+tempGP(trainX, trainY, trainT = NULL)
 }
 \arguments{
 \item{trainX}{A matrix with each column corresponding to one input variable.}
 
 \item{trainY}{A vector with each element corresponding to the output at the corresponding row of \code{trainX}.}
+
+\item{trainT}{A vector for time indices of the data points. By default, the function assigns natural numbers starting from 1 as the time indices.}
 }
 \value{
 An object of class \code{tempGP} with the following attributes:
 \itemize{
-\item trainX
-\item trainY
-\item thinningNumber
-\item estimatedParams
-\item llval
-\item gradval
+\item trainX - same as the input matrix \code{trainX}.
+\item trainY - same as the input vector \code{trainY}.
+\item thinningNumber - the thinning number computed by the algorithm.
+\item modelF - A list containing the details of the model for predicting function \code{f(x)}:
+\itemize{
+\item X - The input variable matrix for computing the cross-covariance for predictions, same as \code{trainX} unless the model is updated. See \code{\link{updateData.tempGP}} method for details on updating the model.
+\item y - The response vector, again same as \code{trainY} unless the model is updated.
+\item weightedY - The weighted response, that is, the response left multiplied by the inverse of the covariance matrix.
+} 
+\item modelG - A list containing the details of the model for predicting function \code{g(t)}:
+\itemize{
+\item residuals - The residuals after subtracting function \code{f(x)} from the response. Used to predict \code{g(t)}. See \code{\link{updateData.tempGP}} method for updating the residuals.
+\item time_index - The time indices of the residuals, same as \code{trainT}.
+}
+\item estimatedParams - Estimated hyperparameters for function \code{f(x)}.
+\item llval - log-likelihood value of the hyperparameter optimization for \code{f(x)}.
+\item gradval - gradient vector at the optimal log-likelihood value.
 }
 }
 \description{
-A Gaussian process based power curve model which explicitly models the temporal aspect of the power curve.
+A Gaussian process based power curve model which explicitly models the temporal aspect of the power curve. The model consists of two parts: \code{f(x)} and \code{g(t)}.
+}
+\seealso{
+\code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
 }

@@ -6,17 +6,30 @@
 
 using namespace Rcpp;
 
-// predictGP
-arma::vec predictGP(const arma::mat& X, const arma::vec& y, const arma::mat& Xnew, List params);
-RcppExport SEXP _DSWE_predictGP(SEXP XSEXP, SEXP ySEXP, SEXP XnewSEXP, SEXP paramsSEXP) {
+// computeWeightedY
+arma::vec computeWeightedY(const arma::mat& X, const arma::vec& y, List params);
+RcppExport SEXP _DSWE_computeWeightedY(SEXP XSEXP, SEXP ySEXP, SEXP paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
+    rcpp_result_gen = Rcpp::wrap(computeWeightedY(X, y, params));
+    return rcpp_result_gen;
+END_RCPP
+}
+// predictGP
+arma::vec predictGP(const arma::mat& X, const arma::vec& weightedY, const arma::mat& Xnew, List params);
+RcppExport SEXP _DSWE_predictGP(SEXP XSEXP, SEXP weightedYSEXP, SEXP XnewSEXP, SEXP paramsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type weightedY(weightedYSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Xnew(XnewSEXP);
     Rcpp::traits::input_parameter< List >::type params(paramsSEXP);
-    rcpp_result_gen = Rcpp::wrap(predictGP(X, y, Xnew, params));
+    rcpp_result_gen = Rcpp::wrap(predictGP(X, weightedY, Xnew, params));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -107,6 +120,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_DSWE_computeWeightedY", (DL_FUNC) &_DSWE_computeWeightedY, 3},
     {"_DSWE_predictGP", (DL_FUNC) &_DSWE_predictGP, 4},
     {"_DSWE_computeLogLikGP_", (DL_FUNC) &_DSWE_computeLogLikGP_, 3},
     {"_DSWE_computeLogLikGradGP_", (DL_FUNC) &_DSWE_computeLogLikGradGP_, 3},
