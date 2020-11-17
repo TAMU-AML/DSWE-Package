@@ -8,9 +8,9 @@
 #'   \item V - wind speed
 #'   \item D - wind direction
 #'   \item air.density - air density
-#'   \item I - intensity
-#'   \item S_b - standard deviation
-#'   \item Y - target or power produced
+#'   \item I - turbulence intensity
+#'   \item S_b - wind shear
+#'   \item Y - wind power
 
 #' }
 #'
