@@ -5,16 +5,17 @@
 \title{Update the data in a tempGP object}
 \usage{
 \method{updateData}{tempGP}(
-  tempGPObj,
+  object,
   newX,
   newY,
   newT = NULL,
   replace = TRUE,
-  updateModelF = FALSE
+  updateModelF = FALSE,
+  ...
 )
 }
 \arguments{
-\item{tempGPObj}{An object of class tempGP.}
+\item{object}{An object of class tempGP.}
 
 \item{newX}{A matrix with each column corresponding to one input variable.}
 
@@ -25,6 +26,8 @@
 \item{replace}{A boolean to specify whether to replace the old data with the new one, or to add the new data while still keeping all the old data. Default is TRUE, which replaces the top \code{m} rows from the old data, where \code{m} is the number of data points in the new data.}
 
 \item{updateModelF}{A boolean to specify whether to update \code{modelF} as well. If the original \code{tempGP} model is trained on a sufficiently large dataset (say one year), updating \code{modelF} regularly may not result in any significant improvement, but can be computationally expensive.}
+
+\item{...}{additional arguments for future development}
 }
 \value{
 An updated object of class \code{tempGP}.

@@ -48,7 +48,7 @@
 #' }
 #' 
 #' @seealso \code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
-#' @importFrom stats pacf
+#' @importFrom stats pacf sd predict
 #' @export
 #' 
 
@@ -126,15 +126,15 @@ tempGP = function(trainX, trainY, trainT = NULL){
 
 #' @title predict from temporal Gaussian process
 #' @description predict function for tempGP objects. This function computes the prediction \code{f(x)} or \code{f(x) + g(t)} depending on the temporal distance between training and test points and whether the time indices for the test points are provided. 
-#' @param tempGPObj An object of class tempGP.
+#' @param object An object of class tempGP.
 #' @param testX A matrix with each column corresponding to one input variable.
 #' @param testT A vector of time indices of the test points. When \code{NULL}, only function \code{f(x)} is used for prediction. Default is \code{NULL}.
 #' @param trainT Optional argument to override the existing trainT indices of the \code{tempGP} object.
-#'
+#' @param ... additional arguments for future development
 #' @return A vector of predictions at the testpoints in \code{testX}.
 #' @export
 #' 
-predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
+predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
   
   testX = as.matrix((testX)) #trying to coerce testX into a matrix, if not already.
   
@@ -153,7 +153,7 @@ predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
     stop('testX must have finite value values only.')
   }
   
-  if (ncol(testX) != ncol(trainX)){
+  if (ncol(testX) != ncol(object$trainX)){
     
     stop("Number of columns in testX must be the same as that of the tempGP's trainX.")
   }
@@ -168,13 +168,13 @@ predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
       stop('trainT must have finite values only.')
     }
     
-    if(length(trainT) != length(trainY)){
+    if(length(trainT) != length(object$trainY)){
       stop('trainT must have the same number of data points as the tempGP object.')
     }
     
     cat("Replacing old trainT with the new one.")
-    tempGPObj$trainT = trainT
-    tempGPObj$modelG$time_index = trainT
+    object$trainT = trainT
+    object$modelG$time_index = trainT
     
   }
   
@@ -198,7 +198,7 @@ predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
   
   #cat("All test passed.\n")
   
-  predF = predictGP(tempGPObj$modelF$X, tempGPObj$modelF$weightedY, testX, tempGPObj$estimatedParams)
+  predF = predictGP(object$modelF$X, object$modelF$weightedY, testX, object$estimatedParams)
   
   if (is.null(testT)){
       
@@ -206,7 +206,7 @@ predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
     
   } else {
     
-    predG = computeLocalFunction(tempGPObj$modelG$residuals, tempGPObj$modelG$time_index, testT, tempGPObj$thinningNumber)
+    predG = computeLocalFunction(object$modelG$residuals, object$modelG$time_index, testT, object$thinningNumber)
     
     return(predF + predG)
     
@@ -216,17 +216,18 @@ predict.tempGP = function(tempGPObj, testX, testT = NULL, trainT = NULL){
 
 #' @title Update the data in a tempGP object
 #' @description This function updates \code{trainX}, \code{trainY}, and \code{trainT} in a \code{tempGP} object. By default, if the new data has \code{m} data points, the function removes top \code{m} data points from the tempGP object and appends the new data at the bottom, thus keeping the total number of data points the same. This can be overwritten by setting \code{replace = FALSE} to keep all the data points (old and new). The method also updates \code{modelG} by computing and updating residuals at the new data points. \code{modelF} can be also be updated by setting the argument \code{updateModelF} to \code{TRUE}, though not required generally (see comments in the \code{Arguments}.)
-#' @param tempGPObj An object of class tempGP.
+#' @param object An object of class tempGP.
 #' @param newX A matrix with each column corresponding to one input variable.
 #' @param newY A vector with each element corresponding to the output at the corresponding row of \code{newX}.
 #' @param newT A vector with time indices of the new datapoints. If \code{NULL}, the function assigns natural numbers starting with one larger than the existing time indices in \code{trainT}.
 #' @param replace A boolean to specify whether to replace the old data with the new one, or to add the new data while still keeping all the old data. Default is TRUE, which replaces the top \code{m} rows from the old data, where \code{m} is the number of data points in the new data.
 #' @param updateModelF A boolean to specify whether to update \code{modelF} as well. If the original \code{tempGP} model is trained on a sufficiently large dataset (say one year), updating \code{modelF} regularly may not result in any significant improvement, but can be computationally expensive.
+#' @param ... additional arguments for future development
 #'
 #' @return An updated object of class \code{tempGP}.
 #' @export
 #' 
-updateData.tempGP = function(tempGPObj,newX, newY, newT = NULL, replace = TRUE, updateModelF = FALSE){
+updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, updateModelF = FALSE, ...){
   
   newX = as.matrix((newX)) #trying to coerce newX into a matrix, if not already.
   
@@ -254,9 +255,9 @@ updateData.tempGP = function(tempGPObj,newX, newY, newT = NULL, replace = TRUE, 
     stop('Number of rows in newX and the length of newY must match.')
   }
   
-  if (ncol(newX) != ncol(tempGPObj$trainX)){
+  if (ncol(newX) != ncol(object$trainX)){
     
-    stop('Number of columns in newX must be the same as that trainX in tempGPObj.')
+    stop('Number of columns in newX must be the same as that trainX in object.')
   }
   
   if (!is.null(newT)){
@@ -277,69 +278,78 @@ updateData.tempGP = function(tempGPObj,newX, newY, newT = NULL, replace = TRUE, 
     
   } else {
     
-    newT = c((tempGPObj$trainT[length(tempGPObj$trainY)]+1):(tempGPObj$trainT[length(tempGPObj$trainY)]+length(newY)))
+    newT = c((object$trainT[length(object$trainY)]+1):(object$trainT[length(object$trainY)]+length(newY)))
   }
   
   if (replace){
     
-    if (length(newY) < length(tempGPObj$trainY)){
+    if (length(newY) < length(object$trainY)){
       
-      tempGPObj$trainX = rbind(tempGPObj$trainX[-c(1:length(newY)),,drop = F],newX)
-      tempGPObj$trainY = c(tempGPObj$trainY[-c(1:length(newY))],newY)
-      tempGPObj$trainT = c(tempGPObj$trainT[-c(1:length(newY))],newT)
+      object$trainX = rbind(object$trainX[-c(1:length(newY)),,drop = F],newX)
+      object$trainY = c(object$trainY[-c(1:length(newY))],newY)
+      object$trainT = c(object$trainT[-c(1:length(newY))],newT)
       
     } else {
       
-      tempGPObj$trainX = newX
-      tempGPObj$trainY = newY
-      tempGPObj$trainT = newT
+      object$trainX = newX
+      object$trainY = newY
+      object$trainT = newT
       
     }
   } else {
     
-    tempGPObj$trainX = rbind(tempGPObj$trainX, newX)
-    tempGPObj$trainY = c(tempGPObj$trainY, newY)
-    tempGPObj$trainT = c(tempGPObj$trainT, newT)
+    object$trainX = rbind(object$trainX, newX)
+    object$trainY = c(object$trainY, newY)
+    object$trainT = c(object$trainT, newT)
     
   }
   
   if (updateModelF){
     
-    tempGPObj$modelF$X = tempGPObj$trainX
-    tempGPObj$modelF$y = tempGPObj$trainY
-    weightedY = computeWeightedY(tempGPObj$modelF$X, tempGPObj$modelF$y, tempGPObj$estimatedParams)
-    tempGPObj$modelF$weightedY = weightedY
-    residuals = tempGPObj$trainY - predictGP(tempGPObj$modelF$X, tempGPObj$modelF$weightedY, tempGPObj$trainX, tempGPObj$estimatedParams)
-    tempGPObj$modelG$residuals = residuals
+    object$modelF$X = object$trainX
+    object$modelF$y = object$trainY
+    weightedY = computeWeightedY(object$modelF$X, object$modelF$y, object$estimatedParams)
+    object$modelF$weightedY = weightedY
+    residuals = object$trainY - predictGP(object$modelF$X, object$modelF$weightedY, object$trainX, object$estimatedParams)
+    object$modelG$residuals = residuals
     
     
   } else {
     
-    newResiduals = newY - predictGP(tempGPObj$modelF$X, tempGPObj$modelF$weightedY, newX, tempGPObj$estimatedParams)
+    newResiduals = newY - predictGP(object$modelF$X, object$modelF$weightedY, newX, object$estimatedParams)
     if (replace){
-      if (length(newY) < length(tempGPObj$trainY)){
-        tempGPObj$modelG$residuals = c( tempGPObj$modelG$residuals[-c(1:length(newY))],newResiduals)
+      if (length(newY) < length(object$trainY)){
+        object$modelG$residuals = c( object$modelG$residuals[-c(1:length(newY))],newResiduals)
         
       } else {
       
-        tempGPObj$modelG$residuals = newResiduals
+        object$modelG$residuals = newResiduals
       }
     } else {
       
-      tempGPObj$modelG$residuals = c( tempGPObj$modelG$residuals,newResiduals)
+      object$modelG$residuals = c( object$modelG$residuals,newResiduals)
       
     }
     
   }
   
-  tempGPObj$modelG$time_index = tempGPObj$trainT
+  object$modelG$time_index = object$trainT
 
-  return(tempGPObj)
+  return(object)
 }
 
+#' @title Updating data in a model
+#' @description \code{updateData} is a generic function to update data in a model.
+#' @param object A model object
+#' @param ... additional arguments for passing to specific methods
+#'
+#' @return The returned value would depend on the class of its argument \code{object}.
+#'
+#' @seealso code{\link{updateData.tempGP}}
 #' @export
 updateData = function(object, ...){
-  
+
   UseMethod("updateData")
-  
+
 }
+

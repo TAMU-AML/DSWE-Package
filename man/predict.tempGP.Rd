@@ -4,16 +4,18 @@
 \alias{predict.tempGP}
 \title{predict from temporal Gaussian process}
 \usage{
-\method{predict}{tempGP}(tempGPObj, testX, testT = NULL, trainT = NULL)
+\method{predict}{tempGP}(object, testX, testT = NULL, trainT = NULL, ...)
 }
 \arguments{
-\item{tempGPObj}{An object of class tempGP.}
+\item{object}{An object of class tempGP.}
 
 \item{testX}{A matrix with each column corresponding to one input variable.}
 
 \item{testT}{A vector of time indices of the test points. When \code{NULL}, only function \code{f(x)} is used for prediction. Default is \code{NULL}.}
 
 \item{trainT}{Optional argument to override the existing trainT indices of the \code{tempGP} object.}
+
+\item{...}{additional arguments for future development}
 }
 \value{
 A vector of predictions at the testpoints in \code{testX}.
