@@ -1,6 +1,6 @@
 <center> <h1>DSWE (Data Science for Wind Energy)</h1> </center>
 
-**Note**: A graphical installation and usage guide is available on TAMU **Advanced Metrology Lab**'s website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/05/DSWE_HELP.pdf).
+ ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/05/DSWE_HELP.pdf).</h2>
 
 - [Introduction](#introduction)
 - [Installation](#installation)
@@ -8,14 +8,15 @@
     1. [ComparePCurve](#ComparePCurve) 
     2. [ComputeWeightedDifference](#ComputeWeightedDifference) 
     3. [funGP](#funGP)
-    4. [KnnPCFit](#KnnPCFit)  
-    5. [KnnPredict](#KnnPredict)  
-    6. [KnnUpdate](#KnnUpdate)  
-    7. [AMK](#AMK)  
-	8. [BayesTreePCFit](#BayesTreePCFit)
-	9. [SplinePCFit](#SplinePCFit)
-	10. [SvmPCFit](#SvmPCFit)
-    11. [CovMatch](#CovMatch)  
+    4. [tempGP](#tempGP)
+    5. [KnnPCFit](#KnnPCFit)  
+    6. [KnnPredict](#KnnPredict)  
+    7. [KnnUpdate](#KnnUpdate)  
+    8. [AMK](#AMK)  
+	9. [BayesTreePCFit](#BayesTreePCFit)
+	10. [SplinePCFit](#SplinePCFit)
+	11. [SvmPCFit](#SvmPCFit)
+    12. [CovMatch](#CovMatch)  
 - [Details](#details)
 
 # Introduction
@@ -30,6 +31,7 @@ Power curve comparison:
 
 Predictive modelling functions:
 
+* tempGP
 * KnnPCFit
 * KnnPredict
 * KnnUpdate
@@ -37,6 +39,7 @@ Predictive modelling functions:
 * BayesTreePCFit
 * SplinePCFit
 * SvmPCFit
+
 
 Covariate matching function :
 
@@ -79,6 +82,7 @@ library(DSWE)
 ComparePCurve()
 ComputeWeightedDifference()
 funGP()
+tempGP()
 KnnPCFit()
 KnnPredict()
 KnnUpdate()
@@ -93,6 +97,7 @@ CovMatch()
 DSWE::ComparePCurve()
 DSWE::ComputeWeightedDifference()
 DSWE::funGP()
+DSWE::tempGP()
 DSWE::KnnPCFit()
 DSWE::KnnPredict()
 DSWE::KnnUpdate()
@@ -193,8 +198,61 @@ rngSeed = 1
  # Executing the function
 function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method, sampleSize, rngSeed)
  ```
+ 
+### 4. tempGP
+  A Gaussian process based power curve model which explicitly models the temporal aspect of the power curve. The model consists of two parts: f(x) and g(t).
+  
+  *Function :*
 
-### 4. KnnPCFit
+ *tempGP (trainX, trainY, trainT = NULL)*
+ 
+ ```R
+ data = DSWE::data1
+ trainindex = 1:5000 #using the first 5000 data points to train the model
+ traindata = data[trainindex,]
+ xCol = c(2:6) #input variable columns
+ yCol = 7 #response column
+ tCol = 1 #column with the time indices
+ trainX = as.matrix(traindata[,xCol])
+ trainY = as.numeric(traindata[,yCol])
+ trainT = as.numeric(traindata[,tCol])
+ 
+ ## Two ways to call the tempGP function
+ # 1. Using user defined trainT
+ tempGPObject = tempGP(trainX, trainY, trainT)
+ 
+ # 2. Generate time indices internally as the sequence of integers starting from 1.
+ tempGPObject = tempGP(trainX, trainY)
+ 
+ ## Use the predict() method to get predictions from the learned model.
+ testdata = data[5001:10000,] # defining test data as the next 5000 data points after train indices
+ 
+ ## Predict only the function f(x) and ignore temporal component g(t)
+ testX = as.matrix(testdata[,xCol,drop = F])
+ testY = as.numeric(testdata[,yCol])
+ predF = predict(tempGPObject, testX)
+ rmseF = sqrt(mean((testY - predF)^2)) #rmse 
+ cat('RMSE using just f(x):',round(rmseF,3),'\n')
+ 
+ ## Or predict both f(x) and g(t) using a rolling window data update with the help of updateData() method for tempGP objects. 
+ 
+ predY = rep(0,nrow(testdata)) #vector to store the rolling predictions
+ for (i in 1:nrow(testdata)){
+  testX = as.matrix(testdata[i,xCol,drop = F]) #input variables for time point i; replace with forecast when actual data not available.
+  testT = testdata[i,tCol] #time index for i
+  predY[i] = predict(tempGPObject, testX, testT) #predict both f(x) and g(t)
+  
+  #After time point i, the data for time point i would be available. Update the data and residuals in the tempGP object.
+  
+  tempGPObject = updateData(tempGPObject, newX = testX, newY = testdata[i,yCol], newT = testT)
+ }
+ rmseY = sqrt(mean((testY - predY)^2)) #rmse 
+ cat('RMSE using rolling update and f(x) + g(t):',round(rmseY,3),'\n')
+ ```
+ 
+ 
+
+### 5. KnnPCFit
 The function can be used to model the data using user supplied arguments, a knn model is returned as an end result. It can also be used to get the best feature subset, if subsetSelection is set TRUE
 
 *Function :*
@@ -211,7 +269,7 @@ subsetSelection = FALSE
 # Executing the function
 knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 ```
-### 5. KnnPredict
+### 6. KnnPredict
 The function can be used to evaluate a prediction on a new test point using model generated using KnnPCFit
 
 *Function :*
@@ -232,7 +290,7 @@ testData = data[1:100, ]
 prediction = KnnPredict(knn_model, testData)
 ```
 
-### 6. KnnUpdate
+### 7. KnnUpdate
 The function can be used to update the knn model whenever new data in available
 
 *Function :*
@@ -253,7 +311,7 @@ newData = data[500:1000, ]
 knn_newmodel = KnnUpdate(knn_model, newData)
 ```
 
-### 7. AMK
+### 8. AMK
 The function can be used to model the data by using user supplied arguments. It uses a kernel to assign weights to every training data points, the bandwidth of kernel (bw) can be provided as vector of values or character 'dpi' and 'dpi-gap'. If provided character input, the bandwidths are computed internally
 
 *Function :*
@@ -276,7 +334,7 @@ AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
 ```
 **Note :-** In case an error such as a non-finite bandwidth is generated upon adding a covariate, please remove such covariates
 
-### 8. BayesTreePCFit
+### 9. BayesTreePCFit
 The function can be used to model the data by using user supplied arguments. It uses tree based method to model the supplied data set
 
 *Function :*
@@ -293,7 +351,7 @@ testX = data[100:110, c(2, 4)]
 # Executing the function
 Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
 ```
-### 9. SplinePCFit
+### 10. SplinePCFit
 The function can be used to model the data by using user supplied arguments. It uses spline based method to model the data set. Users can leverage the modelFormula argument to model data set using interactions among features
 
 *Function :*
@@ -310,7 +368,7 @@ testX = data[100:110, ]
 # Executing the function
 Spline_prediction = SplinePCFit(data, xCol, yCol, testX)
 ```
-### 10. SvmPCFit
+### 11. SvmPCFit
 The function can be used to model the data by using user supplied arguments. It uses support vector machine to model the data set.
 
 *Function :*
@@ -327,7 +385,7 @@ testX = data[100:110, c(2, 4)]
 # Executing the function
 Svm_prediction = SvmPCFit(trainX, trainY, testX)
 ```
-### 11. CovMatch
+### 12. CovMatch
 The function can be used to match different data sets. It can only be used to match two different data set at one time. If priority argument is set to FALSE, which is default, the feature columns provided are used in the same order in matching, else computes the covariates matching sequence
 
 *Function :*
