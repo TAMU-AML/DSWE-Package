@@ -3,7 +3,7 @@
 #DESCRIPTION: This script can be used to install DSWE package from its source file
 ##################################################################################
 
-.PACKAGE_VERSION = "1.4.1" #Update this line when version changes
+.PACKAGE_VERSION = "1.4.2" #Update this line when version changes
 .requiredRversion = "3.5.0"
 .DEPENDENCIES = list(
   list(name = "Rcpp",version = "1.0.4.6"),

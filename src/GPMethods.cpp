@@ -1,25 +1,25 @@
 /*
-// MIT License
-// 
-//   Copyright (c) 2020 Nitesh Kumar, Abhinav Prakash, and Yu Ding
-// 
-//   Permission is hereby granted, free of charge, to any person obtaining a copy
-//   of this software and associated documentation files (the "Software"), to deal
-//   in the Software without restriction, including without limitation the rights
-//   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//   copies of the Software, and to permit persons to whom the Software is
-//   furnished to do so, subject to the following conditions:
-// 
-//     The above copyright notice and this permission notice shall be included in all
-//     copies or substantial portions of the Software.
-// 
-//   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//     SOFTWARE.
+ // MIT License
+ // 
+ //   Copyright (c) 2020 Abhinav Prakash, Rui Tuo, and Yu Ding
+ // 
+ //   Permission is hereby granted, free of charge, to any person obtaining a copy
+ //   of this software and associated documentation files (the "Software"), to deal
+ //   in the Software without restriction, including without limitation the rights
+ //   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ //   copies of the Software, and to permit persons to whom the Software is
+ //   furnished to do so, subject to the following conditions:
+ // 
+ //     The above copyright notice and this permission notice shall be included in all
+ //     copies or substantial portions of the Software.
+ // 
+ //   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ //     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ //     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ //     AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ //     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ //     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ //     SOFTWARE.
  */
 
 #include <RcppArmadillo.h>
@@ -37,11 +37,37 @@ arma::mat OuterDiff(const arma::vec & x1,const arma::vec & x2){
 arma::mat computeCorrelMat_(const arma::mat & X1,const arma::mat & X2,const arma::vec & theta){
   arma::mat correlMat = arma::zeros( X1.n_rows, X2.n_rows);
   for (arma::uword i=0; i < theta.n_elem; i++){
-      correlMat = correlMat + pow(OuterDiff(X1.col(i),X2.col(i))/theta(i),2);
-    }
-    correlMat = exp(-0.5*correlMat);
+    correlMat = correlMat + pow(OuterDiff(X1.col(i),X2.col(i))/theta(i),2);
+  }
+  correlMat = exp(-0.5*correlMat);
   return correlMat;
 } 
+
+// [[Rcpp::export]]
+arma::vec computeWeightedY(const arma::mat& X, const arma::vec& y, List params){
+  arma::vec theta = params["theta"];
+  double sigma_f = params["sigma_f"];
+  double sigma_n = params["sigma_n"];
+  double beta = params["beta"];
+  arma::mat trainMat = pow(sigma_f,2)*computeCorrelMat_(X,X, theta);
+  trainMat.diag() +=  pow(sigma_n,2);
+  arma::mat upperCholTrainMat = arma::chol(trainMat);
+  trainMat = arma::mat();
+  arma::vec y_dash = y - beta;
+  arma::vec weightedY = arma::solve(arma::trimatu(upperCholTrainMat),arma::solve(arma::trimatl(upperCholTrainMat.t()),y_dash));
+  return weightedY;
+}
+
+// [[Rcpp::export]]
+arma::vec predictGP(const arma::mat& X, const arma::vec& weightedY, const arma::mat& Xnew, List params){
+  arma::vec pred = arma::zeros(Xnew.n_rows,1);
+  arma::vec theta = params["theta"];
+  double sigma_f = params["sigma_f"];
+  double beta = params["beta"];
+  arma::mat testCovMat = pow(sigma_f,2)*computeCorrelMat_(Xnew,X, theta);
+  pred = beta + (testCovMat*weightedY);
+  return pred;
+}
 
 // [[Rcpp::export]]
 double computeLogLikGP_(const arma::mat & X, const arma::vec&  y, const List& params){
@@ -95,6 +121,41 @@ arma::vec computeLogLikGradGP_(const arma::mat & X,const arma::vec & y, List par
   return gradval;
 }
 
+// [[Rcpp::export]]
+arma::vec computeLogLikGradGPZeroMean_(const arma::mat & X,const arma::vec & y, List params){
+  arma::vec theta = params["theta"];
+  int n_theta = theta.n_elem;
+  double sigma_f = params["sigma_f"];
+  double sigma_n = params["sigma_n"];
+  double beta = params["beta"];
+  arma::mat CorrelMat = computeCorrelMat_(X,X, theta);
+  arma::mat CovMat = pow(sigma_f,2)*CorrelMat;
+  CovMat.diag() +=  pow(sigma_n,2);
+  arma::mat InvMat = arma::inv_sympd(CovMat);
+  CovMat = arma::mat();
+  arma::vec gradval(n_theta + 2);
+  gradval.zeros();
+  arma::vec y_dash = y - beta;
+  arma::vec alpha = InvMat*y_dash;
+  arma::mat diffMat = (alpha*alpha.t()) - InvMat;
+  arma::vec OneVec = arma::ones<arma::vec>(y.n_elem);
+  arma::vec SolOneVec = InvMat*OneVec;
+  InvMat = arma::mat();
+  for (int i=0; i<n_theta; i++){
+    arma::mat delThetaMat = (pow(sigma_f,2)*pow(OuterDiff(X.col(i),X.col(i)),2)/pow(theta(i),3))%CorrelMat;
+    delThetaMat = diffMat*delThetaMat;
+    gradval(i) = -0.5*arma::sum(delThetaMat.diag());
+  }
+  arma::mat delSigma_fMat = 2*sigma_f*CorrelMat;
+  delSigma_fMat = diffMat*delSigma_fMat;
+  gradval(n_theta) = -0.5*arma::sum(delSigma_fMat.diag());
+  delSigma_fMat = arma::mat();
+  arma::mat delSigma_nMat = 2*sigma_n*diffMat;
+  gradval(n_theta+1) = -0.5*sum(delSigma_nMat.diag());
+  //delSigma_nMat = arma::mat();
+  //gradval(n_theta+2) = 0.5*arma::as_scalar((2*beta*OneVec.t()*SolOneVec)-(y.t()*SolOneVec)-(OneVec.t()*(alpha+(beta*SolOneVec))));
+  return gradval;
+}
 
 // [[Rcpp::export]]
 List computeDiffCov_(const arma::mat& X1, const arma::vec y1, const arma::mat& X2, const arma::vec y2, const arma::mat& XT, arma::vec theta, double sigma_f, double sigma_n, double beta ){
@@ -152,3 +213,4 @@ arma::vec computeConfBand_(const arma::mat& diffCovMat, double confLevel){
   arma::vec band = max(G,1);
   return band;
 }
+
