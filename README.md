@@ -238,13 +238,13 @@ function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt
  
  predY = rep(0,nrow(testdata)) #vector to store the rolling predictions
  for (i in 1:nrow(testdata)){
-  testX = as.matrix(testdata[i,xCol,drop = F]) #input variables for time point i; replace with forecast when actual data not available.
-  testT = testdata[i,tCol] #time index for i
-  predY[i] = predict(tempGPObject, testX, testT) #predict both f(x) and g(t)
+  testX_i = as.matrix(testdata[i,xCol,drop = F]) #input variables for time point i; replace with forecast when actual data not available.
+  testT_i = testdata[i,tCol] #time index for i
+  predY[i] = predict(tempGPObject, testX_i, testT_i) #predict both f(x) and g(t)
   
   #After time point i, the data for time point i would be available. Update the data and residuals in the tempGP object.
   
-  tempGPObject = updateData(tempGPObject, newX = testX, newY = testdata[i,yCol], newT = testT)
+  tempGPObject = updateData(tempGPObject, newX = testX_i, newY = testY[i], newT = testT_i)
  }
  rmseY = sqrt(mean((testY - predY)^2)) #rmse 
  cat('RMSE using rolling update and f(x) + g(t):',round(rmseY,3),'\n')
