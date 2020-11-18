@@ -345,7 +345,7 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
 #'
 #' @return The returned value would depend on the class of its argument \code{object}.
 #'
-#' @seealso code{\link{updateData.tempGP}}
+#' @seealso \code{\link{updateData.tempGP}}
 #' @export
 updateData = function(object, ...){
 

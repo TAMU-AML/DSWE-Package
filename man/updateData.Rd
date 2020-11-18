@@ -18,5 +18,5 @@ The returned value would depend on the class of its argument \code{object}.
 \code{updateData} is a generic function to update data in a model.
 }
 \seealso{
-code{\link{updateData.tempGP}}
+\code{\link{updateData.tempGP}}
 }
