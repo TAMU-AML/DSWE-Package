@@ -29,12 +29,17 @@ computeThinningNumber = function(trainX){
 createThinnedBins = function(dataX, dataY, thinningNumber){
   nData = nrow(dataX)
   thinnedBins = list()
-  for (i in 1:thinningNumber){
-    nPoints = floor((nData - i)/thinningNumber)
-    lastIdx = i + (nPoints*thinningNumber)
-    idx = seq(i, lastIdx, length.out = (nPoints+1))
-    thinnedBins[[i]] = list(X = dataX[idx,], y = dataY[idx])
+  if (thinningNumber < 2) {
+    thinnedBins[[1]] = list(X = dataX, y = dataY)
+  } else {
+    for (i in 1:thinningNumber){
+      nPoints = floor((nData - i)/thinningNumber)
+      lastIdx = i + (nPoints*thinningNumber)
+      idx = seq(i, lastIdx, length.out = (nPoints+1))
+      thinnedBins[[i]] = list(X = dataX[idx,,drop = FALSE], y = dataY[idx])
+    }
   }
+  
   return(thinnedBins)
 }
 
