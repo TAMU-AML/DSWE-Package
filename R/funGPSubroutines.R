@@ -55,9 +55,16 @@ estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, o
                                             params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
     objGrad = function(par){computeloglikGradSum(datalist,covCols,yCol,
                                                  params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
-    optimResult = stats::optim(par = parInit, fn = objFun, gr = objGrad, method = opt_method, control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
-    estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
-    objVal = optimResult$value
+    if (opt_method == "BFGS" || opt_method == "L-BFGS-B"){
+      optimResult = stats::optim(par = parInit, fn = objFun, gr = objGrad, method = opt_method, control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
+      estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
+      objVal = optimResult$value
+    } else if (opt_method == "nlminb"){
+      optimResult = stats::nlminb(start = parInit, objective = objFun, gradient = objGrad, control = list(eval.max = 1000,iter.max = 1000, trace = 0,step.min = 1e-6))
+      estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
+      objVal = optimResult$objective
+    }
+    
     return(list(estimatedParams = estimatedParams,objVal = objVal))
   }
 }

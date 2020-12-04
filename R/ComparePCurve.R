@@ -34,7 +34,7 @@
 #' @param powerbins A numeric stating the number of power bins for computing the scaled difference, default is 15.
 #' @param baseline An integer between 0 to 2, where 1 indicates to use power curve of first dataset as the base for metric calculation, 2 indicates to use the power curve of second dataset as the base, and 0 indicates to use the average of both power curves as the base. Default is set to 1.
 #' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference
-#' @param opt_method A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.
+#' @param opt_method A string specifying the optimization method to be used for hyperparameter estimation. Current options are: \code{'L-BFGS-B'}, \code{'BFGS'}, and \code{'nlminb'}. Default is set to \code{'L-BFGS-B'}.
 #' @param sampleSize A named list of two integer items: \code{optimSize} and \code{bandSize}, denoting the sample size for each dataset for hyperparameter optimization and confidence band computation, respectively, when \code{limitMemory = TRUE}. Default value is \code{list(optimSize = 500, bandSize = 5000)}. 
 #' @param rngSeed Random seed for sampling data when \code{limitMemory = TRUE}. Default is 1.
 #' 
@@ -93,6 +93,10 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
       stop('If limitMemory is TRUE, sampleSize must be a list with two named items: optimSize and bandSize.')
     }
     
+  }
+  
+  if (opt_method != "L-BFGS-B" && opt_method != "BFGS" && opt_method != "nlminb"){
+    stop("opt_method must be 'L-BFGS-B', 'BFGS', or 'nlminb'.")
   }
   
   if(!is.list(data)){
