@@ -1,6 +1,6 @@
 <center> <h1>DSWE (Data Science for Wind Energy)</h1> </center>
 
- ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/05/DSWE_HELP.pdf).</h2>
+ ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/12/DSWE_HELP_20201204.pdf).</h2>
 
 - [Introduction](#introduction)
 - [Installation](#installation)
