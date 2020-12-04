@@ -25,7 +25,16 @@
 #' 
 estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, optimSize, rngSeed){
   
-  if (limitMemory){
+  if(!limitMemory){
+    
+    thinningNumber = ceiling((computeThinningNumber(as.matrix(datalist[[1]][,covCols])) + computeThinningNumber(as.matrix(datalist[[2]][,covCols])))/2)
+    thinnedBins1 = createThinnedBins(as.matrix(datalist[[1]][,covCols]),as.numeric(datalist[[1]][,yCol]),thinningNumber)
+    thinnedBins2 = createThinnedBins(as.matrix(datalist[[2]][,covCols]),as.numeric(datalist[[1]][,yCol]),thinningNumber)
+    thinnedBins = c(thinnedBins1,thinnedBins2)
+    optimResult = estimateBinnedParams(thinnedBins)
+    return(list(estimatedParams = optimResult$estimatedParams,objVal = optimResult$objVal))
+  
+  } else if(limitMemory){
     maxDataSample = optimSize
     for (i in 1:length(datalist)){
       if (nrow(datalist[[i]]) > maxDataSample){
@@ -33,24 +42,24 @@ estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, o
         datalist[[i]] = datalist[[i]][sample(nrow(datalist[[i]]), maxDataSample),]
       }
     }
+    nCov = length(covCols)
+    theta = rep(0,nCov)
+    for (i in 1:length(theta)){
+      theta[i] = mean(unlist(lapply(datalist, function(x) stats::sd(x[,covCols[i]]))))
+    }
+    beta = mean(unlist(lapply(datalist, function(x) mean(x[,yCol]))))
+    sigma_f = mean(unlist(lapply(datalist, function(x) stats::sd(x[,yCol])/sqrt(2))))
+    sigma_n = mean(unlist(lapply(datalist, function(x) stats::sd(x[,yCol])/sqrt(2))))
+    parInit = c(theta,sigma_f,sigma_n,beta)
+    objFun = function(par){computeloglikSum(datalist,covCols,yCol,
+                                            params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
+    objGrad = function(par){computeloglikGradSum(datalist,covCols,yCol,
+                                                 params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
+    optimResult = stats::optim(par = parInit, fn = objFun, gr = objGrad, method = opt_method, control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
+    estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
+    objVal = optimResult$value
+    return(list(estimatedParams = estimatedParams,objVal = objVal))
   }
-  nCov = length(covCols)
-  theta = rep(0,nCov)
-  for (i in 1:length(theta)){
-    theta[i] = mean(unlist(lapply(datalist, function(x) stats::sd(x[,covCols[i]]))))
-  }
-  beta = mean(unlist(lapply(datalist, function(x) mean(x[,yCol]))))
-  sigma_f = mean(unlist(lapply(datalist, function(x) stats::sd(x[,yCol])/sqrt(2))))
-  sigma_n = mean(unlist(lapply(datalist, function(x) stats::sd(x[,yCol])/sqrt(2))))
-  parInit = c(theta,sigma_f,sigma_n,beta)
-  objFun = function(par){computeloglikSum(datalist,covCols,yCol,
-                                          params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
-  objGrad = function(par){computeloglikGradSum(datalist,covCols,yCol,
-                                               params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
-  optimResult = stats::optim(par = parInit, fn = objFun, gr = objGrad, method = opt_method, control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
-  estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
-  objVal = optimResult$value
-  return(list(estimatedParams = estimatedParams,objVal = objVal))
 }
 
 ###
