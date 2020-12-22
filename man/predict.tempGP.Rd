@@ -23,3 +23,10 @@ A vector of predictions at the testpoints in \code{testX}.
 \description{
 predict function for tempGP objects. This function computes the prediction \code{f(x)} or \code{f(x) + g(t)} depending on the temporal distance between training and test points and whether the time indices for the test points are provided.
 }
+\examples{
+\donttest{
+testdata = data[5001:10000,] # defining test data as the next 5000 data points after train indices
+testX = as.matrix(testdata[,xCol,drop = F])
+predF = predict(tempGPObject, testX)
+}
+}
