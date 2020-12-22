@@ -25,8 +25,8 @@ predict function for tempGP objects. This function computes the prediction \code
 }
 \examples{
 \donttest{
-testdata = data[5001:10000,] # defining test data as the next 5000 data points after train indices
-testX = as.matrix(testdata[,xCol,drop = F])
-predF = predict(tempGPObject, testX)
+   testdata = data[5001:10000,] # defining test data as the next 5000 data points after train indices
+   testX = as.matrix(testdata[,xCol,drop = F])
+   predF = predict(tempGPObject, testX)
 }
 }

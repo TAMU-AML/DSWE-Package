@@ -73,7 +73,7 @@
 #' function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol,
 #' testCol, testSet, thrs, confLevel, gridSize)
 #' }
-#' @references For details, see Ding et al. (2020) available on \code{arxiv} at this \href{https://arxiv.org/abs/2005.08652}{link}.
+#' @references For details, see Ding et al. (2020) available on \code{arxiv} at <\url{https://arxiv.org/abs/2005.08652}>.
 #' @export
 
 ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'nlminb',sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1 ){

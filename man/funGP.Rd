@@ -62,3 +62,6 @@ opt_method = 'nlminb'
 function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
 }
 }
+\references{
+For more details, please see Prakash et al. (2020) at <\url{https://arxiv.org/abs/2003.07899}>.
+}

@@ -54,6 +54,7 @@
 
 #' function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
 #' }
+#' @references For more details, please see Prakash et al. (2020) at <\url{https://arxiv.org/abs/2003.07899}>.
 #'@export
 funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1){
 

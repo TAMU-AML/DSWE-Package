@@ -94,5 +94,5 @@ testCol, testSet, thrs, confLevel, gridSize)
 }
 }
 \references{
-For details, see Ding et al. (2020) available on \code{arxiv} at this \href{https://arxiv.org/abs/2005.08652}{link}.
+For details, see Ding et al. (2020) available on \code{arxiv} at <\url{https://arxiv.org/abs/2005.08652}>.
 }
