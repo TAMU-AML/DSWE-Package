@@ -25,7 +25,3 @@ Imports:
     gss (>= 2.2-2),
     e1071 (>= 1.7-3),
     stats (>= 3.5.0)
-Suggests: 
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
