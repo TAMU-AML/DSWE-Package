@@ -38,6 +38,22 @@ An object of class \code{tempGP} with the following attributes:
 \description{
 A Gaussian process based power curve model which explicitly models the temporal aspect of the power curve. The model consists of two parts: \code{f(x)} and \code{g(t)}.
 }
+\examples{
+\donttest{
+    data = DSWE::data1
+    trainindex = 1:5000 #using the first 5000 data points to train the model
+    traindata = data[trainindex,]
+    xCol = c(2:6) #input variable columns
+    yCol = 7 #response column
+    trainX = as.matrix(traindata[,xCol])
+    trainY = as.numeric(traindata[,yCol])
+    tempGPObject = tempGP(trainX, trainY)
+} 
+
+}
+\references{
+Prakash, A., Tuo, R., & Ding, Y. (2020). "The temporal overfitting problem with applications in wind power curve modeling." arXiv preprint arXiv:2012.01349. <\url{https://arxiv.org/abs/2012.01349}>.
+}
 \seealso{
 \code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
 }

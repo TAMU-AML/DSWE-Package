@@ -28,7 +28,7 @@
 #' @param confLevel A single value representing the statistical significance level for constructing the band
 #' @param testset Test points at which the functions will be compared
 #' @param limitMemory A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference.
-#' @param opt_method A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.
+#' @param opt_method A string specifying the optimization method to be used for hyperparameter estimation. Current options are: \code{'L-BFGS-B'}, \code{'BFGS'}, and \code{'nlminb'}. Default is set to \code{'nlminb'}.
 #' @param sampleSize A named list of two integer items: \code{optimSize} and \code{bandSize}, denoting the sample size for each dataset for hyperparameter optimization and confidence band computation, respectively, when \code{limitMemory = TRUE}. Default value is \code{list(optimSize = 500, bandSize = 5000)}. 
 #' @param rngSeed Random seed for sampling data when \code{limitMemory = TRUE}. Default is 1.
 #' 
@@ -50,12 +50,13 @@
 #' confLevel = 0.95
 #' testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
 #' limitMemory = TRUE
-#' opt_method = 'L-BFGS-B'
+#' opt_method = 'nlminb'
 
 #' function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
 #' }
+#' @references For more details, please see Prakash et al. (2020) at <\url{https://arxiv.org/abs/2003.07899}>.
 #'@export
-funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T, opt_method = 'L-BFGS-B', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1){
+funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = T, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
@@ -120,8 +121,8 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
       }
     }
 
-  if (opt_method != 'L-BFGS-B' && opt_method != 'BFGS'){
-    stop("opt_method must be L-BFGS-B or BFGS.")
+  if (opt_method != "L-BFGS-B" && opt_method != "BFGS" && opt_method != "nlminb"){
+    stop("opt_method must be 'L-BFGS-B', 'BFGS', or 'nlminb'.")
   }
 
   params = estimateParameters(datalist, xCol, yCol, opt_method, limitMemory, sampleSize$optimSize, rngSeed)$estimatedParams

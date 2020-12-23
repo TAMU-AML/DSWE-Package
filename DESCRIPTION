@@ -1,10 +1,10 @@
 Package: DSWE
-Title: Data Science for wind energy
-Version: 1.5.0
+Title: Data Science for Wind Energy
+Version: 1.5.1
 Authors@R: c(
-    person(given = "Nitesh", family = "Kumar", role = c("aut","cre"), email = "nitesh.kumar@tamu.edu"),
+    person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nitesh.kumar@tamu.edu"),
     person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@tamu.edu"),
-    person(given = "Yu", family = "Ding", role = c("aut"), email = "yuding@tamu.edu"))
+    person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding@tamu.edu"))
 Description: An R-implementation for some of the data science methods used in wind energy applications. Current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching.
 Depends:
       R (>= 3.5.0) 

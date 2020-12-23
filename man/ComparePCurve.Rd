@@ -17,7 +17,7 @@ ComparePCurve(
   powerbins = 15,
   baseline = 1,
   limitMemory = T,
-  opt_method = "L-BFGS-B",
+  opt_method = "nlminb",
   sampleSize = list(optimSize = 500, bandSize = 5000),
   rngSeed = 1
 )
@@ -47,7 +47,7 @@ ComparePCurve(
 
 \item{limitMemory}{A boolean (True/False) indicating whether to limit the memory use or not. Default is true. If set to true, 5000 datapoints are randomly sampled from each dataset under comparison for inference}
 
-\item{opt_method}{A string specifying the optimization method to be used for hyperparameter estimation. Current options are: 'L-BFGS-B' and 'BFGS'. Default is set to 'L-BFGS-B' and is recommended.}
+\item{opt_method}{A string specifying the optimization method to be used for hyperparameter estimation. Current options are: \code{'L-BFGS-B'}, \code{'BFGS'}, and \code{'nlminb'}. Default is set to \code{'nlminb'}.}
 
 \item{sampleSize}{A named list of two integer items: \code{optimSize} and \code{bandSize}, denoting the sample size for each dataset for hyperparameter optimization and confidence band computation, respectively, when \code{limitMemory = TRUE}. Default value is \code{list(optimSize = 500, bandSize = 5000)}.}
 
@@ -94,5 +94,5 @@ testCol, testSet, thrs, confLevel, gridSize)
 }
 }
 \references{
-For details, see Ding et al. (2020) available on \code{arxiv} at this \href{https://arxiv.org/abs/2005.08652}{link}.
+For details, see Ding et al. (2020) available on \code{arxiv} at <\url{https://arxiv.org/abs/2005.08652}>.
 }

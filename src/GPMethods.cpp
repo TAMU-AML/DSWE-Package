@@ -79,7 +79,7 @@ double computeLogLikGP_(const arma::mat & X, const arma::vec&  y, const List& pa
   CovMat.diag() +=  pow(sigma_n,2);
   arma::mat UpperCholMat = chol(CovMat);
   arma::vec y_dash = y - beta;
-  double t1 = 0.5*as_scalar((y.t()*arma::solve(arma::trimatu(UpperCholMat),arma::solve(arma::trimatl(UpperCholMat.t()),y_dash))));
+  double t1 = 0.5*as_scalar((y_dash.t()*arma::solve(arma::trimatu(UpperCholMat),arma::solve(arma::trimatl(UpperCholMat.t()),y_dash))));
   double t2 = arma::sum(log(arma::abs(UpperCholMat.diag())));
   double t3 = log(2*arma::datum::pi)*UpperCholMat.n_rows/2;
   return (t1+t2+t3);

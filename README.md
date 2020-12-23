@@ -1,6 +1,6 @@
 <center> <h1>DSWE (Data Science for Wind Energy)</h1> </center>
 
- ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/05/DSWE_HELP.pdf).</h2>
+ ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/12/DSWE_HELP_20201204.pdf).</h2>
 
 - [Introduction](#introduction)
 - [Installation](#installation)
@@ -112,7 +112,7 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 *Function :*
 
-*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'L-BFGS-B', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1)*
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1)*
 
 ```R
 # Preparing the arguments
@@ -130,7 +130,7 @@ gridSize = c(10, 10)
 powerbins = 15
 baseline = 1
 limitMemory = TRUE
-opt_method = 'L-BFGS-B'
+opt_method = 'nlminb'
 sampleSize = list(optimSize = 500, bandSize = 5000) 
 rngSeed = 1 
 
@@ -181,7 +181,7 @@ testCol = c(2, 4)
 
  *Function :*
 
- *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'L-BFGS-B', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1 )*
+ *funGP (datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1 )*
 
  ```R
  # Preparing the arguments
@@ -191,7 +191,7 @@ yCol = 7
 confLevel = 0.95
 testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
 limitMemory = TRUE
-opt_method = 'L-BFGS-B'
+opt_method = 'nlminb'
 sampleSize = list(optimSize = 500, bandSize = 5000) 
 rngSeed = 1 
 

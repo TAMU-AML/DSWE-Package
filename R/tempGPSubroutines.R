@@ -29,12 +29,17 @@ computeThinningNumber = function(trainX){
 createThinnedBins = function(dataX, dataY, thinningNumber){
   nData = nrow(dataX)
   thinnedBins = list()
-  for (i in 1:thinningNumber){
-    nPoints = floor((nData - i)/thinningNumber)
-    lastIdx = i + (nPoints*thinningNumber)
-    idx = seq(i, lastIdx, length.out = (nPoints+1))
-    thinnedBins[[i]] = list(X = dataX[idx,], y = dataY[idx])
+  if (thinningNumber < 2) {
+    thinnedBins[[1]] = list(X = dataX, y = dataY)
+  } else {
+    for (i in 1:thinningNumber){
+      nPoints = floor((nData - i)/thinningNumber)
+      lastIdx = i + (nPoints*thinningNumber)
+      idx = seq(i, lastIdx, length.out = (nPoints+1))
+      thinnedBins[[i]] = list(X = dataX[idx,,drop = FALSE], y = dataY[idx])
+    }
   }
+  
   return(thinnedBins)
 }
 
@@ -89,15 +94,29 @@ estimateLocalFunctionParams= function(trainT, residual){
   return(list(estimatedParams = estimatedParams,objVal = objVal, gradVal = gradVal))
 }
 
+
 computeLocalFunction = function(residual, traindataT, testdataT, neighbourhood){
   pred = rep(0,length(testdataT))
   for (i in 1:length(testdataT)){
     distance = abs(testdataT[i] - traindataT)
     trainIdx = which(distance < neighbourhood)
-    if (length(trainIdx)>1){
-      params = estimateLocalFunctionParams(traindataT[trainIdx],residual[trainIdx])
-      weightedRes = computeWeightedY(as.matrix(traindataT[trainIdx]),residual[trainIdx],params$estimatedParams)
-      pred[i] = predictGP(as.matrix(traindataT[trainIdx]),weightedRes,as.matrix(testdataT[i]),params$estimatedParams)
+    if (length(trainIdx)>0){
+      if (var(residual[trainIdx]) < .Machine$double.eps || is.na(var(residual[trainIdx]))){
+        warning("While computing g(t), variance of the training residuals is numerically zero for time index: ",testdataT[i], '\nUsing mean of the response as the prediction.\n')
+        pred[i] = mean(residual[trainIdx])
+      } else {
+        params = try (
+          expr = estimateLocalFunctionParams(traindataT[trainIdx],residual[trainIdx]), silent = TRUE
+          )
+        if (class(params) == "try-error"){
+          warning("Computing g(t) is numerically unstable for time index: ",testdataT[i], '\nUsing mean of the response as the prediction.\n')
+          pred[i] =  mean(residual[trainIdx])
+        } else {
+          weightedRes = computeWeightedY(as.matrix(traindataT[trainIdx]),residual[trainIdx],params$estimatedParams)
+          pred[i] = predictGP(as.matrix(traindataT[trainIdx]),weightedRes,as.matrix(testdataT[i]),params$estimatedParams)    
+        }
+      }
+      
     } else {
       pred[i] = 0
     }
