@@ -1,5 +1,5 @@
 Package: DSWE
-Title: Data Science for wind energy
+Title: Data Science for Wind Energy
 Version: 1.5.1
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nitesh.kumar@tamu.edu"),
