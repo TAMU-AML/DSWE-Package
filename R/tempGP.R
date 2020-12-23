@@ -147,7 +147,7 @@ tempGP = function(trainX, trainY, trainT = NULL){
 #' @return A vector of predictions at the testpoints in \code{testX}.
 #' @examples 
 #' \donttest{
-#'    testdata = data[5001:10000,] # defining test data as the next 5000 data points after train indices
+#'    testdata = data[5001:10000,] # defining test data 
 #'    testX = as.matrix(testdata[,xCol,drop = F])
 #'    predF = predict(tempGPObject, testX)
 #' }
