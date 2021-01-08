@@ -49,7 +49,7 @@ dir.create(.rootdir)
 .destfile = tempfile(pattern = "DSWE", fileext = ".tar.gz", tmpdir = .rootdir)
 download.file(url = .downloadURL, destfile = .destfile)
 untar(.destfile, exdir = .rootdir )
-.folder = list.dirs(.rootdir, full.names = T, recursive = F)
+.folder = list.dirs(.rootdir, full.names = TRUE, recursive = FALSE)
 utils::install.packages(.folder,repos=NULL,type = "source")
 rm(list = c(".PACKAGE_VERSION",".DEPENDENCIES",".downloadURL",".rootdir",".destfile",".folder",".packageList",".i"))
 
