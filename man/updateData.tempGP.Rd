@@ -35,3 +35,17 @@ An updated object of class \code{tempGP}.
 \description{
 This function updates \code{trainX}, \code{trainY}, and \code{trainT} in a \code{tempGP} object. By default, if the new data has \code{m} data points, the function removes top \code{m} data points from the tempGP object and appends the new data at the bottom, thus keeping the total number of data points the same. This can be overwritten by setting \code{replace = FALSE} to keep all the data points (old and new). The method also updates \code{modelG} by computing and updating residuals at the new data points. \code{modelF} can be also be updated by setting the argument \code{updateModelF} to \code{TRUE}, though not required generally (see comments in the \code{Arguments}.)
 }
+\examples{
+   data = DSWE::data1
+   trainindex = 1:100 #using the first 100 data points to train the model
+   traindata = data[trainindex,]
+   xCol = 2 #input variable columns
+   yCol = 7 #response column
+   trainX = as.matrix(traindata[,xCol])
+   trainY = as.numeric(traindata[,yCol])
+   tempGPObject = tempGP(trainX, trainY)
+   newdata = DSWE::data1[101:110,] # defining new data  
+   newX = as.matrix(newdata[,xCol, drop = FALSE])
+   newY = as.numeric(newdata[,yCol])
+   tempGPupdated = updateData(tempGPObject, newX, newY)
+}

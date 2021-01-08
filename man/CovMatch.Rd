@@ -32,14 +32,17 @@ The function aims to take list of two data sets and returns the after
 matched data sets using user specified covariates and threshold
 }
 \examples{
-\donttest{
+
 data1 = data1[1:100, ]
 data2 = data2[1:100, ]
 data = list(data1, data2)
-xCol = c(2, 4)
+xCol = 2
 xCol.circ = NULL
-thrs = c(0.1, 0.1)
+thrs = 0.1
 priority = FALSE
 matched_data = CovMatch(data, xCol, xCol.circ, thrs, priority)
+
 }
+\references{
+Ding, Y. (2019). Data Science for Wind Energy. Chapman & Hall, Boca Raton, FL.
 }

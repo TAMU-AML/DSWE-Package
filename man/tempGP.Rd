@@ -39,16 +39,16 @@ An object of class \code{tempGP} with the following attributes:
 A Gaussian process based power curve model which explicitly models the temporal aspect of the power curve. The model consists of two parts: \code{f(x)} and \code{g(t)}.
 }
 \examples{
-\donttest{
+
     data = DSWE::data1
-    trainindex = 1:5000 #using the first 5000 data points to train the model
+    trainindex = 1:100 #using the first 100 data points to train the model
     traindata = data[trainindex,]
-    xCol = c(2:6) #input variable columns
+    xCol = 2 #input variable columns
     yCol = 7 #response column
     trainX = as.matrix(traindata[,xCol])
     trainY = as.numeric(traindata[,yCol])
     tempGPObject = tempGP(trainX, trainY)
-} 
+
 
 }
 \references{
