@@ -5,7 +5,14 @@ Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nitesh.kumar@tamu.edu"),
     person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@tamu.edu"),
     person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding@tamu.edu"))
-Description: An R-implementation for some of the data science methods used in wind energy applications. Current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching.
+Description: Data science methods used in wind energy applications. 
+              Current functionalities include creating a multi-dimensional power curve model, 
+              performing power curve function comparison, and covariate matching. 
+              Relevant works are Ding (2019, ISBN:9780429956508),
+              Prakash et al. (2020) <arxiv:2012.01349>, 
+              Lee et al. (2015) <doi:10.1080/01621459.2014.977385>, 
+              Prakash et al. (2020) <arxiv:2003.07899>, 
+              Ding et al. (2020) <arxiv:2005.08652>.
 Depends:
       R (>= 3.5.0) 
 License: MIT + file LICENSE
