@@ -75,7 +75,7 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory,
   sigma_f = params$sigma_f
   sigma_n = params$sigma_n
   beta = params$beta
-  if (limitMemory == T){
+  if (limitMemory == TRUE){
     maxDataSample = bandSize
     for (i in 1:length(datalist)){
       if (nrow(datalist[[i]]) > maxDataSample){
