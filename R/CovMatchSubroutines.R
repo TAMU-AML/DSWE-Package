@@ -54,7 +54,7 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
 
   # Setting up the reference data set and threshold
   refid_ = length(fname_)
-  ref_ = as.matrix(fname_[[refid_]][, covcol_, drop = F])
+  ref_ = as.matrix(fname_[[refid_]][, covcol_, drop = FALSE])
 
   # Test files
   testid_ = c(1:length(fname_))[-refid_]
@@ -64,7 +64,7 @@ CovMatch.Mult = function(dname, cov, wgt, cov.circ){
   thres_ = ratio_ * wgt_
 
   # Matching data sets with ref as reference
-  matchID_  = lapply(testid_, function(x) Match.Cov(ref_, fname_[[x]][, covcol_, drop = F], thres_, pos, flag))
+  matchID_  = lapply(testid_, function(x) Match.Cov(ref_, fname_[[x]][, covcol_, drop = FALSE], thres_, pos, flag))
 
   # creating list of matched data set
   matched_ = rep(list(c()), (length(fname_)))
