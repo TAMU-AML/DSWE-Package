@@ -52,7 +52,7 @@
 #' @examples
 #' 
 #'     data = DSWE::data1
-#'     trainindex = 1:100 #using the first 5000 data points to train the model
+#'     trainindex = 1:100 #using the first 100 data points to train the model
 #'     traindata = data[trainindex,]
 #'     xCol = 2 #input variable columns
 #'     yCol = 7 #response column
@@ -147,7 +147,7 @@ tempGP = function(trainX, trainY, trainT = NULL){
 #' @return A vector of predictions at the testpoints in \code{testX}.
 #' @examples 
 #'    data = DSWE::data1
-#'    trainindex = 1:100 #using the first 5000 data points to train the model
+#'    trainindex = 1:100 #using the first 100 data points to train the model
 #'    traindata = data[trainindex,]
 #'    xCol = 2 #input variable columns
 #'    yCol = 7 #response column
@@ -251,6 +251,19 @@ predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
 #' @param ... additional arguments for future development
 #'
 #' @return An updated object of class \code{tempGP}.
+#' @examples 
+#'    data = DSWE::data1
+#'    trainindex = 1:100 #using the first 100 data points to train the model
+#'    traindata = data[trainindex,]
+#'    xCol = 2 #input variable columns
+#'    yCol = 7 #response column
+#'    trainX = as.matrix(traindata[,xCol])
+#'    trainY = as.numeric(traindata[,yCol])
+#'    tempGPObject = tempGP(trainX, trainY)
+#'    newdata = DSWE::data1[101:110,] # defining new data  
+#'    newX = as.matrix(newdata[,xCol, drop = FALSE])
+#'    newY = as.numeric(newdata[,yCol])
+#'    tempGPupdated = updateData(tempGPObject, newX, newY)
 #' @export
 #' 
 updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, updateModelF = FALSE, ...){
