@@ -56,7 +56,7 @@ estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, o
     objGrad = function(par){computeloglikGradSum(datalist,covCols,yCol,
                                                  params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
     if (opt_method == "BFGS" || opt_method == "L-BFGS-B"){
-      optimResult = stats::optim(par = parInit, fn = objFun, gr = objGrad, method = opt_method, control = list(maxit = 1000, trace = 1, REPORT = 1)) # , lower = c(rep(0.001,nCov+2),-Inf))
+      optimResult = stats::optim(par = parInit, fn = objFun, gr = objGrad, method = opt_method, control = list(maxit = 1000, trace = 0)) 
       estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
       objVal = optimResult$value
     } else if (opt_method == "nlminb"){
