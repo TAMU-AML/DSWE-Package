@@ -114,15 +114,15 @@ tempGP = function(trainX, trainY, trainT = NULL){
     trainT = c(1:length(trainY))
   }
   
-  #cat("All test passed.\n")
+
   thinningNumber = computeThinningNumber(trainX)
-  cat("thinning number =",thinningNumber,'\n')
+
   if (thinningNumber > 0){
     thinnedBins = createThinnedBins(trainX,trainY,thinningNumber)  
   } else{
     thinnedBins = list(list(x = trainX, y = trainY))
   }
-  cat("Estimating hyperparameters...\n")
+
   optimResult = estimateBinnedParams(thinnedBins)
   weightedY = computeWeightedY(trainX, trainY, optimResult$estimatedParams)
   modelF = list(X = trainX, y = trainY, weightedY = weightedY)
