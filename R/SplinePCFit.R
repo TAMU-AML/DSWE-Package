@@ -109,9 +109,9 @@ SplinePCFit = function(data, xCol, yCol, testX, modelFormula = NULL){
   }
   
   #model fitting
-  modelFit = ssanova(data = data, formula = modelFormula, skip.iter = F)
+  modelFit = ssanova(data = data, formula = modelFormula, skip.iter = FALSE)
   
   #predcition on test points
-  testPred = predict(modelFit, testX[, xCol])
+  testPred = predict(modelFit, testX[, xCol, drop = FALSE])
   return(testPred)
 }
