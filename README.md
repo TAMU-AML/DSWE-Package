@@ -112,7 +112,7 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 *Function :*
 
-*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1)*
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = TRUE, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1)*
 
 ```R
 # Preparing the arguments
@@ -228,7 +228,7 @@ function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt
  testdata = data[5001:10000,] # defining test data as the next 5000 data points after train indices
  
  ## Predict only the function f(x) and ignore temporal component g(t)
- testX = as.matrix(testdata[,xCol,drop = F])
+ testX = as.matrix(testdata[,xCol,drop = FALSE])
  testY = as.numeric(testdata[,yCol])
  predF = predict(tempGPObject, testX)
  rmseF = sqrt(mean((testY - predF)^2)) #rmse 
@@ -238,7 +238,7 @@ function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt
  
  predY = rep(0,nrow(testdata)) #vector to store the rolling predictions
  for (i in 1:nrow(testdata)){
-  testX_i = as.matrix(testdata[i,xCol,drop = F]) #input variables for time point i; replace with forecast when actual data not available.
+  testX_i = as.matrix(testdata[i,xCol,drop = FALSE]) #input variables for time point i; replace with forecast when actual data not available.
   testT_i = testdata[i,tCol] #time index for i
   predY[i] = predict(tempGPObject, testX_i, testT_i) #predict both f(x) and g(t)
   
