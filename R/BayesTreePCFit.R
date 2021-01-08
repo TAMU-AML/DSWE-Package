@@ -74,7 +74,7 @@ BayesTreePCFit = function(trainX, trainY, testX, nTree = 50){
     stop("testX and trainX must have same number of columns")
   }
   
-  modelFit = bart(x.train = trainX, y.train = trainY, x.test = testX, ntree = nTree, verbose = F)
+  modelFit = bart(x.train = trainX, y.train = trainY, x.test = testX, ntree = nTree, verbose = FALSE)
   
   return(modelFit$yhat.test.mean)
 }
