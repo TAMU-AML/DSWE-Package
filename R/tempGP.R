@@ -106,7 +106,7 @@ tempGP = function(trainX, trainY, trainT = NULL){
       stop('trainX, trainY, and trainT must have the same number of data points.')
     }
     
-    trainX = trainX[order(trainT),,drop = F]
+    trainX = trainX[order(trainT),,drop = FALSE]
     trainY = trainY[order(trainT)]
     trainT = trainT[order(trainT)]
     
@@ -291,7 +291,7 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
     if(length(newT) != length(newY)){
       stop('newX, newY, and newT must have the same number of data points.')
     }
-    newX = newX[order(newT),,drop=F]
+    newX = newX[order(newT),,drop = FALSE]
     newY = newY[order(newT)]
     newT = newT[order(newT)]
     
@@ -304,7 +304,7 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
     
     if (length(newY) < length(object$trainY)){
       
-      object$trainX = rbind(object$trainX[-c(1:length(newY)),,drop = F],newX)
+      object$trainX = rbind(object$trainX[-c(1:length(newY)),,drop = FALSE],newX)
       object$trainY = c(object$trainY[-c(1:length(newY))],newY)
       object$trainT = c(object$trainT[-c(1:length(newY))],newT)
       
