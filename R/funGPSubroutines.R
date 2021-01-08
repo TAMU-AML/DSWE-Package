@@ -100,7 +100,6 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory,
 
 ###
 computeConfBand = function(diffCovMat, confLevel){
-  set.seed(1)
   band = computeConfBand_(diffCovMat, confLevel)
   return(as.numeric(band))
 
