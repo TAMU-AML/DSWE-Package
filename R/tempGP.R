@@ -146,11 +146,18 @@ tempGP = function(trainX, trainY, trainT = NULL){
 #' @param ... additional arguments for future development
 #' @return A vector of predictions at the testpoints in \code{testX}.
 #' @examples 
-#' \donttest{
-#'    testdata = data[5001:10000,] # defining test data 
-#'    testX = as.matrix(testdata[,xCol,drop = F])
+#'    data = DSWE::data1
+#'    trainindex = 1:100 #using the first 5000 data points to train the model
+#'    traindata = data[trainindex,]
+#'    xCol = 2 #input variable columns
+#'    yCol = 7 #response column
+#'    trainX = as.matrix(traindata[,xCol])
+#'    trainY = as.numeric(traindata[,yCol])
+#'    tempGPObject = tempGP(trainX, trainY)
+#'    testdata = DSWE::data1[101:110,] # defining test data 
+#'    testX = as.matrix(testdata[,xCol, drop = FALSE])
 #'    predF = predict(tempGPObject, testX)
-#' }
+#' 
 #' @export
 #' 
 predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
