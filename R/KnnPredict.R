@@ -62,7 +62,7 @@ KnnPredict = function(knnMdl, testData){
     normalizedTestData[, feature] = (testData[, feature] - min(trainData[, feature])) / (max(trainData[, feature]) - min(trainData[, feature]))
   }
 
-  prediction = FNN::knn.reg(normalizedTrainData[, xCol, drop =F], normalizedTestData[, xCol, drop = F], trainData[, yCol], k = bestK )
+  prediction = FNN::knn.reg(normalizedTrainData[, xCol, drop =FALSE], normalizedTestData[, xCol, drop = FALSE], trainData[, yCol], k = bestK )
 
   return(prediction$pred)
 }
