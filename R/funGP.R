@@ -52,7 +52,7 @@
 
 #' function_diff = funGP(datalist, xCol, yCol, confLevel, testset)
 #' 
-#' @references For more details, please see Prakash et al. (2020) at <\url{https://arxiv.org/abs/2003.07899}>.
+#' @references Prakash, A., Tuo, R., & Ding, Y. (2020). "Gaussian process aided function comparison using noisy scattered data." arXiv preprint arXiv:2003.07899.  <\url{https://arxiv.org/abs/2003.07899}>.
 #'@export
 funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1){
 
