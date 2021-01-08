@@ -47,7 +47,7 @@
 #' testX = as.matrix(data[c(101:110),2])
 #' AMK_prediction = AMK(trainX, trainY, testX, bw = 'dpi_gap', cirCov = NA)
 #' 
-#' @references  Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67. 
+#' @references  Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67, DOI:10.1080/01621459.2014.977385. 
 #' @export
 AMK = function(trainX, trainY, testX, bw = 'dpi_gap', nMultiCov = 3, fixedCov = c(1, 2), cirCov = NA ){
   
