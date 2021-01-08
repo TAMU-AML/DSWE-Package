@@ -4,7 +4,8 @@ Version: 1.5.1
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nitesh.kumar@tamu.edu"),
     person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@tamu.edu"),
-    person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding@tamu.edu"))
+    person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding@tamu.edu"),
+    person(given = "Rui", family = "Tuo", role = c("ctb","cph"), email = "ruituo@tamu.edu"))
 Description: Data science methods used in wind energy applications. 
               Current functionalities include creating a multi-dimensional power curve model, 
               performing power curve function comparison, and covariate matching. 
