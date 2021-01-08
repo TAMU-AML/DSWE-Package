@@ -182,7 +182,7 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
       }else{
         prediction = rep(NA, nrow(testX))
         for(i in 1:nrow(testX)){
-          bandwidth = find.bw(trainY, trainX, testX[i, , drop = F], band)
+          bandwidth = find.bw(trainY, trainX, testX[i, , drop = FALSE], band)
           if(all(!is.na(cirCov))){
           for (i in cirCov){
             bandwidth[i] = bandwidth[i]*pi/180
@@ -195,7 +195,7 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
             bandwidth[i] = sqrt(var(trainX[, i]))
           }
           }
-          prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = F], bandwidth, nMultiCov, fixedCov, cirCov)
+          prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = FALSE], bandwidth, nMultiCov, fixedCov, cirCov)
         }
         if (any(!is.finite(prediction))){
           warning("some of the testpoints resulted in non-finite predictions.")
