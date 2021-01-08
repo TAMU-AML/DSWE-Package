@@ -30,14 +30,14 @@
 #'
 #' @importFrom e1071 svm
 #' @examples 
-#' \donttest{
+#' 
 #' data = data1
-#' trainX = data[, c(2, 4)]
-#' trainY = data[, 7]
-#' testX = data[100:110, c(2, 4)]
+#' trainX = as.matrix(data[c(1:100),2])
+#' trainY = data[c(1:100),7]
+#' testX = as.matrix(data[c(101:110),2])
 #' 
 #' Svm_prediction = SvmPCFit(trainX, trainY, testX)
-#' }
+#' 
 #' @export
 
 SvmPCFit = function(trainX, trainY, testX, kernel = 'radial'){
