@@ -44,18 +44,13 @@ This function is based on Lee et al. (2015). Main features  are:
 }
 }
 \examples{
-\donttest{
 data = data1
-trainX = data[, c(2, 4)]
-trainY = data[, 7]
-testX = data[100:140, c(2, 4)]
-bw = 'dpi_gap'
-nMultiCov = 2
-fixedCov = NULL
-cirCov = NA
-AMK_prediction = AMK(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov)
-}
+trainX = as.matrix(data[c(1:100),2])
+trainY = data[c(1:100),7]
+testX = as.matrix(data[c(101:110),2])
+AMK_prediction = AMK(trainX, trainY, testX, bw = 'dpi_gap', cirCov = NA)
+
 }
 \references{
-Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67.
+Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67, DOI:10.1080/01621459.2014.977385.
 }

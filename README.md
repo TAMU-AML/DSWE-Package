@@ -1,6 +1,6 @@
 <center> <h1>DSWE (Data Science for Wind Energy)</h1> </center>
 
- ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/12/DSWE_HELP_20201204.pdf).</h2>
+ ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](https://tamucs-my.sharepoint.com/:b:/g/personal/yu-ding_tamu_edu/Eaq5kAqvtMNBkowoavEpV5gBFW7XIPHCMNLpoVhxtn9WEA?e=eUkbbj).</h2>
 
 - [Introduction](#introduction)
 - [Installation](#installation)
@@ -20,7 +20,7 @@
 - [Details](#details)
 
 # Introduction
-This is an R-package implementing some of the data science methods for wind energy applications (DSWE). The current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching:
+Data science methods for wind energy applications (DSWE). The current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching:
 
 Power curve comparison:
 
@@ -46,26 +46,17 @@ Covariate matching function :
 * CovMatch
 
 # Installation
-The package building relies on certain tool chains in Windows and Mac respectively, as the compiler for C++ code, along with package `remotes`
 
-**Step 1 (Download necessary tool chain):**
-
-Tool chain : [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [GFortran](https://mac.r-project.org/tools/) for Mac OS
-
-**Step 2 (Install package remotes in R):**
-
-Install package remotes:
+## For versions 1.5.1 and above (through [CRAN](https://cran.r-project.org/package=DSWE)):
 ```R
-install.packages("remotes")
+install.packages("DSWE")
 ```
 
-**Step 3 (Build package using remotes):**
+<span style="color:red"> Note: </span> The package contains C++ code, hence installation using source requires C++ compilers: [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [GFortran](https://mac.r-project.org/tools/) for Mac OS. The pre-compiled binaries available through [CRAN](https://cran.r-project.org), the offical package repository for `R`, do not require C++ compilers.
 
-```R
-remotes::install_github("TAMU-AML/DSWE-Package")
-```
 
-You can also specify the version (for example, version 1.3.1) as follows:
+## For versions prior to 1.5.1:
+Install using the remotes package by specify the version (for example, version 1.3.1) as follows:
 ```R
 remotes::install_github("TAMU-AML/DSWE-Package@v1.3.1")
 ```
@@ -112,7 +103,7 @@ The function can be used to quantify the difference using CovMatch and funGP fun
 
 *Function :*
 
-*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = T, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1)*
+*ComparePCurve(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = TRUE, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1)*
 
 ```R
 # Preparing the arguments
@@ -228,7 +219,7 @@ function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt
  testdata = data[5001:10000,] # defining test data as the next 5000 data points after train indices
  
  ## Predict only the function f(x) and ignore temporal component g(t)
- testX = as.matrix(testdata[,xCol,drop = F])
+ testX = as.matrix(testdata[,xCol,drop = FALSE])
  testY = as.numeric(testdata[,yCol])
  predF = predict(tempGPObject, testX)
  rmseF = sqrt(mean((testY - predF)^2)) #rmse 
@@ -238,7 +229,7 @@ function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt
  
  predY = rep(0,nrow(testdata)) #vector to store the rolling predictions
  for (i in 1:nrow(testdata)){
-  testX_i = as.matrix(testdata[i,xCol,drop = F]) #input variables for time point i; replace with forecast when actual data not available.
+  testX_i = as.matrix(testdata[i,xCol,drop = FALSE]) #input variables for time point i; replace with forecast when actual data not available.
   testT_i = testdata[i,tCol] #time index for i
   predY[i] = predict(tempGPObject, testX_i, testT_i) #predict both f(x) and g(t)
   

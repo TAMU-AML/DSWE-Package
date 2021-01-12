@@ -10,7 +10,7 @@ funGP(
   yCol,
   confLevel = 0.95,
   testset,
-  limitMemory = T,
+  limitMemory = TRUE,
   opt_method = "nlminb",
   sampleSize = list(optimSize = 500, bandSize = 5000),
   rngSeed = 1
@@ -51,17 +51,15 @@ a list containing :
 Function comparison using Gaussian Process and Hypothesis testing
 }
 \examples{
-\donttest{
+
 datalist = list(data1[1:100,], data2[1:100, ])
-xCol = c(2, 4)
+xCol = 2
 yCol = 7
 confLevel = 0.95
-testset = matrix(c(7.2, 1.14, 12.3, 1.16), nrow = 2, ncol = 2, byrow = TRUE)
-limitMemory = TRUE
-opt_method = 'nlminb'
-function_diff = funGP(datalist, xCol, yCol, confLevel, testset, limitMemory, opt_method)
-}
+testset = seq(4,10,length.out = 20)
+function_diff = funGP(datalist, xCol, yCol, confLevel, testset)
+
 }
 \references{
-For more details, please see Prakash et al. (2020) at <\url{https://arxiv.org/abs/2003.07899}>.
+Prakash, A., Tuo, R., & Ding, Y. (2020). "Gaussian process aided function comparison using noisy scattered data." arXiv preprint arXiv:2003.07899.  <\url{https://arxiv.org/abs/2003.07899}>.
 }

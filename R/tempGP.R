@@ -50,16 +50,16 @@
 #' @seealso \code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
 #' @importFrom stats pacf sd predict
 #' @examples
-#' \donttest{
+#' 
 #'     data = DSWE::data1
-#'     trainindex = 1:5000 #using the first 5000 data points to train the model
+#'     trainindex = 1:100 #using the first 100 data points to train the model
 #'     traindata = data[trainindex,]
-#'     xCol = c(2:6) #input variable columns
+#'     xCol = 2 #input variable columns
 #'     yCol = 7 #response column
 #'     trainX = as.matrix(traindata[,xCol])
 #'     trainY = as.numeric(traindata[,yCol])
 #'     tempGPObject = tempGP(trainX, trainY)
-#' } 
+#' 
 #' 
 #' @references Prakash, A., Tuo, R., & Ding, Y. (2020). "The temporal overfitting problem with applications in wind power curve modeling." arXiv preprint arXiv:2012.01349. <\url{https://arxiv.org/abs/2012.01349}>.
 #' @export
@@ -106,7 +106,7 @@ tempGP = function(trainX, trainY, trainT = NULL){
       stop('trainX, trainY, and trainT must have the same number of data points.')
     }
     
-    trainX = trainX[order(trainT),,drop = F]
+    trainX = trainX[order(trainT),,drop = FALSE]
     trainY = trainY[order(trainT)]
     trainT = trainT[order(trainT)]
     
@@ -114,15 +114,15 @@ tempGP = function(trainX, trainY, trainT = NULL){
     trainT = c(1:length(trainY))
   }
   
-  #cat("All test passed.\n")
+
   thinningNumber = computeThinningNumber(trainX)
-  cat("thinning number =",thinningNumber,'\n')
+
   if (thinningNumber > 0){
     thinnedBins = createThinnedBins(trainX,trainY,thinningNumber)  
   } else{
     thinnedBins = list(list(x = trainX, y = trainY))
   }
-  cat("Estimating hyperparameters...\n")
+
   optimResult = estimateBinnedParams(thinnedBins)
   weightedY = computeWeightedY(trainX, trainY, optimResult$estimatedParams)
   modelF = list(X = trainX, y = trainY, weightedY = weightedY)
@@ -146,11 +146,18 @@ tempGP = function(trainX, trainY, trainT = NULL){
 #' @param ... additional arguments for future development
 #' @return A vector of predictions at the testpoints in \code{testX}.
 #' @examples 
-#' \donttest{
-#'    testdata = data[5001:10000,] # defining test data 
-#'    testX = as.matrix(testdata[,xCol,drop = F])
+#'    data = DSWE::data1
+#'    trainindex = 1:100 #using the first 100 data points to train the model
+#'    traindata = data[trainindex,]
+#'    xCol = 2 #input variable columns
+#'    yCol = 7 #response column
+#'    trainX = as.matrix(traindata[,xCol])
+#'    trainY = as.numeric(traindata[,yCol])
+#'    tempGPObject = tempGP(trainX, trainY)
+#'    testdata = DSWE::data1[101:110,] # defining test data 
+#'    testX = as.matrix(testdata[,xCol, drop = FALSE])
 #'    predF = predict(tempGPObject, testX)
-#' }
+#' 
 #' @export
 #' 
 predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
@@ -244,6 +251,19 @@ predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
 #' @param ... additional arguments for future development
 #'
 #' @return An updated object of class \code{tempGP}.
+#' @examples 
+#'    data = DSWE::data1
+#'    trainindex = 1:100 #using the first 100 data points to train the model
+#'    traindata = data[trainindex,]
+#'    xCol = 2 #input variable columns
+#'    yCol = 7 #response column
+#'    trainX = as.matrix(traindata[,xCol])
+#'    trainY = as.numeric(traindata[,yCol])
+#'    tempGPObject = tempGP(trainX, trainY)
+#'    newdata = DSWE::data1[101:110,] # defining new data  
+#'    newX = as.matrix(newdata[,xCol, drop = FALSE])
+#'    newY = as.numeric(newdata[,yCol])
+#'    tempGPupdated = updateData(tempGPObject, newX, newY)
 #' @export
 #' 
 updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, updateModelF = FALSE, ...){
@@ -291,7 +311,7 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
     if(length(newT) != length(newY)){
       stop('newX, newY, and newT must have the same number of data points.')
     }
-    newX = newX[order(newT),,drop=F]
+    newX = newX[order(newT),,drop = FALSE]
     newY = newY[order(newT)]
     newT = newT[order(newT)]
     
@@ -304,7 +324,7 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
     
     if (length(newY) < length(object$trainY)){
       
-      object$trainX = rbind(object$trainX[-c(1:length(newY)),,drop = F],newX)
+      object$trainX = rbind(object$trainX[-c(1:length(newY)),,drop = FALSE],newX)
       object$trainY = c(object$trainY[-c(1:length(newY))],newY)
       object$trainT = c(object$trainT[-c(1:length(newY))],newT)
       

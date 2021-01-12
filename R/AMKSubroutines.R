@@ -150,17 +150,10 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
   if (class(bw)=="character"){
     if (bw == "dpi"){
       bandwidth = computeBandwidth(trainY,trainX,cirCov)
-      if(any(is.na(bandwidth))){
-        for(i in which(is.na(bandwidth))){
+      if(any(!is.finite(bandwidth))){
+        for(i in which(!is.finite(bandwidth))){
           bandwidth[i] = sqrt(var(trainX[, i]))
         }
-      }
-      if (any(!is.finite(bandwidth))){
-        message("Bandwidths not finite for some of the covariates. Bandwidths are:")
-        for (i in 1:ncol(trainX)){
-          message("Covariate ",i," : ",bandwidth[i])
-        }
-        stop("Estimation stopped. Try with finite bandwidths.")
       }
       pred = computePred(trainX, trainY, testX, bandwidth, nMultiCov, fixedCov, cirCov )
     }else if (bw == "dpi_gap"){
@@ -171,18 +164,18 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
         band$bw.fix[i] = 1/((band$bw.fix[i])^2)
       }
       }
-      if(any(is.na(band$bw.fix))){
-      for(i in which(is.na(band$bw.fix))){
+      if(any(!is.finite(band$bw.fix))){
+      for(i in which(!is.finite(band$bw.fix))){
         band$bw.fix[i] = sqrt(var(trainX[, i]))
       }
       }
-      if(is.na(band$bw.adp)){
+      if(!is.finite(band$bw.adp)){
         pred = computePred(trainX, trainY, testX, band$bw.fix, nMultiCov, fixedCov, cirCov )
         
       }else{
         prediction = rep(NA, nrow(testX))
         for(i in 1:nrow(testX)){
-          bandwidth = find.bw(trainY, trainX, testX[i, , drop = F], band)
+          bandwidth = find.bw(trainY, trainX, testX[i, , drop = FALSE], band)
           if(all(!is.na(cirCov))){
           for (i in cirCov){
             bandwidth[i] = bandwidth[i]*pi/180
@@ -190,18 +183,15 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
           }
           }
           
-          if(any(is.na(bandwidth))){
+          if(any(!is.finite(bandwidth))){
           for(i in which(is.na(bandwidth))){
             bandwidth[i] = sqrt(var(trainX[, i]))
           }
           }
-          prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = F], bandwidth, nMultiCov, fixedCov, cirCov)
-        }
-        if (any(!is.finite(prediction))){
-          warning("some of the testpoints resulted in non-finite predictions.")
+          prediction[i] = computePredGap(trainX, trainY, testX[i, , drop = FALSE], bandwidth, nMultiCov, fixedCov, cirCov)
         }
         
-        pred = list(pred = prediction)
+        pred = prediction
         
       }
     }

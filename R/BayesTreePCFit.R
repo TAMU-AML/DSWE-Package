@@ -32,14 +32,14 @@
 #' @importFrom BayesTree bart
 #' @importFrom stats predict
 #' @examples 
-#' \donttest{
+#' 
 #' data = data1
-#' trainX = data[, c(2, 4)]
-#' trainY = data[, 7]
-#' testX = data[100:110, c(2, 4)]
+#' trainX = as.matrix(data[c(1:100),2])
+#' trainY = data[c(1:100),7]
+#' testX = as.matrix(data[c(100:110),2])
 #' 
 #' Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
-#' }
+#' 
 #' @export
 
 
@@ -74,7 +74,7 @@ BayesTreePCFit = function(trainX, trainY, testX, nTree = 50){
     stop("testX and trainX must have same number of columns")
   }
   
-  modelFit = bart(x.train = trainX, y.train = trainY, x.test = testX, ntree = nTree, verbose = F)
+  modelFit = bart(x.train = trainX, y.train = trainY, x.test = testX, ntree = nTree, verbose = FALSE)
   
   return(modelFit$yhat.test.mean)
 }

@@ -111,7 +111,7 @@ find.bw = function (y.tr, X.tr, X.ts, bw)
     bins <- as.data.frame(matrix(NA, nrow = n.ts, ncol = length(id.adp)))
     for (k in 1:length(id.adp)) {
       bins[, k] <- .bincode(X.ts[, id.adp[k]], cutpt[[k]],
-                            include.lowest = T)
+                            include.lowest = TRUE)
 
     }
   }
