@@ -1,6 +1,6 @@
 <center> <h1>DSWE (Data Science for Wind Energy)</h1> </center>
 
- ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](http://11ekj91tjuht16uu5226632v-wpengine.netdna-ssl.com/wp-content/uploads/sites/164/2020/12/DSWE_HELP_20201204.pdf).</h2>
+ ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](https://tamucs-my.sharepoint.com/:b:/g/personal/yu-ding_tamu_edu/Eaq5kAqvtMNBkowoavEpV5gBFW7XIPHCMNLpoVhxtn9WEA?e=eUkbbj).</h2>
 
 - [Introduction](#introduction)
 - [Installation](#installation)
@@ -20,7 +20,7 @@
 - [Details](#details)
 
 # Introduction
-This is an R-package implementing some of the data science methods for wind energy applications (DSWE). The current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching:
+Data science methods for wind energy applications (DSWE). The current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching:
 
 Power curve comparison:
 
@@ -46,26 +46,17 @@ Covariate matching function :
 * CovMatch
 
 # Installation
-The package building relies on certain tool chains in Windows and Mac respectively, as the compiler for C++ code, along with package `remotes`
 
-**Step 1 (Download necessary tool chain):**
-
-Tool chain : [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [GFortran](https://mac.r-project.org/tools/) for Mac OS
-
-**Step 2 (Install package remotes in R):**
-
-Install package remotes:
+## For versions 1.5.1 and above (through [CRAN](https://cran.r-project.org/package=DSWE)):
 ```R
-install.packages("remotes")
+install.packages("DSWE")
 ```
 
-**Step 3 (Build package using remotes):**
+<span style="color:red"> Note: </span> The package contains C++ code, hence installation using source requires C++ compilers: [Rtools](https://cran.r-project.org/bin/windows/Rtools/) for Windows, [Apple Command Line Tools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) and [GFortran](https://mac.r-project.org/tools/) for Mac OS. The pre-compiled binaries available through [CRAN](https://cran.r-project.org), the offical package repository for `R`, do not require C++ compilers.
 
-```R
-remotes::install_github("TAMU-AML/DSWE-Package")
-```
 
-You can also specify the version (for example, version 1.3.1) as follows:
+## For versions prior to 1.5.1:
+Install using the remotes package by specify the version (for example, version 1.3.1) as follows:
 ```R
 remotes::install_github("TAMU-AML/DSWE-Package@v1.3.1")
 ```
