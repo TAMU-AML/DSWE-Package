@@ -223,7 +223,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
   }
   
-  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory, opt_method)
+  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory, opt_method, sampleSize, rngSeed)
   
   weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol, baseline)
   
