@@ -23,25 +23,34 @@
 #' @useDynLib DSWE
 #' @importFrom Rcpp sourceCpp
 #' 
-estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, optimSize, rngSeed){
+estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, optimSize, rngSeed, optimIdx){
   
   if(!limitMemory){
     
     thinningNumber = ceiling((computeThinningNumber(as.matrix(datalist[[1]][,covCols])) + computeThinningNumber(as.matrix(datalist[[2]][,covCols])))/2)
     thinnedBins1 = createThinnedBins(as.matrix(datalist[[1]][,covCols]),as.numeric(datalist[[1]][,yCol]),thinningNumber)
-    thinnedBins2 = createThinnedBins(as.matrix(datalist[[2]][,covCols]),as.numeric(datalist[[2]][,yCol]),thinningNumber)
+    thinnedBins2 = createThinnedBins(as.matrix(datalist[[2]][,covCols]),as.numeric(datalist[[1]][,yCol]),thinningNumber)
     thinnedBins = c(thinnedBins1,thinnedBins2)
     optimResult = estimateBinnedParams(thinnedBins)
     return(list(estimatedParams = optimResult$estimatedParams,objVal = optimResult$objVal))
   
   } else if(limitMemory){
-    maxDataSample = optimSize
-    for (i in 1:length(datalist)){
-      if (nrow(datalist[[i]]) > maxDataSample){
-        set.seed(rngSeed)
-        datalist[[i]] = datalist[[i]][sample(nrow(datalist[[i]]), maxDataSample),]
+      if (!is.null(optimIdx)){
+        for (i in 1:length(datalist)){
+          datalist[[i]] = datalist[[i]][optimIdx[[i]], ]  
+        }
       }
-    }
+      else {
+        optimIdx = vector("list", length=length(datalist))
+        maxDataSample = optimSize
+        for (i in 1:length(datalist)){
+          if (nrow(datalist[[i]]) > maxDataSample){
+            set.seed(rngSeed)
+            optimIdx[[i]] = sample(nrow(datalist[[i]]), maxDataSample)
+            datalist[[i]] = datalist[[i]][optimIdx[[i]], ]
+          }
+        }
+      }
     nCov = length(covCols)
     theta = rep(0,nCov)
     for (i in 1:length(theta)){
@@ -64,23 +73,36 @@ estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, o
       estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
       objVal = optimResult$objective
     }
+    if (limitMemory){
+      return(list(estimatedParams = estimatedParams,objVal = objVal, optimIdx = optimIdx))  
+    } else {
+      return(list(estimatedParams = estimatedParams,objVal = objVal, optimIdx = NULL))  
+    }
     
-    return(list(estimatedParams = estimatedParams,objVal = objVal))
   }
 }
 
 ###
-computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory, bandSize, rngSeed){
+computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory, bandSize, rngSeed, bandIdx){
   theta = params$theta
   sigma_f = params$sigma_f
   sigma_n = params$sigma_n
   beta = params$beta
   if (limitMemory == TRUE){
-    maxDataSample = bandSize
-    for (i in 1:length(datalist)){
-      if (nrow(datalist[[i]]) > maxDataSample){
-        set.seed(rngSeed)
-        datalist[[i]] = datalist[[i]][sample(nrow(datalist[[i]]), maxDataSample),]
+    if (!is.null(bandIdx)){
+      for (i in 1:length(datalist)){
+        datalist[[i]] = datalist[[i]][bandIdx[[i]], ]  
+      }
+    }
+    else { 
+      bandIdx = vector("list", length=length(datalist))
+      maxDataSample = bandSize
+      for (i in 1:length(datalist)){
+        if (nrow(datalist[[i]]) > maxDataSample){
+          set.seed(rngSeed)
+          bandIdx[[i]] = sample(nrow(datalist[[i]]), maxDataSample)
+          datalist[[i]] = datalist[[i]][bandIdx[[i]],]
+        }
       }
     }
   }
@@ -94,7 +116,11 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory,
   testset = as.matrix(testset)
   
   returnList = computeDiffCov_(X1, y1, X2, y2, testset, theta, sigma_f, sigma_n, beta)
-  
+  if (limitMemory){
+    returnList$bandIdx = bandIdx  
+  } else {
+    returnList$bandIdx = NULL
+  }
   return(returnList)
 }
 
