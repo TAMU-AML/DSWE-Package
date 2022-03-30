@@ -105,7 +105,7 @@ ComputeWeightedDiff = function(dList, mu1, mu2, testdata, testCol, baseline){
   }
   percentDiff = round(diff*100/avgMu,2)
   
-  return(percentDiff)
+  return(percentDiff = percentDiff, weights = probTest)
   
 }
 

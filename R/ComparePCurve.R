@@ -225,7 +225,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
   
   resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory, opt_method, sampleSize, rngSeed)
   
-  weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol, baseline)
+  weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol, baseline)$percentDiff
   
   weightedStatDiff = ComputeWeightedStatDiff(data, resultGP$mu1, resultGP$mu2, resultGP$band, testSet, testCol, baseline)
   
