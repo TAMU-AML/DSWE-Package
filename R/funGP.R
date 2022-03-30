@@ -54,7 +54,7 @@
 #' 
 #' @references Prakash, A., Tuo, R., & Ding, Y. (2020). "Gaussian process aided function comparison using noisy scattered data." arXiv preprint arXiv:2003.07899.  <\url{https://arxiv.org/abs/2003.07899}>.
 #'@export
-funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1){
+funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1, hyperparameters = NULL, optimIdx = NULL, bandIdx = NULL){
 
   if (class(limitMemory)!="logical"){
     stop('limitMemory should either be TRUE or FALSE')
@@ -122,16 +122,20 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
   if (opt_method != "L-BFGS-B" && opt_method != "BFGS" && opt_method != "nlminb"){
     stop("opt_method must be 'L-BFGS-B', 'BFGS', or 'nlminb'.")
   }
-
-  params = estimateParameters(datalist, xCol, yCol, opt_method, limitMemory, sampleSize$optimSize, rngSeed)$estimatedParams
-
-  diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory, sampleSize$bandSize, rngSeed)
+  if (!is.null(hyperparameters)){
+    params = hyperparameters
+  } else {
+    estOutput = estimateParameters(datalist, xCol, yCol, opt_method, limitMemory, sampleSize$optimSize, rngSeed, optimIdx)
+    params = estOutput$estimatedParams
+  }
+  
+  diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory, sampleSize$bandSize, rngSeed, bandIdx)
 
   muDiff = diffCov$mu2 - diffCov$mu1
 
   band = computeConfBand(diffCov$diffCovMat, confLevel)
 
-  returnList = list(muDiff = muDiff,mu2 = diffCov$mu2, mu1= diffCov$mu1,band = band, confLevel = confLevel, testset = testset, estimatedParams = params)
+  returnList = list(muDiff = muDiff,mu2 = diffCov$mu2, mu1= diffCov$mu1,band = band, confLevel = confLevel, testset = testset, estimatedParams = params, objVal = estOutput$objVal, optimIdx = estOutput$optimIdx, bandIdx = diffCov$bandIdx)
 
   return(returnList)
 }
