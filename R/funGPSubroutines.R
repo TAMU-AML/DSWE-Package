@@ -29,7 +29,7 @@ estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, o
     
     thinningNumber = ceiling((computeThinningNumber(as.matrix(datalist[[1]][,covCols])) + computeThinningNumber(as.matrix(datalist[[2]][,covCols])))/2)
     thinnedBins1 = createThinnedBins(as.matrix(datalist[[1]][,covCols]),as.numeric(datalist[[1]][,yCol]),thinningNumber)
-    thinnedBins2 = createThinnedBins(as.matrix(datalist[[2]][,covCols]),as.numeric(datalist[[1]][,yCol]),thinningNumber)
+    thinnedBins2 = createThinnedBins(as.matrix(datalist[[2]][,covCols]),as.numeric(datalist[[2]][,yCol]),thinningNumber)
     thinnedBins = c(thinnedBins1,thinnedBins2)
     optimResult = estimateBinnedParams(thinnedBins)
     return(list(estimatedParams = optimResult$estimatedParams,objVal = optimResult$objVal))
