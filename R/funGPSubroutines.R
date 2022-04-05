@@ -91,7 +91,9 @@ computeDiffCov = function(datalist, covCols, yCol, params, testset, limitMemory,
   if (limitMemory == TRUE){
     if (!is.null(bandIdx)){
       for (i in 1:length(datalist)){
-        datalist[[i]] = datalist[[i]][bandIdx[[i]], ]  
+        if (nrow(datalist[[i]]) > bandSize){
+          datalist[[i]] = datalist[[i]][bandIdx[[i]], ] 
+        }
       }
     }
     else { 

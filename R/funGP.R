@@ -127,6 +127,7 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
   } else {
     estOutput = estimateParameters(datalist, xCol, yCol, opt_method, limitMemory, sampleSize$optimSize, rngSeed, optimIdx)
     params = estOutput$estimatedParams
+    optimIdx = estOutput$optimIdx
   }
   
   diffCov = computeDiffCov(datalist, xCol, yCol, params, testset, limitMemory, sampleSize$bandSize, rngSeed, bandIdx)
@@ -135,7 +136,7 @@ funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = 
 
   band = computeConfBand(diffCov$diffCovMat, confLevel)
 
-  returnList = list(muDiff = muDiff,mu2 = diffCov$mu2, mu1= diffCov$mu1,band = band, confLevel = confLevel, testset = testset, estimatedParams = params, objVal = estOutput$objVal, optimIdx = estOutput$optimIdx, bandIdx = diffCov$bandIdx)
+  returnList = list(muDiff = muDiff,mu2 = diffCov$mu2, mu1= diffCov$mu1,band = band, confLevel = confLevel, testset = testset, estimatedParams = params, optimIdx = optimIdx, bandIdx = diffCov$bandIdx)
 
   return(returnList)
 }
