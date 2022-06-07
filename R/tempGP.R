@@ -65,7 +65,18 @@
 #' @export
 #' 
 
-tempGP = function(trainX, trainY, trainT = NULL){
+tempGP = function(trainX, trainY, trainT = NULL, 
+                  fast_computation = FALSE,
+                  limit_memory = NULL,
+                  optim_control = list(batch_size = 100, 
+                                       learn_rate = 0.005, 
+                                       max_iter = 1000, 
+                                       tol = 1e-6,
+                                       beta1 = 0.9, 
+                                       beta2 = 0.999, 
+                                       epsilon = 1e-8,
+                                       logfile = NULL
+                                       )){
   
   trainX = as.matrix((trainX)) #trying to coerce trainX into a matrix, if not already.
   
@@ -114,7 +125,12 @@ tempGP = function(trainX, trainY, trainT = NULL){
     trainT = c(1:length(trainY))
   }
   
-
+  if (!(class(limit_memory) %in% c("integer", "numeric", "NULL"))){
+    stop("limit memory must be an integer or NULL")
+  } else if (class(limit_memory) == "numeric"){
+    limit_memory = as.integer(limit_memory)
+  }
+  
   thinningNumber = computeThinningNumber(trainX)
 
   if (thinningNumber > 0){
@@ -123,15 +139,26 @@ tempGP = function(trainX, trainY, trainT = NULL){
     thinnedBins = list(list(x = trainX, y = trainY))
   }
 
-  optimResult = estimateBinnedParams(thinnedBins)
-  weightedY = computeWeightedY(trainX, trainY, optimResult$estimatedParams)
-  modelF = list(X = trainX, y = trainY, weightedY = weightedY)
-  trainResiduals = trainY - predictGP(trainX, weightedY, trainX, optimResult$estimatedParams)
+  optimResult = estimateBinnedParams(thinnedBins, fast_computation, optim_control)
+  if (class(limit_memory) == "integer"){
+    ntrain = nrow(trainX)
+    if (limit_memory < ntrain) {
+      pred_index = sample(ntrain, limit_memory)
+    }
+    activeX = trainX[pred_index,, drop=FALSE]
+    activeY = trainY[pred_index]
+  } else {
+    activeX = trainX
+    activeY = trainY
+  }
+  weightedY = computeWeightedY(activeX, activeY, optimResult$estimatedParams)
+  modelF = list(X = activeX, y = activeY, weightedY = weightedY)
+  trainResiduals = trainY - predictGP(modelF$X, modelF$weightedY, trainX, optimResult$estimatedParams)
   modelG = list(residuals = trainResiduals, time_index = trainT)
   output = list(trainX = trainX, trainY = trainY, trainT = trainT, 
                 thinningNumber = thinningNumber, modelF = modelF, 
                 modelG = modelG, estimatedParams = optimResult$estimatedParams, 
-                llval = -optimResult$objVal, gradval = -optimResult$gradVal)
+                llval = optimResult$objVal, gradval = optimResult$gradVal)
   class(output) = "tempGP"
   return(output)
 }
