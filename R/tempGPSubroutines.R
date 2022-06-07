@@ -58,11 +58,15 @@ estimateBinnedParams= function(databins, fast_computation, optim_control){
   objGrad = function(par){computeloglikGradSumTempGP(databins,
                                                      params = list(theta=par[1:nCov],sigma_f=par[nCov+1],sigma_n=par[nCov+2],beta=par[nCov+3]))}
   if (fast_computation){
-    optimResult = adam_optimizer(databins, parInit, optim_control$batch_size, 
-                                 optim_control$learn_rate, optim_control$beta1, 
-                                 optim_control$beta2, optim_control$epsilon, 
-                                 optim_control$max_iter, optim_control$rng_seed, 
-                                 optim_control$tol, optim_control$logfile )
+    optimResult = adam_optimizer(databins, parInit, 
+                                 optim_control$batch_size, 
+                                 optim_control$learn_rate,
+                                 optim_control$max_iter,
+                                 optim_control$tol, 
+                                 optim_control$beta1, 
+                                 optim_control$beta2, 
+                                 optim_control$epsilon, 
+                                 optim_control$logfile )
     estimatedParams = list(theta = abs(optimResult$par[1:nCov]), sigma_f = abs(optimResult$par[nCov+1]), sigma_n = abs(optimResult$par[nCov+2]), beta = optimResult$par[nCov+3])
     objVal = NULL
     gradVal = NULL
@@ -137,7 +141,7 @@ computeLocalFunction = function(residual, traindataT, testdataT, neighbourhood){
   return(pred)
 }
 
-adam_optimizer = function(data_bins, par_init, batch_size, learn_rate,max_iter, tol, beta1, beta2, epsilon, logfile){
+adam_optimizer = function(data_bins, par_init, batch_size, learn_rate, max_iter, tol, beta1, beta2, epsilon, logfile){
   t = 0
   nCov = ncol(data_bins[[1]]$X)
   params_t = par_init
