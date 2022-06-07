@@ -144,13 +144,16 @@ tempGP = function(trainX, trainY, trainT = NULL,
     ntrain = nrow(trainX)
     if (limit_memory < ntrain) {
       pred_index = sample(ntrain, limit_memory)
+      activeX = trainX[pred_index,, drop=FALSE]
+      activeY = trainY[pred_index]
+    } else {
+      activeX = trainX
+      activeY = trainY
     }
-    activeX = trainX[pred_index,, drop=FALSE]
-    activeY = trainY[pred_index]
   } else {
     activeX = trainX
     activeY = trainY
-  }
+  } 
   weightedY = computeWeightedY(activeX, activeY, optimResult$estimatedParams)
   modelF = list(X = activeX, y = activeY, weightedY = weightedY)
   trainResiduals = trainY - predictGP(modelF$X, modelF$weightedY, trainX, optimResult$estimatedParams)
