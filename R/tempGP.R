@@ -66,11 +66,11 @@
 #' 
 
 tempGP = function(trainX, trainY, trainT = NULL, 
-                  fast_computation = FALSE,
-                  limit_memory = NULL,
-                  optim_control = list(batch_size = 100, 
-                                       learn_rate = 0.005, 
-                                       max_iter = 1000, 
+                  fast_computation = TRUE,
+                  limit_memory = 5000L,
+                  optim_control = list(batch_size = 100L, 
+                                       learn_rate = 0.05, 
+                                       max_iter = 5000L, 
                                        tol = 1e-6,
                                        beta1 = 0.9, 
                                        beta2 = 0.999, 
