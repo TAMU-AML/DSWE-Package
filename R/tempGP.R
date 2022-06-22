@@ -25,6 +25,19 @@
 #' @param trainX A matrix with each column corresponding to one input variable. 
 #' @param trainY A vector with each element corresponding to the output at the corresponding row of \code{trainX}.
 #' @param trainT A vector for time indices of the data points. By default, the function assigns natural numbers starting from 1 as the time indices. 
+#' @param fast_computation A Boolean that specifies whether to do exact inference or fast approximation. Default is \code{TRUE}.
+#' @param limit_memory An integer or \code{NULL}. The integer is used sample training points during prediction to limit the total memory requirement. Setting the value to \code{NULL} would result in no sampling, that is, full training data is used for prediction. Default value is \code{5000}.
+#' @param optim_control A list parameters passed to the Adam optimizer when \code{fast_computation} is set to \code{TRUE}. The default values have been tested rigorously and tend to strike a balance between accuracy and speed. \itemize{
+#' \item \code{batch_size}: Number of training points sampled at each iteration of Adam.
+#' \item \code{learn_rate}: The step size for the Adam optimizer.
+#' \item \code{max_iter}: The maximum number of iterations to be performed by Adam.
+#' \item \code{tol}: Gradient tolerance.
+#' \item \code{beta1}: Decay rate for the first moment of the gradient.
+#' \item \code{beta2}: Decay rate for the second moment of the gradient.
+#' \item \code{epsilon}: A small number to avoid division by zero.
+#' \item \code{logfile}: A string specifying a file name to store hyperparameters value for each iteration.
+#' }
+#' 
 #'
 #' @return An object of class \code{tempGP} with the following attributes:
 #' \itemize{
