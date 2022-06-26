@@ -157,7 +157,7 @@ adam_optimizer = function(data_bins, par_init, batch_size, learn_rate, max_iter,
     if (batch_size < length(data_bins[[sampled_bin]]$y)){
       sampled_idx = sample(length(data_bins[[sampled_bin]]$y), batch_size)
     } else {
-      sampled_idx = length(data_bins[[sampled_bin]]$y)
+      sampled_idx = 1:length(data_bins[[sampled_bin]]$y)
     }
     sample_x = data_bins[[sampled_bin]]$X[sampled_idx, , drop=FALSE]
     sample_y = data_bins[[sampled_bin]]$y[sampled_idx]
