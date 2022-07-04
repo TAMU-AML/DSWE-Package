@@ -1,3 +1,72 @@
+# MIT License
+# 
+# Copyright (c) 2022 Effi Latiffianti and Yu Ding
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#   
+#   The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#' @title Energy decomposition for wind turbine performance comparison
+#' 
+#' @description Energy decomposition compares energy production from two datasets and separates it into turbine effects (deltaE.turb) and weather/environment effects (deltaE.weather). 
+#'
+#' @param data A list of two data sets to be compared. A difference  is always computed as (data2 - data1).
+#' @param powercol A numeric stating the column number of power production.
+#' @param timecol A numeric stating the column number of data time stamp. Default value is zero. A value other than zero should be provided when \code{sync.method = 'time'}. 
+#' @param xcol A numeric or vector stating the column number(s) of power curve input covariates/features (environmental or weather variables are recommended).
+#' @param sync.method A string specifying data synchronization method. Default value \code{'minimum power'}; other options include \code{'time'} and \code{'random'}.
+#' @param imput A boolean (TRUE/FALSE) indicating whether power imputation should be performed before calculating energy decomposition. The recommended and default value is TRUE. Change to FALSE when data have been preprocessed or imputed before.#' @param vcol A numeric stating the column number of wind speed. It is required when \code{imput = TRUE}.
+#' @param vrange A vector of cut-in, rated, and cut-out wind speed. Values should be provided when \code{imput = TRUE}.
+#' @param rated.power A numerical value stating the wind turbine rated power. 
+#' @param sample A boolean (TRUE/FALSE) indicating whether to use sample or the whole data sets to train the power curve to be used for power imputation. Default value is TRUE. It is only used when \code{imput = TRUE}.
+#' @param size A numeric stating the size of sample when \code{sample = TRUE}. Default value is 2500. It is only used when \code{imput = TRUE} and \code{sample = TRUE}.
+#' @param timestamp.min A numerical value stating the resolution of the datasets in minutes. It is the difference between two consecutive time stamps at which data were recorded. Default value is 10. 
+#' 
+#' @return a list containing :
+#'  \itemize{
+#'   \item deltaE.turb - A numeric, % of energy difference representing the turbine effects. 
+#'   \item deltaE.weather - A numeric, % of energy difference representing the weather effects.
+#'   \item deltaE.hat - A numeric, % of total energy difference estimated.
+#'   \item deltaE.obs - A numeric, % of total energy difference observed.
+#'   \item estimated.energy - A numeric vector of the total energy calculated from each of f1(x2), f1(x1),  f2(x2), f1(x2). If power is in kW, these values will be in kWh.
+#'   \item data - A list of two datasets used to calculate energy decomposition, i.e. synchronized. When \code{imput = TRUE}, the power column is the result from imputation.
+#' }
+#' @examples 
+#' 
+#' data = list(data1[1:200,], data2[1:200, ])
+#' powercol = 6
+#' timecol = 1
+#' xcol = c(2:5)
+#' sync.method = 'time'
+#' imput = TRUE
+#' vcol = 2
+#' vrange = c(4,10,25)
+#' rated.power = 2000
+#' sample = FALSE
+#' size = 2500
+#' timestamp.min = 10
+
+#' Decomposition = deltaEnergy(data, powercol, timecol, xcol, sync.method, imput,
+#' vcol, vrange, rated.power, sample, size, timestamp.min)
+#' 
+#' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. doi:10.1002/we.2722.<\url{https://onlinelibrary.wiley.com/doi/10.1002/we.2722}>. 
+#' 
+#'@export
+
 deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum power", imput=TRUE,
                 vcol=NULL, vrange=NULL, rated.power = NULL, sample = TRUE, size = 2500, 
                 timestamp.min = 10){

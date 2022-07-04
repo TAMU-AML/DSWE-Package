@@ -1,3 +1,49 @@
+# MIT License
+# 
+# Copyright (c) 2022 Effi Latiffianti and Yu Ding
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#   
+#   The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#' @title Data synchronization
+#' @description Data synchronization is meant to make a pair of data to have the same size. It is performed by removing some data points from the larger dataset. This step is important when comparing energy production between two data sets because energy production is time-based.
+#' @param data A list of two data sets to be synchronized.
+#' @param powercol A numeric stating the column number of power production.
+#' @param timecol A numeric stating the column number of data time stamp. Default value is zero. A value other than zero should be provided when \code{method = 'time'}. 
+#' @param xcol A numeric or vector stating the column number(s) of power curve input covariates/features (to be used for energy decomposition). 
+#' @param method A string specifying data synchronization method. Default value \code{'minimum power'}; other options include \code{'time'} and \code{'random'}.
+#' 
+#' @return a list containing the synchronized datasets. 
+#'  
+#' @examples 
+#' 
+#' data = list(data1[1:200,], data2[1:180, ])
+#' powercol = 6
+#' timecol = 1
+#' xcol = c(2:5)
+#' method = 'random'
+
+#' sync.dat = syncSize(data, powercol, timecol, xcol, method)
+#' 
+#' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. doi:10.1002/we.2722.<\url{https://onlinelibrary.wiley.com/doi/10.1002/we.2722}>. 
+#' 
+#' @export
+
 syncSize = function(data, powercol, timecol=0, xcol, method="minimum power"){
  
    # Checks whether the provided data set is a list or not

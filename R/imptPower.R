@@ -1,3 +1,55 @@
+# MIT License
+# 
+# Copyright (c) 2022 Effi Latiffianti and Yu Ding
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#   
+#   The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#' @title Power imputation
+#' 
+#' @description Good power curve modeling requires valid power values in the region between cut-in and cut-out wind speed. However, when turbine is not operating, the power production will be recorded as zero or negative. This function replaces those values with predicted values obtained from the estimated tempGP power curve model using one input variable - the wind speed. 
+#'
+#' @param data A list of two data sets that require imputation.
+#' @param powercol A numeric stating the column number of power production.
+#' @param vrange A vector of cut-in, rated, and cut-out wind speed.
+#' @param rated.power A numerical value stating the wind turbine rated power. 
+#' @param sample A boolean (TRUE/FALSE) indicating whether to use sample or the whole data sets to train the power curve. 
+#' @param size A numeric stating the size of sample when \code{sample = TRUE}. Default value is 2500. It is only used when \code{sample = TRUE}.
+#' 
+#' @return a list containing datasets with the imputed power. 
+#'  
+#' @examples 
+#' 
+#' data = list(data1[1:100,], data2[1:110, ])
+#' powercol = 6
+#' timecol = 1
+#' vcol = 2
+#' vrange = c(4,10,25)
+#' rated.power = 2000
+#' sample = FALSE
+#' size = 2500
+#' 
+#' imputed.dat = imptPower(data, powercol, vcol, vrange, rated.power, sample, size)
+#' 
+#' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. doi:10.1002/we.2722.<\url{https://onlinelibrary.wiley.com/doi/10.1002/we.2722}>. 
+#' 
+#' @export
+
 imptPower = function(data, powercol, vcol, vrange, rated.power=NULL, sample = TRUE, size = 2500){
   
   if(!is.list(data)){
