@@ -47,21 +47,18 @@
 #' }
 #' @examples 
 #' 
-#' data = list(data1[1:200,], data2[1:200, ])
-#' powercol = 6
+#' data = list(data1[1:210,], data2[1:400, ])
+#' powercol = 7
 #' timecol = 1
-#' xcol = c(2:5)
+#' xcol = c(2:6)
 #' sync.method = 'time'
 #' imput = TRUE
 #' vcol = 2
-#' vrange = c(4,10,25)
-#' rated.power = 2000
+#' vrange = c(5,12,25)
+#' rated.power = 100
 #' sample = FALSE
-#' size = 2500
-#' timestamp.min = 10
-
 #' Decomposition = deltaEnergy(data, powercol, timecol, xcol, sync.method, imput,
-#' vcol, vrange, rated.power, sample, size, timestamp.min)
+#' vcol, vrange, rated.power, sample)
 #' 
 #' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. doi:10.1002/we.2722.<\url{https://onlinelibrary.wiley.com/doi/10.1002/we.2722}>. 
 #' 
@@ -134,7 +131,7 @@ deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum po
   
   if(imput){
     data.imput = imptPower(data=data.sync, powercol=powercol, vcol=vcol, vrange=vrange,
-                           sample=sample, size=size)
+                           rated.power = rated.power, sample=sample, size=size)
     data.sync = data.imput
   }
   

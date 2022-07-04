@@ -35,16 +35,15 @@
 #'  
 #' @examples 
 #' 
-#' data = list(data1[1:100,], data2[1:110, ])
-#' powercol = 6
+#' data = list(data1[1:100,], data2[1:120, ])
+#' powercol = 7
 #' timecol = 1
 #' vcol = 2
-#' vrange = c(4,10,25)
-#' rated.power = 2000
+#' vrange = c(5,12,25)
+#' rated.power = 100
 #' sample = FALSE
-#' size = 2500
 #' 
-#' imputed.dat = imptPower(data, powercol, vcol, vrange, rated.power, sample, size)
+#' imputed.dat = imptPower(data, powercol, vcol, vrange, rated.power, sample)
 #' 
 #' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. doi:10.1002/we.2722.<\url{https://onlinelibrary.wiley.com/doi/10.1002/we.2722}>. 
 #' 

@@ -33,11 +33,17 @@
 #' @examples 
 #' 
 #' data = list(data1[1:200,], data2[1:180, ])
-#' powercol = 6
+#' powercol = 7
 #' timecol = 1
-#' xcol = c(2:5)
+#' xcol = c(2:6)
 #' method = 'random'
-
+#' sync.dat = syncSize(data, powercol, timecol, xcol, method)
+#' 
+#' data = list(data1[500:700,], data2[600:750, ])
+#' powercol = 7
+#' timecol = 1
+#' xcol = c(2:6)
+#' method = 'time'
 #' sync.dat = syncSize(data, powercol, timecol, xcol, method)
 #' 
 #' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. doi:10.1002/we.2722.<\url{https://onlinelibrary.wiley.com/doi/10.1002/we.2722}>. 
@@ -73,10 +79,6 @@ syncSize = function(data, powercol, timecol=0, xcol, method="minimum power"){
     
     if(method=="time" & timecol==0) {
       stop('Provide value for timecol and make sure data sets have the same time format')
-    }
-    
-    if (method == "time" && nchar(data[[1]][1,timecol]) != nchar(data[[2]][1,timecol])) {
-      stop('Make sure data sets have same the time format')
     }
     
     ## Quick clean and prepare the data
