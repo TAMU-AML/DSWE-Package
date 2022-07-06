@@ -32,6 +32,7 @@
 #' 
 #' @importFrom dplyr filter
 #' @importFrom stats complete.cases
+#' @importFrom dplyr %>%
 #'  
 #' @examples 
 #' 
@@ -85,7 +86,7 @@ syncSize = function(data, powercol, timecol=0, xcol, method="minimum power"){
     }
     
     ## Quick clean and prepare the data
-    library(dplyr)
+    #library(dplyr)
     Data1 = data[[1]]; Data2 = data[[2]]
     if (timecol > 0){
       names(Data1)[timecol]=names(Data2)[timecol]="Timestamp" 
@@ -136,8 +137,8 @@ syncSize = function(data, powercol, timecol=0, xcol, method="minimum power"){
         idx2 = unique(Data2$Timestamp)
         timestamp = c(idx1,idx2)
         timestamp = timestamp[duplicated(timestamp)]
-        Data1.sync = Data1 %>% filter(Timestamp %in% timestamp)
-        Data2.sync = Data2 %>% filter(Timestamp %in% timestamp)
+        Data1.sync = Data1 %>% filter(Data1$Timestamp %in% timestamp)
+        Data2.sync = Data2 %>% filter(Data2$Timestamp %in% timestamp)
         for (z in 1:20){
           idx1 = which(duplicated(Data1.sync$Timestamp)==TRUE)
           idx2 = which(duplicated(Data2.sync$Timestamp)==TRUE)
