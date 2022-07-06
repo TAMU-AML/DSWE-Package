@@ -88,7 +88,7 @@ syncSize = function(data, powercol, timecol=0, xcol, method="minimum power"){
     ## Quick clean and prepare the data
     #library(dplyr)
     Data1 = data[[1]]; Data2 = data[[2]]
-    if (timecol > 0){
+    if (timecol != 0){
       names(Data1)[timecol]=names(Data2)[timecol]="Timestamp" 
     }
     names(Data1)[powercol]=names(Data2)[powercol]="Power"
