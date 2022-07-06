@@ -176,7 +176,7 @@ adam_optimizer = function(data_bins, par_init, batch_size, learn_rate, max_iter,
     
     if (max(abs(params_t - params_prev)) < tol || t == max_iter){
       if (!is.null(logfile)){
-        write.table(params_mat, file = logfile, sep = ",", row.names = FALSE, col.names = FALSE)
+        utils::write.table(params_mat, file = logfile, sep = ",", row.names = FALSE, col.names = FALSE)
       }
       return(list(par=params_t))
     }

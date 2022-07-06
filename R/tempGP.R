@@ -62,6 +62,7 @@
 #' 
 #' @seealso \code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
 #' @importFrom stats pacf sd predict
+#' @importFrom utils write.table
 #' @examples
 #' 
 #'     data = DSWE::data1
