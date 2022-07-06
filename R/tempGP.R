@@ -25,6 +25,19 @@
 #' @param trainX A matrix with each column corresponding to one input variable. 
 #' @param trainY A vector with each element corresponding to the output at the corresponding row of \code{trainX}.
 #' @param trainT A vector for time indices of the data points. By default, the function assigns natural numbers starting from 1 as the time indices. 
+#' @param fast_computation A Boolean that specifies whether to do exact inference or fast approximation. Default is \code{TRUE}.
+#' @param limit_memory An integer or \code{NULL}. The integer is used sample training points during prediction to limit the total memory requirement. Setting the value to \code{NULL} would result in no sampling, that is, full training data is used for prediction. Default value is \code{5000}.
+#' @param optim_control A list parameters passed to the Adam optimizer when \code{fast_computation} is set to \code{TRUE}. The default values have been tested rigorously and tend to strike a balance between accuracy and speed. \itemize{
+#' \item \code{batch_size}: Number of training points sampled at each iteration of Adam.
+#' \item \code{learn_rate}: The step size for the Adam optimizer.
+#' \item \code{max_iter}: The maximum number of iterations to be performed by Adam.
+#' \item \code{tol}: Gradient tolerance.
+#' \item \code{beta1}: Decay rate for the first moment of the gradient.
+#' \item \code{beta2}: Decay rate for the second moment of the gradient.
+#' \item \code{epsilon}: A small number to avoid division by zero.
+#' \item \code{logfile}: A string specifying a file name to store hyperparameters value for each iteration.
+#' }
+#' 
 #'
 #' @return An object of class \code{tempGP} with the following attributes:
 #' \itemize{
@@ -49,6 +62,7 @@
 #' 
 #' @seealso \code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
 #' @importFrom stats pacf sd predict
+#' @importFrom utils write.table
 #' @examples
 #' 
 #'     data = DSWE::data1
@@ -65,7 +79,18 @@
 #' @export
 #' 
 
-tempGP = function(trainX, trainY, trainT = NULL){
+tempGP = function(trainX, trainY, trainT = NULL, 
+                  fast_computation = TRUE,
+                  limit_memory = 5000L,
+                  optim_control = list(batch_size = 100L, 
+                                       learn_rate = 0.05, 
+                                       max_iter = 5000L, 
+                                       tol = 1e-6,
+                                       beta1 = 0.9, 
+                                       beta2 = 0.999, 
+                                       epsilon = 1e-8,
+                                       logfile = NULL
+                                       )){
   
   trainX = as.matrix((trainX)) #trying to coerce trainX into a matrix, if not already.
   
@@ -114,7 +139,12 @@ tempGP = function(trainX, trainY, trainT = NULL){
     trainT = c(1:length(trainY))
   }
   
-
+  if (!(class(limit_memory) %in% c("integer", "numeric", "NULL"))){
+    stop("limit memory must be an integer or NULL")
+  } else if (class(limit_memory) == "numeric"){
+    limit_memory = as.integer(limit_memory)
+  }
+  
   thinningNumber = computeThinningNumber(trainX)
 
   if (thinningNumber > 0){
@@ -123,15 +153,29 @@ tempGP = function(trainX, trainY, trainT = NULL){
     thinnedBins = list(list(x = trainX, y = trainY))
   }
 
-  optimResult = estimateBinnedParams(thinnedBins)
-  weightedY = computeWeightedY(trainX, trainY, optimResult$estimatedParams)
-  modelF = list(X = trainX, y = trainY, weightedY = weightedY)
-  trainResiduals = trainY - predictGP(trainX, weightedY, trainX, optimResult$estimatedParams)
+  optimResult = estimateBinnedParams(thinnedBins, fast_computation, optim_control)
+  if (class(limit_memory) == "integer"){
+    ntrain = nrow(trainX)
+    if (limit_memory < ntrain) {
+      pred_index = sample(ntrain, limit_memory)
+      activeX = trainX[pred_index,, drop=FALSE]
+      activeY = trainY[pred_index]
+    } else {
+      activeX = trainX
+      activeY = trainY
+    }
+  } else {
+    activeX = trainX
+    activeY = trainY
+  } 
+  weightedY = computeWeightedY(activeX, activeY, optimResult$estimatedParams)
+  modelF = list(X = activeX, y = activeY, weightedY = weightedY)
+  trainResiduals = trainY - predictGP(modelF$X, modelF$weightedY, trainX, optimResult$estimatedParams)
   modelG = list(residuals = trainResiduals, time_index = trainT)
   output = list(trainX = trainX, trainY = trainY, trainT = trainT, 
                 thinningNumber = thinningNumber, modelF = modelF, 
                 modelG = modelG, estimatedParams = optimResult$estimatedParams, 
-                llval = -optimResult$objVal, gradval = -optimResult$gradVal)
+                llval = optimResult$objVal, gradval = optimResult$gradVal)
   class(output) = "tempGP"
   return(output)
 }
