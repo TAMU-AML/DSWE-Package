@@ -26,12 +26,15 @@
 #'
 #' @param data A list of two data sets that require imputation.
 #' @param powercol A numeric stating the column number of power production.
+#' @param vcol  A numeric stating the column number of wind speed.
 #' @param vrange A vector of cut-in, rated, and cut-out wind speed.
 #' @param rated.power A numerical value stating the wind turbine rated power. 
 #' @param sample A boolean (TRUE/FALSE) indicating whether to use sample or the whole data sets to train the power curve. 
 #' @param size A numeric stating the size of sample when \code{sample = TRUE}. Default value is 2500. It is only used when \code{sample = TRUE}.
 #' 
 #' @return a list containing datasets with the imputed power. 
+#' 
+#' @importFrom stats complete.cases
 #'  
 #' @examples 
 #' 

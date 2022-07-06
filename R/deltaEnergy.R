@@ -30,6 +30,7 @@
 #' @param xcol A numeric or vector stating the column number(s) of power curve input covariates/features (environmental or weather variables are recommended).
 #' @param sync.method A string specifying data synchronization method. Default value \code{'minimum power'}; other options include \code{'time'} and \code{'random'}.
 #' @param imput A boolean (TRUE/FALSE) indicating whether power imputation should be performed before calculating energy decomposition. The recommended and default value is TRUE. Change to FALSE when data have been preprocessed or imputed before.#' @param vcol A numeric stating the column number of wind speed. It is required when \code{imput = TRUE}.
+#' @param vcol A numeric stating the column number of wind speed.
 #' @param vrange A vector of cut-in, rated, and cut-out wind speed. Values should be provided when \code{imput = TRUE}.
 #' @param rated.power A numerical value stating the wind turbine rated power. 
 #' @param sample A boolean (TRUE/FALSE) indicating whether to use sample or the whole data sets to train the power curve to be used for power imputation. Default value is TRUE. It is only used when \code{imput = TRUE}.
@@ -45,6 +46,7 @@
 #'   \item estimated.energy - A numeric vector of the total energy calculated from each of f1(x2), f1(x1),  f2(x2), f1(x2). If power is in kW, these values will be in kWh.
 #'   \item data - A list of two datasets used to calculate energy decomposition, i.e. synchronized. When \code{imput = TRUE}, the power column is the result from imputation.
 #' }
+#'  
 #' @examples 
 #' 
 #' data = list(data1[1:210,], data2[1:400, ])

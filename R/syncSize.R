@@ -29,6 +29,9 @@
 #' @param method A string specifying data synchronization method. Default value \code{'minimum power'}; other options include \code{'time'} and \code{'random'}.
 #' 
 #' @return a list containing the synchronized datasets. 
+#' 
+#' @importFrom dplyr filter
+#' @importFrom stats complete.cases
 #'  
 #' @examples 
 #' 
