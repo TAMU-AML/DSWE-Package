@@ -49,7 +49,7 @@
 #'  
 #' @examples 
 #' 
-#' data = list(data1[1:210,], data2[1:400, ])
+#' data = list(data1[1:100,], data2[101:200, ])
 #' powercol = 7
 #' timecol = 1
 #' xcol = c(2:6)
