@@ -75,7 +75,7 @@
 #'     tempGPObject = tempGP(trainX, trainY)
 #' 
 #' 
-#' @references Prakash, A., Tuo, R., & Ding, Y. (2022). "The temporal overfitting problem with applications in wind power curve modeling." Technometrics. <\url{https://doi.org/10.1080/00401706.2022.2069158}>.
+#' @references Prakash, A., Tuo, R., & Ding, Y. (2022). "The temporal overfitting problem with applications in wind power curve modeling." Technometrics. \doi{10.1080/00401706.2022.2069158}.
 #' @export
 #' 
 

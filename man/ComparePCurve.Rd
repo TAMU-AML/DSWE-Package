@@ -94,5 +94,5 @@ testCol, testSet, thrs, confLevel, gridSize)
 
 }
 \references{
-For details, see Ding et al. (2021) available at <\url{https://doi.org/10.1016/j.renene.2021.02.136}>.
+For details, see Ding et al. (2021) available \doi{10.1016/j.renene.2021.02.136}.
 }

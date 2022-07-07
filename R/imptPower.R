@@ -47,7 +47,7 @@
 #' 
 #' imputed.dat = imptPower(data, powercol, vcol, vrange, rated.power, sample)
 #' 
-#' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. doi:10.1002/we.2722.<\url{https://onlinelibrary.wiley.com/doi/10.1002/we.2722}>. 
+#' @references Latiffianti, E, Ding, Y, Sheng, S, Williams, L, Morshedizadeh, M, Rodgers, M (2022). "Analysis of leading edge protection application on wind turbine performance through energy and power decomposition approaches". Wind Energy. 2022; 1-19. \doi{10.1002/we.2722}.
 #' 
 #' @export
 
