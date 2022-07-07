@@ -9,12 +9,15 @@ Authors@R: c(
     person(given = "Effi", family = "Latiffianti", role = c("ctb","cph"), email = "latiffianti@tamu.edu"))
 Description: Data science methods used in wind energy applications. 
               Current functionalities include creating a multi-dimensional power curve model, 
-              performing power curve function comparison, and covariate matching. 
+              performing power curve function comparison, covariate matching, and energy decomposition. 
               Relevant works for the developed functions are: 
-              funGP() - Prakash et al. (2020) <arXiv:2003.07899>, 
+              funGP() - Prakash et al. (2022) <doi:10.1080/00401706.2021.1905073>, 
               AMK() - Lee et al. (2015) <doi:10.1080/01621459.2014.977385>, 
-              tempGP() - Prakash et al. (2020) <arXiv:2012.01349>, 
-              ComparePCurve() - Ding et al. (2020) <arXiv:2005.08652>,
+              tempGP() - Prakash et al. (2022) <doi:10.1080/00401706.2022.2069158>, 
+              ComparePCurve() - Ding et al. (2021) <doi:10.1016/j.renene.2021.02.136>,
+              deltaEnergy() - Latiffianti et al. (2022) <doi:10.1002/we.2722>,
+              syncSize() - Latiffianti et al. (2022) <doi:10.1002/we.2722>,
+              imptPower() - Latiffianti et al. (2022) <doi:10.1002/we.2722>,
               All other functions - Ding (2019, ISBN:9780429956508).
 Depends:
       R (>= 3.5.0) 
