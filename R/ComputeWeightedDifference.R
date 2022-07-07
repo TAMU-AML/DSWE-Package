@@ -55,8 +55,8 @@
 #' weightedStatDiff = ComputeWeightedDifference(output$muDiff, userweights, output$mu1, 
 #' statDiff = TRUE, confBand = output$band)
 #' 
-#' @details The function is a modification to the percentage weighted difference defined in Ding et. al. (2020). It computes a weighted difference between power curves on a testset, where the weights have to be provided by the user based on any probability distribution of their choice rather than the weights being computed from the data. The weights must sum to 1 to be valid.
-#' @references For details, see Ding et. al. (2020) available on \code{arxiv} at this \href{https://arxiv.org/abs/2005.08652}{link}.
+#' @details The function is a modification to the percentage weighted difference defined in Ding et al. (2021). It computes a weighted difference between power curves on a testset, where the weights have to be provided by the user based on any probability distribution of their choice rather than the weights being computed from the data. The weights must sum to 1 to be valid.
+#' @references For details, see Ding et al. (2021) available at \doi{10.1016/j.renene.2021.02.136}.
 #' @export
 
 ComputeWeightedDifference = function(muDiff, weights, base, statDiff = FALSE, confBand = NULL){
