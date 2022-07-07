@@ -2,7 +2,6 @@
 
  ### <span style="color:red"> Note: </span> A graphical installation and usage guide is available on TAMU Advanced Metrology Lab's website at this [link](https://tamucs-my.sharepoint.com/:b:/g/personal/yu-ding_tamu_edu/Eaq5kAqvtMNBkowoavEpV5gBFW7XIPHCMNLpoVhxtn9WEA?e=eUkbbj).</h2>
 
-- [Introduction](#introduction)
 - [Installation](#installation)
 - [Usage](#Usage)   
     1. [ComparePCurve](#ComparePCurve) 
@@ -17,33 +16,6 @@
 	10. [SplinePCFit](#SplinePCFit)
 	11. [SvmPCFit](#SvmPCFit)
     12. [CovMatch](#CovMatch)  
-- [Details](#details)
-
-# Introduction
-Data science methods for wind energy applications (DSWE). The current functionalities include creating a multi-dimensional power curve model, performing power curve function comparison, and covariate matching:
-
-Power curve comparison:
-
-* ComparePCurve
-* ComputeWeightedDifference
-* funGP
-
-
-Predictive modelling functions:
-
-* tempGP
-* KnnPCFit
-* KnnPredict
-* KnnUpdate
-* AMK
-* BayesTreePCFit
-* SplinePCFit
-* SvmPCFit
-
-
-Covariate matching function :
-
-* CovMatch
 
 # Installation
 
@@ -62,41 +34,6 @@ remotes::install_github("TAMU-AML/DSWE-Package@v1.3.1")
 ```
 
 # Usage
-
-The package can be accessed either by attaching the package or using the package name.
-
-*Attaching package and accessing functions*
-
-```R
-library(DSWE)
-
-ComparePCurve()
-ComputeWeightedDifference()
-funGP()
-tempGP()
-KnnPCFit()
-KnnPredict()
-KnnUpdate()
-AMK()
-BayesTreePCFit()
-SplinePCFit()
-CovMatch()
-```
-
-*Accesing functions without attaching package*
-```R
-DSWE::ComparePCurve()
-DSWE::ComputeWeightedDifference()
-DSWE::funGP()
-DSWE::tempGP()
-DSWE::KnnPCFit()
-DSWE::KnnPredict()
-DSWE::KnnUpdate()
-DSWE::AMK()
-DSWE::BayesTreePCFit
-DSWE::SplinePCFit
-DSWE::CovMatch()
-```
 
 ### 1. ComparePCurve
 The function can be used to quantify the difference using CovMatch and funGP functions internally.
@@ -404,9 +341,3 @@ matched_data = CovMatch(data, xCol, xCol.circ, thrs, priority)
 help(functionname)
 ?functionname
 ```
-# Details
-For more information on DSWE Package, please access the package documentations. Please feel free to contact the authors.
-
-* Name : Abhinav Prakash, Nitesh Kumar
-
-* Email : abhinavp@tamu.edu, nitesh.kumar@tamu.edu

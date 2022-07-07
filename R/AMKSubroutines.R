@@ -147,7 +147,7 @@ kernpred = function(trainX, trainY, testX, bw, nMultiCov, fixedCov, cirCov){
   trainX = as.matrix(trainX)
   trainY = as.numeric(trainY)
   testX = as.matrix(testX)
-  if (class(bw)=="character"){
+  if (inherits(bw, "character")){
     if (bw == "dpi"){
       bandwidth = computeBandwidth(trainY,trainX,cirCov)
       if(any(!is.finite(bandwidth))){

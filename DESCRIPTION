@@ -1,19 +1,23 @@
 Package: DSWE
 Title: Data Science for Wind Energy
-Version: 1.5.1
+Version: 1.6.0
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nitesh.kumar@tamu.edu"),
     person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@tamu.edu"),
     person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding@tamu.edu"),
-    person(given = "Rui", family = "Tuo", role = c("ctb","cph"), email = "ruituo@tamu.edu"))
+    person(given = "Rui", family = "Tuo", role = c("ctb","cph"), email = "ruituo@tamu.edu"),
+    person(given = "Effi", family = "Latiffianti", role = c("ctb","cph"), email = "latiffianti@tamu.edu"))
 Description: Data science methods used in wind energy applications. 
               Current functionalities include creating a multi-dimensional power curve model, 
-              performing power curve function comparison, and covariate matching. 
+              performing power curve function comparison, covariate matching, and energy decomposition. 
               Relevant works for the developed functions are: 
-              funGP() - Prakash et al. (2020) <arXiv:2003.07899>, 
+              funGP() - Prakash et al. (2022) <doi:10.1080/00401706.2021.1905073>, 
               AMK() - Lee et al. (2015) <doi:10.1080/01621459.2014.977385>, 
-              tempGP() - Prakash et al. (2020) <arXiv:2012.01349>, 
-              ComparePCurve() - Ding et al. (2020) <arXiv:2005.08652>,
+              tempGP() - Prakash et al. (2022) <doi:10.1080/00401706.2022.2069158>, 
+              ComparePCurve() - Ding et al. (2021) <doi:10.1016/j.renene.2021.02.136>,
+              deltaEnergy() - Latiffianti et al. (2022) <doi:10.1002/we.2722>,
+              syncSize() - Latiffianti et al. (2022) <doi:10.1002/we.2722>,
+              imptPower() - Latiffianti et al. (2022) <doi:10.1002/we.2722>,
               All other functions - Ding (2019, ISBN:9780429956508).
 Depends:
       R (>= 3.5.0) 
@@ -22,7 +26,7 @@ URL: https://github.com/TAMU-AML/DSWE-Package, https://aml.engr.tamu.edu/book-ds
 BugReports: https://github.com/TAMU-AML/DSWE-Package/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 LinkingTo: 
     Rcpp (>= 1.0.4.6) ,
     RcppArmadillo (>= 0.9.870.2.0)
@@ -35,4 +39,5 @@ Imports:
     BayesTree (>= 0.3-1.4),
     gss (>= 2.2-2),
     e1071 (>= 1.7-3),
-    stats (>= 3.5.0)
+    stats (>= 3.5.0),
+    dplyr (>= 1.0.9)

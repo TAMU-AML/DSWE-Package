@@ -61,5 +61,5 @@ function_diff = funGP(datalist, xCol, yCol, confLevel, testset)
 
 }
 \references{
-Prakash, A., Tuo, R., & Ding, Y. (2020). "Gaussian process aided function comparison using noisy scattered data." arXiv preprint arXiv:2003.07899.  <\url{https://arxiv.org/abs/2003.07899}>.
+Prakash, A., Tuo, R., & Ding, Y. (2022). "Gaussian process aided function comparison using noisy scattered data," Technometrics, Vol. 64, No. 1, pp. 92-102, \doi{10.1080/00401706.2021.1905073}.
 }

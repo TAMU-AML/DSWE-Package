@@ -73,12 +73,12 @@
 #' function_comparison = ComparePCurve(data, xCol, xCol.circ, yCol,
 #' testCol, testSet, thrs, confLevel, gridSize)
 #' 
-#' @references For details, see Ding et al. (2020) available on \code{arxiv} at <\url{https://arxiv.org/abs/2005.08652}>.
+#' @references For details, see Ding et al. (2021) available \doi{10.1016/j.renene.2021.02.136}.
 #' @export
 
 ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = TRUE, opt_method = 'nlminb',sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1 ){
   
-  if (class(limitMemory)!="logical"){
+  if (!inherits(limitMemory, "logical")){
     stop('limitMemory should either be TRUE or FALSE')
   }
   
@@ -223,7 +223,7 @@ ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = 
     resultMatching = CovMatch(data, xCol, xCol.circ, thrs)
   }
   
-  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory, opt_method)
+  resultGP = funGP(resultMatching$matchedData, testCol, yCol, conflevel, testSet, limitMemory, opt_method, sampleSize, rngSeed)
   
   weightedDiff = ComputeWeightedDiff(data, resultGP$mu1, resultGP$mu2, testSet, testCol, baseline)
   

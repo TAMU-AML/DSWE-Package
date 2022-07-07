@@ -52,5 +52,5 @@ AMK_prediction = AMK(trainX, trainY, testX, bw = 'dpi_gap', cirCov = NA)
 
 }
 \references{
-Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67, DOI:10.1080/01621459.2014.977385.
+Lee, Ding, Genton, and Xie, 2015, “Power curve estimation with multivariate environmental factors for inland and offshore wind farms,” Journal of the American Statistical Association, Vol. 110, pp. 56-67, \doi{10.1080/01621459.2014.977385}.
 }
