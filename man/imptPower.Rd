@@ -39,7 +39,6 @@ Good power curve modeling requires valid power values in the region between cut-
 
 data = list(data1[1:100,], data2[1:120, ])
 powercol = 7
-timecol = 1
 vcol = 2
 vrange = c(5,12,25)
 rated.power = 100
