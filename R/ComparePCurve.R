@@ -78,7 +78,7 @@
 
 ComparePCurve = function(data, xCol, xCol.circ = NULL, yCol, testCol, testSet = NULL, thrs = 0.2, conflevel = 0.95, gridSize = c(50, 50), powerbins = 15, baseline = 1, limitMemory = TRUE, opt_method = 'nlminb',sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1 ){
   
-  if (class(limitMemory)!="logical"){
+  if (!inherits(limitMemory, "logical")){
     stop('limitMemory should either be TRUE or FALSE')
   }
   

@@ -124,7 +124,7 @@ computeLocalFunction = function(residual, traindataT, testdataT, neighbourhood){
         params = try (
           expr = estimateLocalFunctionParams(traindataT[trainIdx],residual[trainIdx]), silent = TRUE
           )
-        if (class(params) == "try-error"){
+        if (inherits(params, "try-error")){
           warning("Computing g(t) is numerically unstable for time index: ",testdataT[i], '\nUsing mean of the response as the prediction.\n')
           pred[i] =  mean(residual[trainIdx])
         } else {

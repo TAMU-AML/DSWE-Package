@@ -79,7 +79,7 @@ imptPower = function(data, powercol, vcol, vrange, rated.power=NULL, sample = TR
     stop('The vrange should provide three numeric values of cut-in, rated, and cut-out wind speed')
   }
   
-  if (class(sample)!="logical"){
+  if (!inherits(sample, "logical")){
     stop('sample should either be TRUE or FALSE')
   }
   

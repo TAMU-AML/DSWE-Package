@@ -141,7 +141,7 @@ tempGP = function(trainX, trainY, trainT = NULL,
   
   if (!(class(limit_memory) %in% c("integer", "numeric", "NULL"))){
     stop("limit memory must be an integer or NULL")
-  } else if (class(limit_memory) == "numeric"){
+  } else if (inherits(limit_memory, "numeric")){
     limit_memory = as.integer(limit_memory)
   }
   
@@ -154,7 +154,7 @@ tempGP = function(trainX, trainY, trainT = NULL,
   }
 
   optimResult = estimateBinnedParams(thinnedBins, fast_computation, optim_control)
-  if (class(limit_memory) == "integer"){
+  if (inherits(limit_memory, "integer")){
     ntrain = nrow(trainX)
     if (limit_memory < ntrain) {
       pred_index = sample(ntrain, limit_memory)

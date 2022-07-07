@@ -101,7 +101,7 @@ deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum po
     }
   }
   
-  if (class(sample)!="logical"){
+  if (!inherits(sample, "logical")){
     stop('sample should either be TRUE or FALSE')
   }
   

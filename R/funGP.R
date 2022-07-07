@@ -56,7 +56,7 @@
 #'@export
 funGP = function(datalist, xCol, yCol, confLevel = 0.95, testset, limitMemory = TRUE, opt_method = 'nlminb', sampleSize = list(optimSize = 500, bandSize = 5000), rngSeed = 1){
 
-  if (class(limitMemory)!="logical"){
+  if (!inherits(limitMemory, "logical")){
     stop('limitMemory should either be TRUE or FALSE')
   }
   
