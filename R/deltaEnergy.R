@@ -77,12 +77,10 @@ deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum po
     stop('The number of data sets to synchronize should be equal to two')
   }
   
-  if(sync.method=="time" & timecol==0) {
-    stop('Provide value for timecol and make sure data sets have the same time format')
-  }
-  
-  if (sync.method == "time" & nchar(data[[1]][1,timecol]) != nchar(data[[2]][1,timecol])) {
-    stop('Make sure data sets have same the time format')}
+  if(sync.method=="time") {
+    if(timecol==0) {stop('Provide value for timecol and make sure data sets have the same time format')}
+    warning('Make sure data in timecol in both data sets have the same format.')
+  } 
   
   if (imput){
     if(!is.numeric(vcol)){
