@@ -126,7 +126,7 @@ imptPower = function(data, powercol, vcol, vrange, rated.power=NULL, sample = TR
     PC2 = tempGP(dat2$Windspeed,dat2$Power)
   }
   
-  dat.list = list(Data1[complete.cases(Data1$Windspeed),],Data2[complete.cases(Data1$Windspeed),])
+  dat.list = list(Data1[complete.cases(Data1$Windspeed),],Data2[complete.cases(Data2$Windspeed),])
   PC = list(PC1,PC2)
   for (i in 1:2) {
     m = which(dat.list[[i]]$Power<=0)
