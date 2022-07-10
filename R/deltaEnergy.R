@@ -79,7 +79,7 @@ deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum po
   
   if(sync.method=="time") {
     if(timecol==0) {stop('Provide value for timecol and make sure data sets have the same time format')}
-    warning('Make sure data in timecol in both data sets have the same format.')
+    #warning('Make sure data in timecol in both data sets have the same format.')
   } 
   
   if (imput){
