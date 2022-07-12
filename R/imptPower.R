@@ -119,11 +119,11 @@ imptPower = function(data, powercol, vcol, vrange, rated.power=NULL, sample = TR
     idx2 = sample(c(1:nrow(dat2)),min(size,nrow(dat2)))
     if (nrow(dat1) < size){idx1 = 1:nrow(dat1)}
     if (nrow(dat2) < size){idx2 = 1:nrow(dat2)}
-    PC1 = tempGP(dat1$Windspeed[idx1],dat1$Power[idx1])
-    PC2 = tempGP(dat2$Windspeed[idx2],dat2$Power[idx2])
+    PC1 = tempGP(as.matrix(dat1$Windspeed[idx1]),as.matrix(dat1$Power[idx1]))
+    PC2 = tempGP(as.matrix(dat2$Windspeed[idx2]),as.matrix(dat2$Power[idx2]))
   } else {
-    PC1 = tempGP(dat1$Windspeed,dat1$Power)
-    PC2 = tempGP(dat2$Windspeed,dat2$Power)
+    PC1 = tempGP(as.matrix(dat1$Windspeed),as.matrix(dat1$Power))
+    PC2 = tempGP(as.matrix(dat2$Windspeed),as.matrix(dat2$Power))
   }
   
   dat.list = list(Data1[complete.cases(Data1$Windspeed),],Data2[complete.cases(Data2$Windspeed),])
@@ -133,7 +133,7 @@ imptPower = function(data, powercol, vcol, vrange, rated.power=NULL, sample = TR
     dat.list[[i]]$Power[m]=0
     j1 = which(dat.list[[i]]$Windspeed[m] > vrange[1] & dat.list[[i]]$Windspeed[m]<= vrange[2])
     j2 = which(dat.list[[i]]$Windspeed[m] > vrange[2] & dat.list[[i]]$Windspeed[m]<= vrange[3])
-    imput.j1 = predict(PC2,dat.list[[i]]$Windspeed[m[j1]])
+    imput.j1 = predict(PC[[i]],as.matrix(dat.list[[i]]$Windspeed[m[j1]]))
     imput.j1[which(imput.j1>max.power[i])]=max.power[i]
     imput.j1[which(imput.j1<0)]=0
     dat.list[[i]]$Power[m[j1]]= imput.j1

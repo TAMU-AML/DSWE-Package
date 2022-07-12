@@ -145,10 +145,10 @@ deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum po
     PC2 = tempGP(as.matrix(Data2[,xcol]),as.numeric(Data2$Power))
   
   ## Estimate the energy
-  F1X1 = sum(predict(PC1,Data1[,xcol])) * (timestamp.min/60)
-  F1X2 = sum(predict(PC1,Data2[,xcol])) * (timestamp.min/60)
-  F2X1 = sum(predict(PC2,Data1[,xcol])) * (timestamp.min/60)
-  F2X2 = sum(predict(PC2,Data2[,xcol])) * (timestamp.min/60)
+  F1X1 = sum(predict(PC1,as.matrix(Data1[,xcol]))) * (timestamp.min/60)
+  F1X2 = sum(predict(PC1,as.matrix(Data2[,xcol]))) * (timestamp.min/60)
+  F2X1 = sum(predict(PC2,as.matrix(Data1[,xcol]))) * (timestamp.min/60)
+  F2X2 = sum(predict(PC2,as.matrix(Data2[,xcol]))) * (timestamp.min/60)
   
   ## Calculate Delta Energy
   E.turb1 = F2X1 - F1X1
