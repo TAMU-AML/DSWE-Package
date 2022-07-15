@@ -93,56 +93,90 @@ imptPower = function(data, powercol, vcol, vrange, rated.power=NULL, sample = TR
   Data2 = data[[2]][,c(powercol,vcol)]
   names(Data1)=names(Data2)=c("Power","Windspeed")
   Data1$obs = c(1:nrow(Data1)); Data2$obs = c(1:nrow(Data2))
-  
-  dat.max1 = Data1$Power[which(Data1$Windspeed > (vrange[2]) & Data1$Windspeed < vrange[3])]
-  dat.max2 = Data2$Power[which(Data2$Windspeed > (vrange[2]) & Data2$Windspeed < vrange[3])]
-  if(min(length(dat.max1),length(dat.max2))== 0 & is.null(rated.power)==TRUE) {
-    stop('provide value for rated.power, no data above rated wind speed is available')
-  }
-  
-  if (length(dat.max1)==0) {max1 = rated.power} else {max1 = mean(dat.max1)}
-  if (length(dat.max2)==0) {max2 = rated.power} else {max2 = mean(dat.max2)}
-  max.power = c(max1,max2)
-  
-  dat1 = Data1[which(Data1$Windspeed >= vrange[1] & Data1$Windspeed <= vrange[2]),]
-  dat2 = Data2[which(Data2$Windspeed >= vrange[1] & Data2$Windspeed <= vrange[2]),]
-  dat1 = dat1[which(dat1$Power > 0),]
-  dat2 = dat2[which(dat2$Power > 0),]
-  dat1 = dat1[complete.cases(dat1),]
-  dat2 = dat2[complete.cases(dat2),]
-  
-  if (nrow(dat1) == 0 || nrow(dat2) == 0) { 
-    stop('not enough data point for predicting the imputed values')}
-  
-  if(sample){
-    idx1 = sample(c(1:nrow(dat1)),min(size,nrow(dat1)))
-    idx2 = sample(c(1:nrow(dat2)),min(size,nrow(dat2)))
-    if (nrow(dat1) < size){idx1 = 1:nrow(dat1)}
-    if (nrow(dat2) < size){idx2 = 1:nrow(dat2)}
-    PC1 = tempGP(as.matrix(dat1$Windspeed[idx1]),as.matrix(dat1$Power[idx1]))
-    PC2 = tempGP(as.matrix(dat2$Windspeed[idx2]),as.matrix(dat2$Power[idx2]))
-  } else {
-    PC1 = tempGP(as.matrix(dat1$Windspeed),as.matrix(dat1$Power))
-    PC2 = tempGP(as.matrix(dat2$Windspeed),as.matrix(dat2$Power))
-  }
-  
+  fuldat1 = complete.cases(Data1)
+  fuldat2 = complete.cases(Data2)
+
+  # Check if imputation is even required
   dat.list = list(Data1[complete.cases(Data1$Windspeed),],Data2[complete.cases(Data2$Windspeed),])
-  PC = list(PC1,PC2)
+  imput.reg2 <- c(0,0)
+  imput.reg3 <- c(0,0)
   for (i in 1:2) {
     m = which(dat.list[[i]]$Power<=0)
-    dat.list[[i]]$Power[m]=0
     j1 = which(dat.list[[i]]$Windspeed[m] > vrange[1] & dat.list[[i]]$Windspeed[m]<= vrange[2])
     j2 = which(dat.list[[i]]$Windspeed[m] > vrange[2] & dat.list[[i]]$Windspeed[m]<= vrange[3])
-    imput.j1 = predict(PC[[i]],as.matrix(dat.list[[i]]$Windspeed[m[j1]]))
-    imput.j1[which(imput.j1>max.power[i])]=max.power[i]
-    imput.j1[which(imput.j1<0)]=0
-    dat.list[[i]]$Power[m[j1]]= imput.j1
-    dat.list[[i]]$Power[m[j2]]= max.power[i]
+    imput.reg2[i] = length(j1)
+    imput.reg3[i] = length(j2)
   }
-  Data1 = data[[1]][dat.list[[1]]$obs,]
-  Data2 = data[[2]][dat.list[[2]]$obs,]
-  Data1[,powercol] = dat.list[[1]]$Power
-  Data2[,powercol] = dat.list[[2]]$Power
-  Data = list(Data1 = Data1, Data2=Data2)
+  imput.required = c(imput.reg2, imput.reg3)
+
+  if(max(imput.required)==0){
+    Data1 = data[[1]][fuldat1,]
+    Data2 = data[[2]][fuldat2,]
+    Data = list(Data1 = Data1, Data2 = Data2)
+  } else {
+    dat.max1 = Data1$Power[which(Data1$Windspeed > (vrange[2]) & Data1$Windspeed < vrange[3])]
+    dat.max2 = Data2$Power[which(Data2$Windspeed > (vrange[2]) & Data2$Windspeed < vrange[3])]
+    if(min(length(dat.max1),length(dat.max2))== 0 & is.null(rated.power)==TRUE) {
+      if(sum(imput.reg3) > 0) {
+        stop('provide value for rated.power, no data above rated wind speed is available for estimation')
+        }
+      }
+    if (length(dat.max1)==0) {max1 = rated.power} else {max1 = mean(dat.max1)}
+    if (length(dat.max2)==0) {max2 = rated.power} else {max2 = mean(dat.max2)}
+    max.power = c(max1,max2)
+    dat1 = Data1[which(Data1$Windspeed >= vrange[1] & Data1$Windspeed <= vrange[2]),]
+    dat2 = Data2[which(Data2$Windspeed >= vrange[1] & Data2$Windspeed <= vrange[2]),]
+    dat1 = dat1[which(dat1$Power > 0),]
+    dat2 = dat2[which(dat2$Power > 0),]
+    dat1 = dat1[complete.cases(dat1),]
+    dat2 = dat2[complete.cases(dat2),]
+  
+    if (nrow(dat1) == 0 || nrow(dat2) == 0) { 
+      stop('not enough data point for predicting the imputed values')}
+    
+    PC1 = PC2 = NULL
+  
+    if(sample){
+      idx1 = sample(c(1:nrow(dat1)),min(size,nrow(dat1)))
+      idx2 = sample(c(1:nrow(dat2)),min(size,nrow(dat2)))
+      if (nrow(dat1) < size){idx1 = 1:nrow(dat1)}
+      if (nrow(dat2) < size){idx2 = 1:nrow(dat2)}
+      if (imput.reg2[1]+imput.reg3[1]>0){
+        PC1 = tempGP(as.matrix(dat1$Windspeed[idx1]),as.matrix(dat1$Power[idx1]))
+      }
+      if (imput.reg2[2]+imput.reg3[2]>0){
+        PC2 = tempGP(as.matrix(dat2$Windspeed[idx2]),as.matrix(dat2$Power[idx2]))
+      }
+      
+    } else {
+      if (imput.reg2[1]+imput.reg3[1]>0) {
+        PC1 = tempGP(as.matrix(dat1$Windspeed),as.matrix(dat1$Power))
+      }
+      if (imput.reg2[2]+imput.reg3[2]>0) {
+        PC2 = tempGP(as.matrix(dat2$Windspeed),as.matrix(dat2$Power))
+      }
+    }
+  
+    dat.list = list(Data1[complete.cases(Data1$Windspeed),],Data2[complete.cases(Data2$Windspeed),])
+    PC = list(PC1,PC2)
+    for (i in 1:2) {
+      m = which(dat.list[[i]]$Power<=0)
+      dat.list[[i]]$Power[m]=0
+      j1 = which(dat.list[[i]]$Windspeed[m] > vrange[1] & dat.list[[i]]$Windspeed[m]<= vrange[2])
+      j2 = which(dat.list[[i]]$Windspeed[m] > vrange[2] & dat.list[[i]]$Windspeed[m]<= vrange[3])
+      if (length(j1) + length(j2) > 0){
+        imput.j1 = predict(PC[[i]],as.matrix(dat.list[[i]]$Windspeed[m[j1]])) 
+      }
+      imput.j1[which(imput.j1>max.power[i])]=max.power[i]
+      imput.j1[which(imput.j1<0)]=0
+      dat.list[[i]]$Power[m[j1]]= imput.j1
+      dat.list[[i]]$Power[m[j2]]= max.power[i]
+    }
+    Data1 = data[[1]][dat.list[[1]]$obs,]
+    Data2 = data[[2]][dat.list[[2]]$obs,]
+    Data1[,powercol] = dat.list[[1]]$Power
+    Data2[,powercol] = dat.list[[2]]$Power
+    Data = list(Data1 = Data1, Data2=Data2)
+    }
   return(Data)
 }
