@@ -166,11 +166,11 @@ imptPower = function(data, powercol, vcol, vrange, rated.power=NULL, sample = TR
       j2 = which(dat.list[[i]]$Windspeed[m] > vrange[2] & dat.list[[i]]$Windspeed[m]<= vrange[3])
       if (length(j1) + length(j2) > 0){
         imput.j1 = predict(PC[[i]],as.matrix(dat.list[[i]]$Windspeed[m[j1]])) 
+        imput.j1[which(imput.j1>max.power[i])]=max.power[i]
+        imput.j1[which(imput.j1<0)]=0
+        dat.list[[i]]$Power[m[j1]]= imput.j1
+        dat.list[[i]]$Power[m[j2]]= max.power[i]
       }
-      imput.j1[which(imput.j1>max.power[i])]=max.power[i]
-      imput.j1[which(imput.j1<0)]=0
-      dat.list[[i]]$Power[m[j1]]= imput.j1
-      dat.list[[i]]$Power[m[j2]]= max.power[i]
     }
     Data1 = data[[1]][dat.list[[1]]$obs,]
     Data2 = data[[2]][dat.list[[2]]$obs,]
