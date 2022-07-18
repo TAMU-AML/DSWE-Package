@@ -49,7 +49,7 @@
 #'  
 #' @examples 
 #' 
-#' data = list(data1[1:50,], data2[1:100,])
+#' data = list(data1[1:100,], data2[1:120,])
 #' powercol = 7
 #' timecol = 1
 #' xcol = c(2:6)
@@ -77,12 +77,10 @@ deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum po
     stop('The number of data sets to synchronize should be equal to two')
   }
   
-  if(sync.method=="time" & timecol==0) {
-    stop('Provide value for timecol and make sure data sets have the same time format')
-  }
-  
-  if (sync.method == "time" & nchar(data[[1]][1,timecol]) != nchar(data[[2]][1,timecol])) {
-    stop('Make sure data sets have same the time format')}
+  if(sync.method=="time") {
+    if(timecol==0) {stop('Provide value for timecol and make sure data sets have the same time format')}
+    #warning('Make sure data in timecol in both data sets have the same format.')
+  } 
   
   if (imput){
     if(!is.numeric(vcol)){
@@ -147,10 +145,10 @@ deltaEnergy = function(data, powercol, timecol=0, xcol, sync.method ="minimum po
     PC2 = tempGP(as.matrix(Data2[,xcol]),as.numeric(Data2$Power))
   
   ## Estimate the energy
-  F1X1 = sum(predict(PC1,Data1[,xcol])) * (timestamp.min/60)
-  F1X2 = sum(predict(PC1,Data2[,xcol])) * (timestamp.min/60)
-  F2X1 = sum(predict(PC2,Data1[,xcol])) * (timestamp.min/60)
-  F2X2 = sum(predict(PC2,Data2[,xcol])) * (timestamp.min/60)
+  F1X1 = sum(predict(PC1,as.matrix(Data1[,xcol]))) * (timestamp.min/60)
+  F1X2 = sum(predict(PC1,as.matrix(Data2[,xcol]))) * (timestamp.min/60)
+  F2X1 = sum(predict(PC2,as.matrix(Data1[,xcol]))) * (timestamp.min/60)
+  F2X2 = sum(predict(PC2,as.matrix(Data2[,xcol]))) * (timestamp.min/60)
   
   ## Calculate Delta Energy
   E.turb1 = F2X1 - F1X1
