@@ -129,7 +129,14 @@ calculateWeights = function(trainX,testpoint,bandwidth,nMultiCov,fixedCov,cirCov
 computeBandwidth = function(trainY,trainX,cirCov){
   bandwidth = rep(0,ncol(trainX))
   for (i in 1:ncol(trainX)){
-    bandwidth[i] = KernSmooth::dpill(trainX[,i],trainY)
+    bw = try(
+      expr = KernSmooth::dpill(trainX[,i],trainY), silent=TRUE
+    )
+    if (inherits(bw, "try-error")) {
+      bandwidth[i] = sd(trainX[,i])
+    } else {
+      bandwidth[i] = bw
+    }
   }
   if(all(!is.na(cirCov))){
   for (i in cirCov){

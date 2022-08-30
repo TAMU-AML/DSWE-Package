@@ -22,11 +22,21 @@
 
 get.dpill = function (cov, y)
 {
-  bw <- KernSmooth::dpill(cov, y)
+  bw <- try(
+    expr = KernSmooth::dpill(cov, y), silent = TRUE
+  )
+  if (inherits(bw, "try-error")){
+    bw = sd(cov)
+  }
   if (is.nan(bw)) {
     par <- 0.06
     while (is.nan(bw)) {
-      bw <- KernSmooth::dpill(cov, y, proptrun = par)
+      bw <- try(
+        expr = KernSmooth::dpill(cov, y, proptrun = par), silent = TRUE
+      )
+      if (inherits(bw, "try-error")){
+        bw = sd(cov)
+      }
       par <- par + 0.01
     }
   }
@@ -172,7 +182,7 @@ bw.gap = function (y, x, id.dir = NA, id.adp = id.dir) {
               0 & cutpt[[p]][length(cutpt[[p]])] >= 360)
             cov.sub[which(cov.sub < cutpt[[p]][2])] <- cov.sub[which(cov.sub <
                                                                        cutpt[[p]][2])] + 360
-          KernSmooth::dpill(cov.sub, y[id.bin])
+          get.dpill(cov.sub, y[id.bin])
         })
       })
       list(bw.fix = bw.fix, bw.adp = bw.adp, id.adp = id.adp,
