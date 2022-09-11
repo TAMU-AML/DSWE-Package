@@ -149,6 +149,9 @@ adam_optimizer = function(data_bins, par_init, batch_size, learn_rate, max_iter,
   v_t = rep(0, length(par_init))
   
   params_mat = matrix(nrow = max_iter, ncol = length(params_t))  
+  samples_mat = matrix(nrow = max_iter, ncol = batch_size)  
+  grad_mat = matrix(nrow = max_iter, ncol = length(params_t))
+  sampled_bin_vec = rep(NA, max_iter)
   
   
   while (TRUE){
@@ -159,11 +162,14 @@ adam_optimizer = function(data_bins, par_init, batch_size, learn_rate, max_iter,
     } else {
       sampled_idx = 1:length(data_bins[[sampled_bin]]$y)
     }
+    sampled_bin_vec[t] = sampled_bin
+    samples_mat[t, c(1:length(sampled_idx))] = sampled_idx
     sample_x = data_bins[[sampled_bin]]$X[sampled_idx, , drop=FALSE]
     sample_y = data_bins[[sampled_bin]]$y[sampled_idx]
     
     grad_t = computeLogLikGradGP_(sample_x, sample_y, 
                                   params = list(theta=params_t[1:nCov],sigma_f=params_t[nCov+1],sigma_n=params_t[nCov+2],beta=params_t[nCov+3]))
+    grad_mat[t, ] = grad_t
     m_t = (beta1 * m_t) + ((1 - beta1) * grad_t)
     v_t = (beta2 * v_t) + ((1 - beta2) * (grad_t**2))
     
@@ -178,6 +184,9 @@ adam_optimizer = function(data_bins, par_init, batch_size, learn_rate, max_iter,
       if (!is.null(logfile)){
         utils::write.table(params_mat, file = logfile, sep = ",", row.names = FALSE, col.names = FALSE)
       }
+      utils::write.table(sampled_bin_vec, "sampled_bin_vec.csv", sep = ",", row.names = FALSE, col.names = FALSE)
+      utils::write.table(samples_mat, "samples_mat.csv", sep = ",", row.names = FALSE, col.names = FALSE)
+      utils::write.table(grad_mat, "grad_mat.csv", sep = ",", row.names = FALSE, col.names = FALSE)
       return(list(par=params_t))
     }
   }
