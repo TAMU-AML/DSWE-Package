@@ -1,6 +1,6 @@
 # MIT License
 # 
-# Copyright (c) 2020 Abhinav Prakash, Rui Tuo, and Yu Ding
+# Copyright (c) 2020-2022 Abhinav Prakash and Yu Ding
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
