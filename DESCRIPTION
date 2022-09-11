@@ -3,7 +3,7 @@ Title: Data Science for Wind Energy
 Version: 1.6.2
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nitesh.kumar@tamu.edu"),
-    person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@tamu.edu"),
+    person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@aggienetwork.com"),
     person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding@tamu.edu"),
     person(given = "Effi", family = "Latiffianti", role = c("ctb","cph"), email = "latiffianti@tamu.edu"))
 Description: Data science methods used in wind energy applications. 
