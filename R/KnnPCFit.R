@@ -46,7 +46,9 @@
 #' knn_model = KnnPCFit(data, xCol, yCol, subsetSelection)
 #' 
 #' @export
+#' @useDynLib DSWE, .registration = TRUE
 #' @importFrom FNN knn.reg knnx.index
+#' 
 KnnPCFit = function(data, xCol, yCol, subsetSelection = FALSE){
 
   if(!is.matrix(data) & !is.data.frame(data)){

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#' @useDynLib DSWE
+#' @useDynLib DSWE, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #' 
 estimateParameters= function(datalist, covCols, yCol, opt_method, limitMemory, optimSize, rngSeed){

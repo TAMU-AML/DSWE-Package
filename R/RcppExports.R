@@ -2,34 +2,34 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 computeWeightedY <- function(X, y, params) {
-    .Call('_DSWE_computeWeightedY', PACKAGE = 'DSWE', X, y, params)
+    .Call(`_DSWE_computeWeightedY`, X, y, params)
 }
 
 predictGP <- function(X, weightedY, Xnew, params) {
-    .Call('_DSWE_predictGP', PACKAGE = 'DSWE', X, weightedY, Xnew, params)
+    .Call(`_DSWE_predictGP`, X, weightedY, Xnew, params)
 }
 
 computeLogLikGP_ <- function(X, y, params) {
-    .Call('_DSWE_computeLogLikGP_', PACKAGE = 'DSWE', X, y, params)
+    .Call(`_DSWE_computeLogLikGP_`, X, y, params)
 }
 
 computeLogLikGradGP_ <- function(X, y, params) {
-    .Call('_DSWE_computeLogLikGradGP_', PACKAGE = 'DSWE', X, y, params)
+    .Call(`_DSWE_computeLogLikGradGP_`, X, y, params)
 }
 
 computeLogLikGradGPZeroMean_ <- function(X, y, params) {
-    .Call('_DSWE_computeLogLikGradGPZeroMean_', PACKAGE = 'DSWE', X, y, params)
+    .Call(`_DSWE_computeLogLikGradGPZeroMean_`, X, y, params)
 }
 
 computeDiffCov_ <- function(X1, y1, X2, y2, XT, theta, sigma_f, sigma_n, beta) {
-    .Call('_DSWE_computeDiffCov_', PACKAGE = 'DSWE', X1, y1, X2, y2, XT, theta, sigma_f, sigma_n, beta)
+    .Call(`_DSWE_computeDiffCov_`, X1, y1, X2, y2, XT, theta, sigma_f, sigma_n, beta)
 }
 
 computeConfBand_ <- function(diffCovMat, confLevel) {
-    .Call('_DSWE_computeConfBand_', PACKAGE = 'DSWE', diffCovMat, confLevel)
+    .Call(`_DSWE_computeConfBand_`, diffCovMat, confLevel)
 }
 
 matchcov <- function(ref, obj, thres, circ_pos, flag) {
-    .Call('_DSWE_matchcov', PACKAGE = 'DSWE', ref, obj, thres, circ_pos, flag)
+    .Call(`_DSWE_matchcov`, ref, obj, thres, circ_pos, flag)
 }
 

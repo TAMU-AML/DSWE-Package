@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#' @useDynLib DSWE, .registration = TRUE
 
 computeThinningNumber = function(trainX, max_thinning_number){
   thinning_vec = rep(max_thinning_number, ncol(trainX))
