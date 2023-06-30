@@ -1,11 +1,10 @@
 Package: DSWE
 Title: Data Science for Wind Energy
-Version: 1.6.1
+Version: 1.6.3
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nitesh.kumar@tamu.edu"),
-    person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@tamu.edu"),
+    person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "abhinavp@aggienetwork.com"),
     person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding@tamu.edu"),
-    person(given = "Rui", family = "Tuo", role = c("ctb","cph"), email = "ruituo@tamu.edu"),
     person(given = "Effi", family = "Latiffianti", role = c("ctb","cph"), email = "latiffianti@tamu.edu"))
 Description: Data science methods used in wind energy applications. 
               Current functionalities include creating a multi-dimensional power curve model, 
@@ -26,7 +25,7 @@ URL: https://github.com/TAMU-AML/DSWE-Package, https://aml.engr.tamu.edu/book-ds
 BugReports: https://github.com/TAMU-AML/DSWE-Package/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 LinkingTo: 
     Rcpp (>= 1.0.4.6) ,
     RcppArmadillo (>= 0.9.870.2.0)

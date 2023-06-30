@@ -1,6 +1,6 @@
 # MIT License
 # 
-# Copyright (c) 2020 Abhinav Prakash, Rui Tuo, and Yu Ding
+# Copyright (c) 2020-2022 Abhinav Prakash and Yu Ding
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-computeThinningNumber = function(trainX){
-  thinningNumber = max(apply(trainX,2,function(col) 
-    min(which(c(1,abs(stats::pacf(col, plot = FALSE)$acf[,1,1])) <= (2/sqrt(nrow(trainX)))))))
+#' @useDynLib DSWE, .registration = TRUE
+
+computeThinningNumber = function(trainX, max_thinning_number){
+  thinning_vec = rep(max_thinning_number, ncol(trainX))
+  for (col_idx in c(1:length(thinning_vec))){
+    col_thinning_vec = which(c(1,abs(stats::pacf(trainX[,col_idx], plot = FALSE, lag.max = max_thinning_number)$acf[,1,1])) <= (2/sqrt(nrow(trainX))))
+    if (length(col_thinning_vec) != 0){
+      thinning_vec[col_idx] = min(col_thinning_vec)
+    }
+  }
+  thinningNumber = max(thinning_vec)
   return(thinningNumber)
 }
 

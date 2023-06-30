@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 #' @importFrom  matrixStats colMins colMaxs colSds
-#' @useDynLib DSWE
+#' @useDynLib DSWE, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 
 CovMatch.Mult = function(dname, cov, wgt, cov.circ){
