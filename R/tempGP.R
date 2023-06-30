@@ -25,6 +25,7 @@
 #' @param trainX A matrix with each column corresponding to one input variable. 
 #' @param trainY A vector with each element corresponding to the output at the corresponding row of \code{trainX}.
 #' @param trainT A vector for time indices of the data points. By default, the function assigns natural numbers starting from 1 as the time indices. 
+#' @param max_thinning_number An integer specifying the max lag to compute the thinning number. If the PACF does not become insignificant till \code{max_thinning_number}, then \code{max_thinning_number} is used for thinning.
 #' @param fast_computation A Boolean that specifies whether to do exact inference or fast approximation. Default is \code{TRUE}.
 #' @param limit_memory An integer or \code{NULL}. The integer is used sample training points during prediction to limit the total memory requirement. Setting the value to \code{NULL} would result in no sampling, that is, full training data is used for prediction. Default value is \code{5000}.
 #' @param optim_control A list parameters passed to the Adam optimizer when \code{fast_computation} is set to \code{TRUE}. The default values have been tested rigorously and tend to strike a balance between accuracy and speed. \itemize{
@@ -82,6 +83,7 @@
 tempGP = function(trainX, trainY, trainT = NULL, 
                   fast_computation = TRUE,
                   limit_memory = 5000L,
+                  max_thinning_number = 20,
                   optim_control = list(batch_size = 100L, 
                                        learn_rate = 0.05, 
                                        max_iter = 5000L, 
@@ -131,6 +133,10 @@ tempGP = function(trainX, trainY, trainT = NULL,
       stop('trainX, trainY, and trainT must have the same number of data points.')
     }
     
+    if (!inherits(max_thinning_number, "integer")){
+      stop('max_thinning_number must be an integer.') 
+    }
+    
     trainX = trainX[order(trainT),,drop = FALSE]
     trainY = trainY[order(trainT)]
     trainT = trainT[order(trainT)]
@@ -145,7 +151,7 @@ tempGP = function(trainX, trainY, trainT = NULL,
     limit_memory = as.integer(limit_memory)
   }
   
-  thinningNumber = computeThinningNumber(trainX)
+  thinningNumber = computeThinningNumber(trainX, max_thinning_number)
 
   if (thinningNumber > 0){
     thinnedBins = createThinnedBins(trainX,trainY,thinningNumber)  
