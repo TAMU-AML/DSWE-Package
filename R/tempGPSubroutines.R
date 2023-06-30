@@ -23,7 +23,7 @@
 
 computeThinningNumber = function(trainX, max_thinning_number){
   thinning_vec = rep(max_thinning_number, ncol(trainX))
-  for (col_idx in 1:length(trainX)){
+  for (col_idx in c(1:length(thinning_vec))){
     col_thinning_vec = which(c(1,abs(stats::pacf(trainX[,col_idx], plot = FALSE, lag.max = max_thinning_number)$acf[,1,1])) <= (2/sqrt(nrow(trainX))))
     if (length(col_thinning_vec) != 0){
       thinning_vec[col_idx] = min(col_thinning_vec)
