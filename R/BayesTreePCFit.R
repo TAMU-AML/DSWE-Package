@@ -34,8 +34,8 @@
 #' @examples 
 #' 
 #' data = data1
-#' trainX = as.matrix(data[c(1:100),2])
-#' trainY = data[c(1:100),7]
+#' trainX = as.matrix(data[c(1:50),2])
+#' trainY = data[c(1:50),7]
 #' testX = as.matrix(data[c(100:110),2])
 #' 
 #' Bart_prediction = BayesTreePCFit(trainX, trainY, testX)
