@@ -412,6 +412,11 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
   fit$covparms=c(cur.var,cur.ranges,cur.oth)
   fit$trend=trend
   
+  ### redefining some outputs to make it compatible with package
+  fit$estimatedParams=fit$covparms
+  fit$objVal=fit$loglik
+  fit$gradval=fit$conv
+  
   if(trend=='zero') {
     fit$X=as.matrix(rep(0,nrow(fit$locs)))
   } else if(trend=='pre') {
