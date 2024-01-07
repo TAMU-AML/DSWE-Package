@@ -161,6 +161,11 @@ tempGP = function(trainX, trainY, trainT = NULL,
   } else{
     thinnedBins = list(list(x = trainX, y = trainY))
   }
+  
+  if (!is.logical(vecchia)) {
+    stop('vecchia must be boolean.')
+  }
+  
   if (vecchia == FALSE){
   optimResult = estimateBinnedParams(thinnedBins, fast_computation, optim_control)
   if (inherits(limit_memory, "integer")){
@@ -181,19 +186,18 @@ tempGP = function(trainX, trainY, trainT = NULL,
   modelF = list(X = activeX, y = activeY, weightedY = weightedY)
   trainResiduals = trainY - predictGP(modelF$X, modelF$weightedY, trainX, optimResult$estimatedParams)
   modelG = list(residuals = trainResiduals, time_index = trainT)
-  output = list(trainX = trainX, trainY = trainY, trainT = trainT, 
-                thinningNumber = thinningNumber, modelF = modelF, 
-                modelG = modelG, estimatedParams = optimResult$estimatedParams, 
-                llval = optimResult$objVal, gradval = optimResult$gradVal)
+  
   }else {
     optimResult=fit_scaled_thinned(y=trainY,inputs=trainX,thinnedBins=thinnedBins,T=thinningNumber)
     trainResiduals = trainY - predictions_scaled_thinned(optimResult,trainX,m=100,joint=TRUE,nsims=0,
                                                          predvar=FALSE,scale='parms')
     modelG = list(residuals = trainResiduals, time_index = trainT)
-    output = list(trainX = trainX, trainY = trainY, trainT = trainT, 
-                  thinningNumber = thinningNumber, modelF = optimResult, 
-                  modelG = modelG,vecchia = TRUE)
   }
+    
+  output = list(trainX = trainX, trainY = trainY, trainT = trainT, 
+                thinningNumber = thinningNumber, modelF = modelF, 
+                modelG = modelG, estimatedParams = optimResult$estimatedParams, 
+                llval = optimResult$objVal, gradval = optimResult$gradVal,vecchia = vecchia)
   class(output) = "tempGP"
   return(output)
 }
