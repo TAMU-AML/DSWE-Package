@@ -52,11 +52,11 @@ Function comparison using Gaussian Process and Hypothesis testing
 }
 \examples{
 
-datalist = list(data1[1:100,], data2[1:100, ])
+datalist = list(data1[1:50,], data2[1:50, ])
 xCol = 2
 yCol = 7
 confLevel = 0.95
-testset = seq(4,10,length.out = 20)
+testset = seq(4,10,length.out = 10)
 function_diff = funGP(datalist, xCol, yCol, confLevel, testset)
 
 }
