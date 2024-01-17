@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 #' @useDynLib DSWE, .registration = TRUE
-#' @importFrom GpGp find_ordered_nn get_linkfun group_obs get_penalty vecchia_grouped_profbeta_loglik_grad_info vecchia_profbeta_loglik_grad_info fisher_scoring fit_vcf find_ordered_nn_brute
+#' @importFrom GpGp find_ordered_nn get_linkfun group_obs get_penalty vecchia_grouped_profbeta_loglik_grad_info vecchia_profbeta_loglik_grad_info fisher_scoring find_ordered_nn_brute
 #' @importFrom GPvecchia order_maxmin_exact
 
 
@@ -261,7 +261,7 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
   
   ### find variance correction factor, if requested
   if(find.vcf){
-    fit$vcf=GpGp::fit_vcf(fit,scale=scale,scorefun=vcf.scorefun)
+    fit$vcf=fit_vcf(fit,scale=scale,scorefun=vcf.scorefun)
   } else fit$vcf=1
   
   return(fit)
