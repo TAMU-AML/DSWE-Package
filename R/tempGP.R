@@ -68,7 +68,7 @@
 #' @examples
 #' 
 #'     data = DSWE::data1
-#'     trainindex = 1:100 #using the first 100 data points to train the model
+#'     trainindex = 1:50 #using the first 50 data points to train the model
 #'     traindata = data[trainindex,]
 #'     xCol = 2 #input variable columns
 #'     yCol = 7 #response column
@@ -213,7 +213,7 @@ tempGP = function(trainX, trainY, trainT = NULL,
 #' @return A vector of predictions at the testpoints in \code{testX}.
 #' @examples 
 #'    data = DSWE::data1
-#'    trainindex = 1:100 #using the first 100 data points to train the model
+#'    trainindex = 1:50 #using the first 50 data points to train the model
 #'    traindata = data[trainindex,]
 #'    xCol = 2 #input variable columns
 #'    yCol = 7 #response column
@@ -323,7 +323,7 @@ predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
 #' @return An updated object of class \code{tempGP}.
 #' @examples 
 #'    data = DSWE::data1
-#'    trainindex = 1:100 #using the first 100 data points to train the model
+#'    trainindex = 1:50 #using the first 50 data points to train the model
 #'    traindata = data[trainindex,]
 #'    xCol = 2 #input variable columns
 #'    yCol = 7 #response column

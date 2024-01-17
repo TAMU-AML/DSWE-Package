@@ -67,7 +67,7 @@ A Gaussian process based power curve model which explicitly models the temporal 
 \examples{
 
     data = DSWE::data1
-    trainindex = 1:100 #using the first 100 data points to train the model
+    trainindex = 1:50 #using the first 50 data points to train the model
     traindata = data[trainindex,]
     xCol = 2 #input variable columns
     yCol = 7 #response column
