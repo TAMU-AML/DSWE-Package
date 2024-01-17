@@ -1,6 +1,6 @@
 Package: DSWE
 Title: Data Science for Wind Energy
-Version: 1.7.0
+Version: 1.7.1
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nkumar.tamu@gmail.com"),
     person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "aprakashphd@gmail.com"),
@@ -38,4 +38,6 @@ Imports:
     gss (>= 2.2-2),
     e1071 (>= 1.7-3),
     stats (>= 3.5.0),
-    dplyr (>= 1.0.9)
+    dplyr (>= 1.0.9),
+    GpGp (>= 	0.4.0),
+    GPvecchia (>= 0.1.4)
