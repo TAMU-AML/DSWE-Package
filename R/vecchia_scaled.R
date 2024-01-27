@@ -1,72 +1,84 @@
-# MIT License
-# 
-# Copyright (c) 2020-2022 Ahmadreza Chokhachian and Yu Ding
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#   
-#   The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-#' @useDynLib DSWE, .registration = TRUE
-#' @importFrom GpGp find_ordered_nn get_linkfun group_obs get_penalty vecchia_grouped_profbeta_loglik_grad_info vecchia_profbeta_loglik_grad_info fisher_scoring find_ordered_nn_brute
-#' @importFrom GPvecchia order_maxmin_exact
+######   scaled Vecchia approximation (Katzfuss, Guinness, Lawrence)  #######
 
 
-fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu=1.5,nug=NULL,scale='none',
-                               var.ini,ranges.ini,select=Inf,print.level=0,max.it=1000,tol.dec=5,
-                               find.vcf=FALSE,vcf.scorefun=ls,grouped=TRUE) {
+### necessary packages
+
+# install.packages('GpGp')  # need version >= 0.2.2
+library(GpGp)
+# install.packages('GPvecchia')
+library(GPvecchia)
+
+
+
+#' fit parameters using scaled Vecchia, assuming matern covariance
+#'
+#' @param y data vector of length n
+#' @param inputs nxd matrix of input coordinates
+#' @param ms vector of conditioning-set sizes
+#' @param trend options are 'pre' (subtract sample mean as a preprocessing step),
+#' 'zero' (no trend), 'intercept', 'linear' (incl intercept)
+#' @param X nxp trend matrix (use if more complicated trend is desired)
+#' @param nu smoothness parameter. 1.5,2.5,3.5,4.5 avoid bessel (faster). 
+#' estimated if nu=NULL.
+#' @param nug nugget or noise variance. estimated if nug=NULL.
+#' @param scale scaling of inputs for ordering and conditioning. 
+#' 'parms': by parameter estimates. 'ranges': to [0,1]. 'none': no scaling
+#' @param var.ini initial value for GP variance parameter
+#' @param ranges.ini initial values for d range parameters
+#' @param select un-select input variables if estimated range parameter is
+#' above select (assuming standardized [0,1] inputs)
+#' @param print.level 0: no printing. 1: print outer loop. 2: print outer+inner loop
+#' @param max.it maximum number of iterations for inner loop
+#' @param tol.dec converged if dot product between the step and the gradient is 
+#' less than \code{10^(-convtol)}
+#' @param n.est subsample size for estimation
+#' @param find.vcf find a variance correction factor to be used in prediction?
+#' @param vcf.scorefun scoring function to be used for \code{find_vcf()}
+#'
+#' @return Object containing fit information, including for use in predictions_scaled()
+#' @examples
+#' inputs=matrix(runif(40),ncol=2)
+#' y=sin(rowSums(inputs*5))
+#' fit=fit_scaled(y,inputs)
+#' summary.GpGp_fit(fit)
+#' @export
+
+
+#####   fitting function   ########
+
+fit_scaled=function(y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scale='parms',
+              var.ini,ranges.ini,select=Inf,print.level=0,max.it=32,tol.dec=4,
+              n.est=min(5e3,nrow(inputs)),find.vcf=TRUE,vcf.scorefun=ls) {
   
-  
-  
-  loc <- list()
-  Y <- list()
-  X <- list()
-  for (i in 1:T) {
-    loc[[i]] <- thinnedBins[[i]]$X
-    Y[[i]] <- thinnedBins[[i]]$y
-  }
-  
-  
-  n = length(Y[[1]])
-  d = ncol(loc[[1]])
-  if(trend=='zero'){
-    for(i in 1:T){
-      X[[i]]=as.matrix(sample(c(-1,1),n,replace=TRUE))
-    }
-  }else if(trend=='pre'){
-    for(i in 1:T){
-      X[[i]]=as.matrix(sample(c(-1,1),n,replace=TRUE))
-    }
-    beta <- mean(y)
-    for (i in 1:T) {
-      Y[[i]]=Y[[i]]-beta
-    }
-  }
-  
+  ## dimensions
+  n=nrow(inputs)
+  d=ncol(inputs)
+
+  ## specify trend covariates
+  if(missing(X)) {
+    if(trend=='zero'){
+      X=as.matrix(sample(c(-1,1),n,replace=TRUE))
+    } else if(trend=='intercept'){
+      X=as.matrix(rep(1,n))
+    } else if(trend=='linear'){
+      X=cbind(rep(1,n),inputs)
+    } else if(trend=='pre'){
+      X=as.matrix(sample(c(-1,1),n,replace=TRUE))
+      beta=mean(y)
+      y=y-beta
+    } else stop('invalid trend option specified')
+  } else trend='X'
   
   ## default variance parameter
   if(missing(var.ini)) {
-    cur.var=summary(stats::lm(Y[[1]]~X[[1]]-1))$sigma^2
+    cur.var=summary(stats::lm(y~X-1))$sigma^2
   } else cur.var=var.ini
   
   ## default range parameters
   input.ranges=apply(inputs,2,function(x) diff(range(x)))
   if(missing(ranges.ini)) cur.ranges=.2*input.ranges else cur.ranges=ranges.ini
   active=rep(TRUE,d)
-  
+
   ## fixed nugget?
   if(is.null(nug)){
     fix.nug=FALSE; nug=.01*var(y)
@@ -87,13 +99,21 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
     fix.nu=TRUE    
   }
   
+  ## only use subsample for estimation?
+  if(n.est<n){
+    ind.est=sample(1:n,n.est)
+    y.full=y; inputs.full=inputs; X.full=X
+    y=y[ind.est]; inputs=inputs[ind.est,,drop=FALSE]; X=X[ind.est,,drop=FALSE]
+  }
+  
+  ## decrease or remove m values larger than n
+  ms=unique(ifelse(ms<length(y),ms,length(y)-1))
   
   
   ### for increasing m
   for(i.m in 1:length(ms)){
     
     m=ms[i.m]
-    
     if(i.m<length(ms)){ tol=10^(-tol.dec-2) } else {tol=10^(-tol.dec)}
     
     ### increase maxit until convergence
@@ -105,8 +125,8 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
         print(paste0('m=',m,', maxit=',maxit)); print(cur.ranges)}
       
       ## check for inactive input dims (large range params)
-      #active=(cur.ranges<input.ranges*select)
-      if(sum(active,na.rm=TRUE)==0) stop('all loc inactive. increase select?')
+      active=(cur.ranges<input.ranges*select)
+      if(sum(active,na.rm=TRUE)==0) stop('all inputs inactive. increase select?')
       cur.ranges[!active]=Inf
       
       ## specify how to scale input dimensions
@@ -117,20 +137,13 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
       } else if(scale=='ranges'){ scales=1/input.ranges
       } else if(scale=='none'){ scales=1
       } else stop(paste0('invalid argument scale=',scale))
-      NNlist<- list()
-      NNarray=list()
-      loc.ord=list()
-      Y.ord=list()
-      X.ord=list()
-      for(i in 1:T){
-        ## order and condition based on current params
-        ord=GPvecchia::order_maxmin_exact(t(t(loc[[i]])*scales))
-        loc.ord[[i]]=loc[[i]][ord,,drop=FALSE]
-        Y.ord[[i]]=Y[[i]][ord]
-        X.ord[[i]]=as.matrix(X[[i]][ord,,drop=FALSE])
-        output=as.matrix(loc.ord[[i]])
-        NNarray[[i]]=GpGp::find_ordered_nn(t(t(as.matrix(output))*scales),m)
-      }
+      
+      ## order and condition based on current params
+      ord=GPvecchia::order_maxmin_exact(t(t(inputs)*scales))
+      inputs.ord=inputs[ord,,drop=FALSE]
+      y.ord=y[ord]
+      X.ord=X[ord,,drop=FALSE]
+      NNarray=GpGp::find_ordered_nn(t(t(inputs.ord)*scales),m)
       
       ## starting and fixed parameters
       cur.parms=c(cur.var,cur.ranges[active],cur.oth)
@@ -138,99 +151,12 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
       if(fix.nu) fixed=c(fixed,length(cur.parms)-1)
       if(fix.nug) fixed=c(fixed,length(cur.parms))
       
-      
-      
-      # get link functions
-      linkfuns <- GpGp::get_linkfun(covfun)
-      link <- linkfuns$link
-      dlink <- linkfuns$dlink
-      invlink <- linkfuns$invlink
-      
-      start_parms=cur.parms
-      
-      invlink_startparms <- invlink(start_parms)
-      lonlat <- linkfuns$lonlat
-      if(lonlat){
-        cat("Assuming columns 1 and 2 of locs are (longitude,latidue) in degrees\n")
-      }
-      
-      penalty=list()
-      pen=list()
-      dpen=list()
-      ddpen=list()
-      
-      for (i in 1:T){
-        NNlist[[i]] <- GpGp::group_obs((NNarray[[i]][,1:(m+1)]))
-        penalty[[i]] <- GpGp::get_penalty(Y.ord[[i]],X.ord[[i]],loc.ord[[i]],covfun) # this function takes in y as a vector, returns a list of three functions, # NEED CHANGE
-        pen[[i]] <- penalty[[i]]$pen
-        dpen[[i]] <- penalty[[i]]$dpen
-        ddpen[[i]] <- penalty[[i]]$ddpen
-      }
-      
-      
-      
-      
-      likfun <- function(logparms){
-        
-        lp <- rep(NA,length(start_parms))
-        lp[active] <- logparms
-        lp[!active] <- invlink_startparms[!active]
-        
-        sumLoglik <- 0 # Add
-        sumGrad <- 0 # Add
-        sumInfo <- 0 # Add
-        for (i in 1:T){
-          
-          if(grouped){
-            likobj <-  GpGp::vecchia_grouped_profbeta_loglik_grad_info(link(lp),covfun,y=as.matrix(Y.ord[[i]]),X=as.matrix(X.ord[[i]]),locs=as.matrix(loc.ord[[i]]),(NNlist[[i]]))
-          }else{
-            likobj <-  GpGp::vecchia_profbeta_loglik_grad_info(link(lp),covfun,y=as.matrix(Y.ord[[i]]),X=as.matrix(X.ord[[i]]),locs=as.matrix(loc.ord[[i]]),(NNarray[[i]]))
-            
-          }
-          likobj$loglik <- -likobj$loglik - pen[[i]](link(lp))
-          likobj$grad <- -c(likobj$grad)*dlink(lp) -
-            dpen[[i]](link(lp))*dlink(lp)
-          likobj$info <- likobj$info*outer(dlink(lp),dlink(lp)) -
-            ddpen[[i]](link(lp))*outer(dlink(lp),dlink(lp))
-          likobj$grad <- likobj$grad[active]
-          likobj$info <- likobj$info[active,active]
-          
-          sumLoglik <- sumLoglik + likobj$loglik 
-          sumGrad <- sumGrad + likobj$grad
-          sumInfo <- sumInfo + likobj$info
-          
-        }
-        likobj$loglik <- sumLoglik/T
-        likobj$grad <- sumGrad/T
-        likobj$info <- sumInfo/T
-        
-        return(likobj)        
-        
-      }
-      
-      
-      fit <- GpGp::fisher_scoring( likfun,invlink(start_parms)[active],
-                                   link,silent=TRUE, convtol = tol, max_iter = maxit ) 
-      invlink_startparms[active] <- fit$logparms
-      #start_parms[active] <- fit$covparms
-      start_parms <- link(invlink_startparms)
-      fit$loglik <- -fit$loglik - pen[[i]](start_parms)
-      invlink_startparms <- invlink(start_parms)
-      
-      
-      # return fit and information used for predictions
-      fit$covfun_name <- covfun
-      #fit$covparms <- start_parms
-      lp <- rep(NA,length(start_parms))
-      lp[active] <- fit$logparms
-      lp[!active] <- invlink_startparms[!active]
-      fit$covparms <- link(lp)
-      
-      
-      fit$locs <- inputs
-      fit$y <- y
-      
-      class(fit) <- "GpGp_fit"
+      ## fisher scoring
+      fit=GpGp::fit_model(y.ord,inputs.ord[,active,drop=FALSE],X.ord,
+                     NNarray=NNarray,m_seq=m,convtol=tol,
+                     start_parms=cur.parms,max_iter=maxit,
+                     covfun_name=covfun,silent=(print.level<2),
+                     reorder=FALSE,fixed_parms=fixed)
       cur.var=fit$covparms[1]
       cur.ranges[active]=fit$covparms[1+(1:sum(active))]
       cur.oth=fit$covparms[-(1:(1+sum(active)))]
@@ -238,24 +164,26 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
       maxit=maxit*2
       
     }
-  }
+  } 
+  
   
   ### prepare fit object for subsequent prediction
   fit$covparms=c(cur.var,cur.ranges,cur.oth)
   fit$trend=trend
-  
-  ### redefining some outputs to make it compatible with package
-  fit$estimatedParams=fit$covparms
-  fit$objVal=fit$loglik
-  fit$gradval=fit$conv
-  
+  if(n.est<n){
+    fit$y=y.full
+    fit$locs=inputs.full
+    fit$X=X.full
+  } else {
+    fit$locs=inputs.ord
+  }
   if(trend=='zero') {
-    fit$X=as.matrix(rep(0,nrow(fit$locs)))
+    fit$X=as.matrix(rep(0,n))
   } else if(trend=='pre') {
-    fit$betahat=beta
-    fit$y=fit$y+beta
-    fit$trend='intercept'
-    fit$X=as.matrix(rep(1,nrow(fit$locs)))
+      fit$betahat=beta
+      fit$y=fit$y+beta
+      fit$trend='intercept'
+      fit$X=as.matrix(rep(1,n))
   }
   
   ### find variance correction factor, if requested
@@ -266,8 +194,41 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
   return(fit)
   
 }
-predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
-                                       predvar=FALSE,X_pred,scale='parms'){
+
+
+
+
+
+#######   prediction   ########
+
+#' prediction using scaled Vecchia, using output from fit_scaled()
+#'
+#' @param fit object returned from fit_scaled()
+#' @param locs_pred n.p x d matrix of test/prediction inputs/locations
+#' @param m conditioning-set size (larger is more accurate but slower)
+#' @param joint Joint predictions (does not return variances) or 
+#' separate/independent predictions (does not produce joint samples)
+#' @param n.sims desired number of samples from predictive distributions. 
+#' if \code{n.sims=0}, posterior mean is returned.
+#' @param predvar return prediction variances? (only if \code{joint=FALSE})
+#' @param X_pred n.p x p trend matrix at locs_pred 
+#' (if missing, will be generated based on fit object)
+#' @param scale scaling of inputs for ordering and conditioning. 
+#' 'parms': by parameter estimates. 'ranges': to [0,1]. 'none': no scaling
+#'
+#' @return Vector of length n.p (\code{n.sims=0}, \code{predvar=FALSE}) or 
+#' list with entries \code{means} and/or \code{vars} and/or \code{samples}
+#' @examples
+#' inputs=matrix(runif(200),ncol=2)
+#' y=sin(rowSums(inputs*5))
+#' inputs.test=matrix(runif(100),ncol=2)
+#' fit=fit_scaled(y,inputs)
+#' preds=predictions_scaled(fit,inputs.test)
+#' plot(rowSums(inputs.test),preds)
+#' @export
+
+predictions_scaled <- function(fit,locs_pred,m=100,joint=TRUE,nsims=0,
+                               predvar=FALSE,X_pred,scale='parms'){
   
   y_obs = fit$y
   locs_obs = fit$locs
@@ -278,10 +239,10 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
   n_obs <- nrow(locs_obs)
   n_pred <- nrow(locs_pred)
   if(is.null(fit$vcf)) vcf=1 else vcf=fit$vcf
-  m = min(m,nrow(locs_pred)-1)
+  
   # ## add nugget for numerical stability
-  if(covparms[length(covparms)]==0) 
-    covparms[length(covparms)]=covparms[1]*1e-12
+  # if(covparms[length(covparms)]==0) 
+  #   covparms[length(covparms)]=covparms[1]*1e-12
   
   # specify trend if missing
   if(missing(X_pred)){
@@ -349,7 +310,9 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
           samples[i,s]=stats::rnorm(1,pm,sqrt(pred.var))
         }
       }
+      
     }
+    
     # add (prior) mean and return to original ordering
     means[ord2] = means + c(Xord_pred %*% beta) 
     if(nsims==0){ 
@@ -367,9 +330,7 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
     
     # find the NNs 
     m=min(m,nrow(locs_obs))
-    
     NNarray=FNN::get.knnx(t(t(locs_obs)*scales),
-                          
                           t(t(locs_pred)*scales),m)$nn.index
     
     
@@ -395,9 +356,14 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
     } else {
       preds=list(means=means,vars=vars)
     }
+    
   }
+  
   return(preds)
+  
 }
+
+
 
 
 #######   obs.pred maxmin ordering   ########
@@ -506,3 +472,32 @@ find_ordered_nn_pred <- function(locs,m,fix.first=0,searchmult=2){
 }
 
 
+
+##########   line search for variance correction factor   ###
+fit_vcf=function(fit,m.pred=140,n.test=min(1e3,round(nrow(fit$locs)/5)),
+                 scale='parms',scorefun=ls){
+  
+  # remove test data from fit object
+  fitsearch=fit
+  inds.test=sample(1:nrow(fit$locs),n.test)
+  fitsearch$y=fit$y[-inds.test]
+  fitsearch$locs=fit$locs[-inds.test,,drop=FALSE]
+  fitsearch$X=fit$X[-inds.test,,drop=FALSE]
+  
+  # make predictions
+  preds=predictions_scaled(fitsearch,locs_pred=fit$locs[inds.test,,drop=FALSE],
+                           m=m.pred,joint=FALSE,predvar=TRUE,scale=scale,
+                           X_pred=fit$X[inds.test,,drop=FALSE])
+  
+  # optimize correction factor
+  y.test=fit$y[inds.test]
+  objfun=function(vcf) scorefun(y.test,preds$means,preds$vars*vcf)
+  vcf=optimize(objfun,c(1e-6,1e6))$minimum
+  
+  return(vcf)
+  
+}
+
+
+### log score
+ls=function(dat,mu,sig2) -mean(dnorm(dat,mu,sqrt(sig2),log=TRUE))

@@ -189,6 +189,7 @@ tempGP = function(trainX, trainY, trainT = NULL,
   
   }else {
     optimResult=fit_scaled_thinned(y=trainY,inputs=trainX,thinnedBins=thinnedBins,T=thinningNumber)
+    modelF=optimResult
     trainResiduals = trainY - predictions_scaled_thinned(optimResult,trainX,m=100,joint=TRUE,nsims=0,
                                                          predvar=FALSE,scale='parms')
     modelG = list(residuals = trainResiduals, time_index = trainT)
