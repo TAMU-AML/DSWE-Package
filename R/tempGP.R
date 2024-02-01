@@ -337,7 +337,7 @@ predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
 #'    tempGPupdated = updateData(tempGPObject, newX, newY)
 #' @export
 #' 
-updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, updateModelF = FALSE, ...){
+updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE ,updateModelF = FALSE, ...){
   
   newX = as.matrix((newX)) #trying to coerce newX into a matrix, if not already.
   
@@ -416,6 +416,8 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
   
   if (updateModelF){
     
+    if(!object$vecchia){
+      
     object$modelF$X = object$trainX
     object$modelF$y = object$trainY
     weightedY = computeWeightedY(object$modelF$X, object$modelF$y, object$estimatedParams)
@@ -423,10 +425,24 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
     residuals = object$trainY - predictGP(object$modelF$X, object$modelF$weightedY, object$trainX, object$estimatedParams)
     object$modelG$residuals = residuals
     
+    } else {
+      
+      object$modelF$X = object$trainX
+      object$modelF$y = object$trainY
+      residuals = object$trainY - predictions_scaled_thinned(object$modelF,object$modelF$X,m=100,joint=TRUE,nsims=0,predvar=FALSE,scale='parms')
+      object$modelG$residuals = residuals
+    }
     
   } else {
+    if(!object$vecchia){
     
     newResiduals = newY - predictGP(object$modelF$X, object$modelF$weightedY, newX, object$estimatedParams)
+    
+    }else{
+    
+        newResiduals = newY - predictions_scaled_thinned(object$modelF,object$modelF$X,m=100,joint=TRUE,nsims=0,predvar=FALSE,scale='parms')
+    }
+    
     if (replace){
       if (length(newY) < length(object$trainY)){
         object$modelG$residuals = c( object$modelG$residuals[-c(1:length(newY))],newResiduals)
@@ -441,6 +457,7 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
       
     }
     
+  
   }
   
   object$modelG$time_index = object$trainT

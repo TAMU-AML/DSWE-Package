@@ -1,6 +1,6 @@
 # MIT License
 # 
-# Copyright (c) 2024 Ahmadreza Chokhachian, Abhinav Prakash, and Yu Ding
+# Copyright (c) 2024 Ahmadreza Chokhachian, and Yu Ding
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@
 #' @param nrounds  number of boosting rounds or trees to build
 #' @return a vector or numeric predictions on user provided test data
 #'
-#' @importFrom xgboost
+#' @importFrom xgboost xgboost
 #' @examples 
 #' 
 #' data = data1
@@ -41,6 +41,7 @@
 #' 
 #' Xgb_prediction = XgbPCFit(trainX, trainY, testX)
 #' 
+#' @references Chen, T., & Guestrin, C. (2016). "XGBoost: A Scalable Tree Boosting System." Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 785-794. \doi{10.1145/2939672.2939785}.
 #' @export
 
 XgbPCFit = function(trainX, trainY, testX, max.depth = 8, eta = 0.25, nthread = 2, nrounds = 5){
@@ -73,7 +74,22 @@ XgbPCFit = function(trainX, trainY, testX, max.depth = 8, eta = 0.25, nthread = 
     
     stop("testX and trainX must have same number of columns")
   }
+
+  if (!is.numeric(max.depth) || max.depth <= 0) {
+    stop("max.depth must be a positive numeric value.")
+  }
   
+  if (!is.numeric(eta) || eta <= 0 || eta > 1) {
+    stop("eta must be a numeric value between 0 and 1.")
+  }
+  
+  if (!is.numeric(nthread) || nthread <= 0 || nthread != round(nthread)) {
+    stop("nthread must be a positive integer.")
+  }
+  
+  if (!is.numeric(nrounds) || nrounds <= 0 || nrounds != round(nrounds)) {
+    stop("nrounds must be a positive integer.")
+  }
 
   modelFit = xgboost::xgboost(data = trainX, label = trainY, max.depth = max.depth, eta = eta, nthread = nthread, nrounds = nrounds, verbose=FALSE)
 

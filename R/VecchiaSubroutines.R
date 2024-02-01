@@ -19,15 +19,36 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
+# MIT License
+#
+# Copyright (c) 2024 Katzfuss Group
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 #' @useDynLib DSWE, .registration = TRUE
-#' @importFrom GpGp find_ordered_nn get_linkfun group_obs get_penalty vecchia_grouped_profbeta_loglik_grad_info vecchia_profbeta_loglik_grad_info fisher_scoring find_ordered_nn_brute
+#' @importFrom GpGp matern15_scaledim find_ordered_nn get_linkfun group_obs get_penalty vecchia_grouped_profbeta_loglik_grad_info vecchia_profbeta_loglik_grad_info fisher_scoring find_ordered_nn_brute
 #' @importFrom GPvecchia order_maxmin_exact
 
 
 fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu=1.5,nug=NULL,scale='none',
-                               var.ini,ranges.ini,select=Inf,print.level=0,max.it=1000,tol.dec=5,
-                               find.vcf=FALSE,vcf.scorefun=ls,grouped=TRUE) {
+                               var.ini,ranges.ini,select=Inf,print.level=0,max.it=1000,tol.dec=5,grouped=TRUE) {
   
   
   
@@ -257,11 +278,7 @@ fit_scaled_thinned <- function(y,inputs,thinnedBins,T,ms=c(10),trend='zero',X,nu
     fit$trend='intercept'
     fit$X=as.matrix(rep(1,nrow(fit$locs)))
   }
-  
-  ### find variance correction factor, if requested
-  if(find.vcf){
-    fit$vcf=fit_vcf(fit,scale=scale,scorefun=vcf.scorefun)
-  } else fit$vcf=1
+ 
   
   return(fit)
   
@@ -270,15 +287,16 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
                                        predvar=FALSE,X_pred,scale='parms'){
   
   y_obs = fit$y
-  locs_obs = fit$locs
+  locs_obs = as.matrix(fit$locs)
+  locs_pred=as.matrix(locs_pred)
   X_obs = fit$X
   beta = fit$betahat
   covparms = fit$covparms
   covfun_name = fit$covfun_name
   n_obs <- nrow(locs_obs)
   n_pred <- nrow(locs_pred)
-  if(is.null(fit$vcf)) vcf=1 else vcf=fit$vcf
-  m = min(m,nrow(locs_pred)-1)
+  vcf=1
+  #m = min(m,nrow(locs_pred)-1)
   # ## add nugget for numerical stability
   if(covparms[length(covparms)]==0) 
     covparms[length(covparms)]=covparms[1]*1e-12
@@ -322,7 +340,7 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
     sm = if (n_pred<1e5) 2 else 1.5
     NNarray_all <- find_ordered_nn_pred(t(t(locs_all)*scales),m,
                                         fix.first=n_obs,searchmult=sm)
-    NNarray_pred=NNarray_all[-(1:n_obs),-1]
+    NNarray_pred=as.matrix(NNarray_all[-(1:n_obs),-1,drop=FALSE])
     
     means=numeric(length=n_pred)
     if(nsims>0) samples=array(dim=c(n_pred,nsims))
@@ -331,16 +349,16 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
     for(i in 1:n_pred){
       
       # NN conditioning sets
-      NN=sort(NNarray_pred[i,])
+      NN=sort(NNarray_pred[i,,drop=FALSE])
       NN_obs=NN[NN<=n_obs]
       NN_pred=NN[NN>n_obs]-n_obs
       
       # (co-)variances
-      K=get(covfun_name)(covparms,locs_all[c(NN,i+n_obs),])
+      K=get(covfun_name)(covparms,locs_all[c(NN,i+n_obs),,drop=FALSE])
       cl=t(chol(K))
-      
+      m=min(m,nrow(locs_obs))
       # prediction
-      y.NN=y[NN_obs]
+      y.NN=y[NN_obs,drop=FALSE]
       means[i]=cl[m+1,1:m]%*%forwardsolve(cl[1:m,1:m],c(y.NN,means[NN_pred]))
       if(nsims>0){ # conditional simulation
         pred.var=cl[m+1,m+1]^2*vcf
@@ -377,10 +395,10 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
     for(i in 1:n_pred){
       
       # NN conditioning sets
-      NN=NNarray[i,]
+      NN=NNarray[i,,drop=FALSE]
       
       # (co-)variances
-      K=get(covfun_name)(covparms,rbind(locs_obs[NN,],locs_pred[i,]))
+      K=get(covfun_name)(covparms,rbind(locs_obs[NN,,drop=FALSE],locs_pred[i,,drop=FALSE]))
       cl=t(chol(K))
       
       # prediction
@@ -398,7 +416,6 @@ predictions_scaled_thinned <- function(fit,locs_pred,m=400,joint=TRUE,nsims=0,
   }
   return(preds)
 }
-
 
 #######   obs.pred maxmin ordering   ########
 order_maxmin_pred<-function(locs, locs_pred,refine=FALSE){
@@ -504,5 +521,3 @@ find_ordered_nn_pred <- function(locs,m,fix.first=0,searchmult=2){
   
   return(NNarray)
 }
-
-

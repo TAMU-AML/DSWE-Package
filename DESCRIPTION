@@ -40,4 +40,5 @@ Imports:
     stats (>= 3.5.0),
     dplyr (>= 1.0.9),
     GpGp (>= 	0.4.0),
-    GPvecchia (>= 0.1.4)
+    GPvecchia (>= 0.1.4),
+    xgboost (>= 1.7.7.1)
