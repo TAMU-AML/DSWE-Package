@@ -11,6 +11,7 @@ tempGP(
   fast_computation = TRUE,
   limit_memory = 5000L,
   max_thinning_number = 20,
+  vecchia = TRUE,
   optim_control = list(batch_size = 100L, learn_rate = 0.05, max_iter = 5000L, tol =
     1e-06, beta1 = 0.9, beta2 = 0.999, epsilon = 1e-08, logfile = NULL)
 )
@@ -27,6 +28,8 @@ tempGP(
 \item{limit_memory}{An integer or \code{NULL}. The integer is used sample training points during prediction to limit the total memory requirement. Setting the value to \code{NULL} would result in no sampling, that is, full training data is used for prediction. Default value is \code{5000}.}
 
 \item{max_thinning_number}{An integer specifying the max lag to compute the thinning number. If the PACF does not become insignificant till \code{max_thinning_number}, then \code{max_thinning_number} is used for thinning.}
+
+\item{vecchia}{A Boolean that specifies whether to do exact inference or vecchia approximation. Default is \code{TRUE}.}
 
 \item{optim_control}{A list parameters passed to the Adam optimizer when \code{fast_computation} is set to \code{TRUE}. The default values have been tested rigorously and tend to strike a balance between accuracy and speed. \itemize{
 \item \code{batch_size}: Number of training points sampled at each iteration of Adam.
@@ -79,6 +82,8 @@ A Gaussian process based power curve model which explicitly models the temporal 
 }
 \references{
 Prakash, A., Tuo, R., & Ding, Y. (2022). "The temporal overfitting problem with applications in wind power curve modeling." Technometrics. \doi{10.1080/00401706.2022.2069158}.
+
+Katzfuss, M., & Guinness, J. (2017). A general framework for Vecchia approximations of Gaussian processes. \doi{1708.06302}.
 }
 \seealso{
 \code{\link{predict.tempGP}} for computing predictions and \code{\link{updateData.tempGP}} for updating data in a tempGP object.
