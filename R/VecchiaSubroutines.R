@@ -1,6 +1,6 @@
 # MIT License
 # 
-# Copyright (c) 2020-2022 Ahmadreza Chokhachian and Yu Ding
+# Copyright (c) 2022-2024 Ahmadreza Chokhachian and Yu Ding
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,6 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
+#The code has been derived from https://github.com/katzfuss-group/scaledVecchia/ and modified.
+#The following is the copyright notice for the scaledVecchia repository
 #
 # MIT License
 #
