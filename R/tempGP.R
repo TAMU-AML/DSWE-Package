@@ -85,7 +85,7 @@
 tempGP = function(trainX, trainY, trainT = NULL, 
                   fast_computation = TRUE,
                   limit_memory = 5000L,
-                  max_thinning_number = 20,
+                  max_thinning_number = 20L,
                   vecchia=TRUE,
                   optim_control = list(batch_size = 100L, 
                                        learn_rate = 0.05, 
