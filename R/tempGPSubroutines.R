@@ -190,4 +190,3 @@ adam_optimizer = function(data_bins, par_init, batch_size, learn_rate, max_iter,
     }
   }
 }
-

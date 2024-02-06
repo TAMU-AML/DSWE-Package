@@ -1,11 +1,12 @@
 Package: DSWE
 Title: Data Science for Wind Energy
-Version: 1.7.0
+Version: 1.8.0
 Authors@R: c(
     person(given = "Nitesh", family = "Kumar", role = c("aut"), email = "nkumar.tamu@gmail.com"),
     person(given = "Abhinav", family = "Prakash", role = c("aut"), email = "aprakashphd@gmail.com"),
     person(given = "Yu", family = "Ding", role = c("aut","cre"), email = "yuding2007@gmail.com"),
-    person(given = "Effi", family = "Latiffianti", role = c("ctb","cph"), email = "latiffianti@gmail.com"))
+    person(given = "Effi", family = "Latiffianti", role = c("ctb","cph"), email = "latiffianti@gmail.com"),
+    person(given = "Ahmadreza", family = "Chokhachian", role = c("ctb","cph"), email = "ar.chokhachian@gmail.com"))
 Description: Data science methods used in wind energy applications. 
               Current functionalities include creating a multi-dimensional power curve model, 
               performing power curve function comparison, covariate matching, and energy decomposition. 
@@ -38,4 +39,7 @@ Imports:
     gss (>= 2.2-2),
     e1071 (>= 1.7-3),
     stats (>= 3.5.0),
-    dplyr (>= 1.0.9)
+    dplyr (>= 1.0.9),
+    GpGp (>= 	0.4.0),
+    GPvecchia (>= 0.1.4),
+    xgboost (>= 1.7.7.1)

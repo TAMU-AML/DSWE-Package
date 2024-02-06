@@ -27,6 +27,7 @@
 #' @param trainT A vector for time indices of the data points. By default, the function assigns natural numbers starting from 1 as the time indices. 
 #' @param max_thinning_number An integer specifying the max lag to compute the thinning number. If the PACF does not become insignificant till \code{max_thinning_number}, then \code{max_thinning_number} is used for thinning.
 #' @param fast_computation A Boolean that specifies whether to do exact inference or fast approximation. Default is \code{TRUE}.
+#' @param vecchia A Boolean that specifies whether to do exact inference or vecchia approximation. Default is \code{TRUE}.
 #' @param limit_memory An integer or \code{NULL}. The integer is used sample training points during prediction to limit the total memory requirement. Setting the value to \code{NULL} would result in no sampling, that is, full training data is used for prediction. Default value is \code{5000}.
 #' @param optim_control A list parameters passed to the Adam optimizer when \code{fast_computation} is set to \code{TRUE}. The default values have been tested rigorously and tend to strike a balance between accuracy and speed. \itemize{
 #' \item \code{batch_size}: Number of training points sampled at each iteration of Adam.
@@ -77,13 +78,15 @@
 #' 
 #' 
 #' @references Prakash, A., Tuo, R., & Ding, Y. (2022). "The temporal overfitting problem with applications in wind power curve modeling." Technometrics. \doi{10.1080/00401706.2022.2069158}.
+#' @references Katzfuss, M., & Guinness, J. (2017). A general framework for Vecchia approximations of Gaussian processes. \doi{1708.06302}.
 #' @export
 #' 
 
 tempGP = function(trainX, trainY, trainT = NULL, 
                   fast_computation = TRUE,
                   limit_memory = 5000L,
-                  max_thinning_number = 20,
+                  max_thinning_number = 20L,
+                  vecchia=TRUE,
                   optim_control = list(batch_size = 100L, 
                                        learn_rate = 0.05, 
                                        max_iter = 5000L, 
@@ -158,7 +161,12 @@ tempGP = function(trainX, trainY, trainT = NULL,
   } else{
     thinnedBins = list(list(x = trainX, y = trainY))
   }
-
+  
+  if (!is.logical(vecchia)) {
+    stop('vecchia must be boolean.')
+  }
+  
+  if (vecchia == FALSE){
   optimResult = estimateBinnedParams(thinnedBins, fast_computation, optim_control)
   if (inherits(limit_memory, "integer")){
     ntrain = nrow(trainX)
@@ -178,10 +186,19 @@ tempGP = function(trainX, trainY, trainT = NULL,
   modelF = list(X = activeX, y = activeY, weightedY = weightedY)
   trainResiduals = trainY - predictGP(modelF$X, modelF$weightedY, trainX, optimResult$estimatedParams)
   modelG = list(residuals = trainResiduals, time_index = trainT)
+  
+  }else {
+    optimResult=fit_scaled_thinned(y=trainY,inputs=trainX,thinnedBins=thinnedBins,T=thinningNumber)
+    modelF=optimResult
+    trainResiduals = trainY - predictions_scaled_thinned(optimResult,trainX,m=100,joint=TRUE,nsims=0,
+                                                         predvar=FALSE,scale='parms')
+    modelG = list(residuals = trainResiduals, time_index = trainT)
+  }
+    
   output = list(trainX = trainX, trainY = trainY, trainT = trainT, 
                 thinningNumber = thinningNumber, modelF = modelF, 
                 modelG = modelG, estimatedParams = optimResult$estimatedParams, 
-                llval = optimResult$objVal, gradval = optimResult$gradVal)
+                llval = optimResult$objVal, gradval = optimResult$gradVal,vecchia = vecchia)
   class(output) = "tempGP"
   return(output)
 }
@@ -273,9 +290,13 @@ predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
   }
   
   #cat("All test passed.\n")
-  
+  if (object$vecchia == TRUE){
+    predF = predictions_scaled_thinned(object$modelF,locs_pred = testX,m=400,joint=TRUE,nsims=0,
+                                       predvar=FALSE,scale='parms')
+    
+  } else {
   predF = predictGP(object$modelF$X, object$modelF$weightedY, testX, object$estimatedParams)
-  
+  }
   if (is.null(testT)){
       
     return(predF)
@@ -316,7 +337,7 @@ predict.tempGP = function(object, testX, testT = NULL, trainT = NULL,...){
 #'    tempGPupdated = updateData(tempGPObject, newX, newY)
 #' @export
 #' 
-updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, updateModelF = FALSE, ...){
+updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE ,updateModelF = FALSE, ...){
   
   newX = as.matrix((newX)) #trying to coerce newX into a matrix, if not already.
   
@@ -395,6 +416,8 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
   
   if (updateModelF){
     
+    if(!object$vecchia){
+      
     object$modelF$X = object$trainX
     object$modelF$y = object$trainY
     weightedY = computeWeightedY(object$modelF$X, object$modelF$y, object$estimatedParams)
@@ -402,10 +425,24 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
     residuals = object$trainY - predictGP(object$modelF$X, object$modelF$weightedY, object$trainX, object$estimatedParams)
     object$modelG$residuals = residuals
     
+    } else {
+      
+      object$modelF$X = object$trainX
+      object$modelF$y = object$trainY
+      residuals = object$trainY - predictions_scaled_thinned(object$modelF,object$modelF$X,m=100,joint=TRUE,nsims=0,predvar=FALSE,scale='parms')
+      object$modelG$residuals = residuals
+    }
     
   } else {
+    if(!object$vecchia){
     
     newResiduals = newY - predictGP(object$modelF$X, object$modelF$weightedY, newX, object$estimatedParams)
+    
+    }else{
+    
+        newResiduals = newY - predictions_scaled_thinned(object$modelF,object$modelF$X,m=100,joint=TRUE,nsims=0,predvar=FALSE,scale='parms')
+    }
+    
     if (replace){
       if (length(newY) < length(object$trainY)){
         object$modelG$residuals = c( object$modelG$residuals[-c(1:length(newY))],newResiduals)
@@ -420,6 +457,7 @@ updateData.tempGP = function(object,newX, newY, newT = NULL, replace = TRUE, upd
       
     }
     
+  
   }
   
   object$modelG$time_index = object$trainT
